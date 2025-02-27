@@ -40,12 +40,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         => (Numerator, Denominator) = (value, BigInteger.One);
 
     public BigFloat(BigFloat value)
-    {
-        if (object.Equals(value, null))
-            (Numerator, Denominator) = (BigInteger.Zero, BigInteger.One);
-        else
-            (Numerator, Denominator) = value;
-    }
+        => (Numerator, Denominator) = value;
 
     public BigFloat(ulong value)
         : this(new BigInteger(value))
@@ -81,34 +76,23 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
 
     public static BigFloat Add(BigFloat value, BigFloat other)
     {
-        if (object.Equals(other, null))
-            throw new ArgumentNullException(nameof(other));
-
         var numerator = value.Numerator * other.Denominator + other.Numerator * value.Denominator;
         return new(numerator, value.Denominator * other.Denominator);
     }
 
     public static BigFloat Subtract(BigFloat value, BigFloat other)
     {
-        if (object.Equals(other, null))
-            throw new ArgumentNullException(nameof(other));
-
         var numerator = value.Numerator * other.Denominator - other.Numerator * value.Denominator;
         return new(numerator, value.Denominator * other.Denominator);
     }
 
     public static BigFloat Multiply(BigFloat value, BigFloat other)
     {
-        if (object.Equals(other, null))
-            throw new ArgumentNullException(nameof(other));
-
         return new(value.Numerator * other.Numerator, value.Denominator * other.Denominator);
     }
 
     public static BigFloat Divide(BigFloat value, BigFloat other)
     {
-        if (BigInteger.Equals(other, null))
-            throw new ArgumentNullException(nameof(other));
         if (other.Numerator == 0)
             throw new DivideByZeroException(nameof(other));
 
@@ -117,9 +101,6 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
 
     public static BigFloat Remainder(BigFloat value, BigFloat other)
     {
-        if (BigInteger.Equals(other, null))
-            throw new ArgumentNullException(nameof(other));
-
         return value - Floor(value / other) * other;
     }
 
@@ -250,16 +231,6 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
 
         return new(value.Numerator / factor, value.Denominator / factor);
     }
-    public new static bool Equals(object left, object right)
-    {
-        if (left == null && right == null)
-            return true;
-        if (left == null || right == null)
-            return false;
-        if (left.GetType() != right.GetType())
-            return false;
-        return ((BigInteger)left).Equals((BigInteger)right);
-    }
 
     public static string ToString(BigFloat value)
         => value.ToString();
@@ -311,11 +282,6 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
 
     public static int Compare(BigFloat left, BigFloat right)
     {
-        if (object.Equals(left, null))
-            throw new ArgumentNullException(nameof(left));
-        if (Equals(right, null))
-            throw new ArgumentNullException(nameof(right));
-
         return new BigFloat(left).CompareTo(right);
     }
 
@@ -378,9 +344,6 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
 
     public int CompareTo(BigFloat other)
     {
-        if (object.Equals(other, null))
-            throw new ArgumentNullException(nameof(other));
-
         //Make copies
         var one = Numerator;
         var two = other.Numerator;
