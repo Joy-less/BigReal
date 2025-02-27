@@ -3,8 +3,7 @@ using System.Globalization;
 
 namespace System.Numerics;
 
-partial struct BigFloat : IFloatingPoint<BigFloat>
-{
+partial struct BigFloat : IFloatingPoint<BigFloat> {
     public static BigFloat E { get; } = Parse("2.7182818284590452353602874713526624977572");
 
     public static BigFloat Pi { get; } = Parse("3.1415926535897932384626433832795028841971");
@@ -23,8 +22,7 @@ partial struct BigFloat : IFloatingPoint<BigFloat>
 
     public static bool IsComplexNumber(BigFloat value) => false;
 
-    public static bool IsEvenInteger(BigFloat value)
-    {
+    public static bool IsEvenInteger(BigFloat value) {
         if (value.Denominator == 1 || value.Denominator == -1)
             return BigInteger.IsEvenInteger(value.Numerator);
         return false;
@@ -46,8 +44,7 @@ partial struct BigFloat : IFloatingPoint<BigFloat>
 
     public static bool IsNormal(BigFloat value) => value.Numerator != 0;
 
-    public static bool IsOddInteger(BigFloat value)
-    {
+    public static bool IsOddInteger(BigFloat value) {
         if (value.Denominator == 1 || value.Denominator == -1)
             return BigInteger.IsOddInteger(value.Numerator);
         return false;
@@ -71,135 +68,110 @@ partial struct BigFloat : IFloatingPoint<BigFloat>
 
     public static BigFloat MinMagnitudeNumber(BigFloat x, BigFloat y) => MinMagnitude(x, y);
 
-    public static BigFloat Parse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider provider)
-    {
+    public static BigFloat Parse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider provider) {
         throw new NotImplementedException();
     }
 
-    public static BigFloat Parse(string s, NumberStyles style, IFormatProvider provider)
-    {
+    public static BigFloat Parse(string s, NumberStyles style, IFormatProvider provider) {
         throw new NotImplementedException();
     }
 
-    public static BigFloat Parse(ReadOnlySpan<char> s, IFormatProvider provider)
-    {
+    public static BigFloat Parse(ReadOnlySpan<char> s, IFormatProvider provider) {
         throw new NotImplementedException();
     }
 
-    public static BigFloat Parse(string s, IFormatProvider provider)
-    {
+    public static BigFloat Parse(string s, IFormatProvider provider) {
         throw new NotImplementedException();
     }
 
-    public static BigFloat Round(BigFloat x, int digits, MidpointRounding mode)
-    {
+    public static BigFloat Round(BigFloat x, int digits, MidpointRounding mode) {
         throw new NotImplementedException();
     }
 
-    public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider provider, [MaybeNullWhen(false)] out BigFloat result)
-    {
+    public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider provider, [MaybeNullWhen(false)] out BigFloat result) {
         throw new NotImplementedException();
     }
 
-    public static bool TryParse([NotNullWhen(true)] string s, NumberStyles style, IFormatProvider provider, [MaybeNullWhen(false)] out BigFloat result)
-    {
+    public static bool TryParse([NotNullWhen(true)] string s, NumberStyles style, IFormatProvider provider, [MaybeNullWhen(false)] out BigFloat result) {
         throw new NotImplementedException();
     }
 
-    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider provider, [MaybeNullWhen(false)] out BigFloat result)
-    {
+    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider provider, [MaybeNullWhen(false)] out BigFloat result) {
         throw new NotImplementedException();
     }
 
-    public static bool TryParse([NotNullWhen(true)] string s, IFormatProvider provider, [MaybeNullWhen(false)] out BigFloat result)
-    {
+    public static bool TryParse([NotNullWhen(true)] string s, IFormatProvider provider, [MaybeNullWhen(false)] out BigFloat result) {
         throw new NotImplementedException();
     }
 
-    static bool INumberBase<BigFloat>.TryConvertFromChecked<TOther>(TOther value, out BigFloat result)
-    {
+    static bool INumberBase<BigFloat>.TryConvertFromChecked<TOther>(TOther value, out BigFloat result) {
         throw new NotImplementedException();
     }
 
-    static bool INumberBase<BigFloat>.TryConvertFromSaturating<TOther>(TOther value, out BigFloat result)
-    {
+    static bool INumberBase<BigFloat>.TryConvertFromSaturating<TOther>(TOther value, out BigFloat result) {
         throw new NotImplementedException();
     }
 
-    static bool INumberBase<BigFloat>.TryConvertFromTruncating<TOther>(TOther value, out BigFloat result)
-    {
+    static bool INumberBase<BigFloat>.TryConvertFromTruncating<TOther>(TOther value, out BigFloat result) {
         throw new NotImplementedException();
     }
 
-    static bool INumberBase<BigFloat>.TryConvertToChecked<TOther>(BigFloat value, out TOther result)
-    {
+    static bool INumberBase<BigFloat>.TryConvertToChecked<TOther>(BigFloat value, out TOther result) {
         throw new NotImplementedException();
     }
 
-    static bool INumberBase<BigFloat>.TryConvertToSaturating<TOther>(BigFloat value, out TOther result)
-    {
+    static bool INumberBase<BigFloat>.TryConvertToSaturating<TOther>(BigFloat value, out TOther result) {
         throw new NotImplementedException();
     }
 
-    static bool INumberBase<BigFloat>.TryConvertToTruncating<TOther>(BigFloat value, out TOther result)
-    {
+    static bool INumberBase<BigFloat>.TryConvertToTruncating<TOther>(BigFloat value, out TOther result) {
         throw new NotImplementedException();
     }
 
-    public int GetExponentByteCount()
-    {
+    public int GetExponentByteCount() {
         // Not significant for BigFloat
         throw new NotImplementedException();
     }
 
-    public int GetExponentShortestBitLength()
-    {
+    public int GetExponentShortestBitLength() {
         // Not significant for BigFloat
         throw new NotImplementedException();
     }
 
-    public int GetSignificandBitLength()
-    {
+    public int GetSignificandBitLength() {
         // Not significant for BigFloat
         throw new NotImplementedException();
     }
 
-    public int GetSignificandByteCount()
-    {
+    public int GetSignificandByteCount() {
         // Not significant for BigFloat
         throw new NotImplementedException();
     }
 
-    public string ToString(string format, IFormatProvider formatProvider)
-    {
+    public string ToString(string format, IFormatProvider formatProvider) {
         throw new NotImplementedException();
     }
 
-    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider provider)
-    {
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider provider) {
         throw new NotImplementedException();
     }
 
-    public bool TryWriteExponentBigEndian(Span<byte> destination, out int bytesWritten)
-    {
+    public bool TryWriteExponentBigEndian(Span<byte> destination, out int bytesWritten) {
         // Not significant for BigFloat
         throw new NotImplementedException();
     }
 
-    public bool TryWriteExponentLittleEndian(Span<byte> destination, out int bytesWritten)
-    {
+    public bool TryWriteExponentLittleEndian(Span<byte> destination, out int bytesWritten) {
         // Not significant for BigFloat
         throw new NotImplementedException();
     }
 
-    public bool TryWriteSignificandBigEndian(Span<byte> destination, out int bytesWritten)
-    {
+    public bool TryWriteSignificandBigEndian(Span<byte> destination, out int bytesWritten) {
         // Not significant for BigFloat
         throw new NotImplementedException();
     }
 
-    public bool TryWriteSignificandLittleEndian(Span<byte> destination, out int bytesWritten)
-    {
+    public bool TryWriteSignificandLittleEndian(Span<byte> destination, out int bytesWritten) {
         // Not significant for BigFloat
         throw new NotImplementedException();
     }

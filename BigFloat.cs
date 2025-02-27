@@ -3,8 +3,7 @@ using System.Text;
 namespace System.Numerics;
 
 [Serializable]
-public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>
-{
+public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat> {
     public readonly BigInteger Numerator;
     public readonly BigInteger Denominator;
 
@@ -14,8 +13,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
     public static BigFloat OneHalf => new(BigInteger.One, 2);
 
     public int Sign
-        => (Numerator.Sign + Denominator.Sign) switch
-        {
+        => (Numerator.Sign + Denominator.Sign) switch {
             2 or -2 => 1,
             0 => -1,
             _ => 0,
@@ -29,8 +27,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
     private BigFloat(string value)
         => (Numerator, Denominator) = Parse(value);
 
-    public BigFloat(BigInteger numerator, BigInteger denominator)
-    {
+    public BigFloat(BigInteger numerator, BigInteger denominator) {
         if (denominator == 0)
             throw new DivideByZeroException($"{nameof(denominator)} equals 0");
         (Numerator, Denominator) = (numerator, denominator);
@@ -43,69 +40,56 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         => (Numerator, Denominator) = value;
 
     public BigFloat(ulong value)
-        : this(new BigInteger(value))
-    { }
+        : this(new BigInteger(value)) { }
 
     public BigFloat(long value)
-        : this(new BigInteger(value))
-    { }
+        : this(new BigInteger(value)) { }
 
     public BigFloat(uint value)
-        : this(new BigInteger(value))
-    { }
+        : this(new BigInteger(value)) { }
 
     public BigFloat(int value)
-        : this(new BigInteger(value))
-    { }
+        : this(new BigInteger(value)) { }
 
     public BigFloat(float value)
-        : this(value.ToString("N99"))
-    { }
+        : this(value.ToString("N99")) { }
 
     public BigFloat(double value)
-        : this(value.ToString("N99"))
-    { }
+        : this(value.ToString("N99")) { }
 
     public BigFloat(decimal value)
-        : this(value.ToString("N99"))
-    { }
+        : this(value.ToString("N99")) { }
 
     #endregion
 
     #region Static Methods
 
-    public static BigFloat Add(BigFloat value, BigFloat other)
-    {
+    public static BigFloat Add(BigFloat value, BigFloat other) {
         var numerator = value.Numerator * other.Denominator + other.Numerator * value.Denominator;
         return new(numerator, value.Denominator * other.Denominator);
     }
 
-    public static BigFloat Subtract(BigFloat value, BigFloat other)
-    {
+    public static BigFloat Subtract(BigFloat value, BigFloat other) {
         var numerator = value.Numerator * other.Denominator - other.Numerator * value.Denominator;
         return new(numerator, value.Denominator * other.Denominator);
     }
 
-    public static BigFloat Multiply(BigFloat value, BigFloat other)
-    {
+    public static BigFloat Multiply(BigFloat value, BigFloat other) {
         return new(value.Numerator * other.Numerator, value.Denominator * other.Denominator);
     }
 
-    public static BigFloat Divide(BigFloat value, BigFloat other)
-    {
+    public static BigFloat Divide(BigFloat value, BigFloat other) {
         if (other.Numerator == 0)
             throw new DivideByZeroException(nameof(other));
 
         return new(value.Numerator * other.Denominator, value.Denominator * other.Numerator);
     }
 
-    public static BigFloat Remainder(BigFloat value, BigFloat other)
-    {
+    public static BigFloat Remainder(BigFloat value, BigFloat other) {
         return value - Floor(value / other) * other;
     }
 
-    public static BigFloat DivideRemainder(BigFloat value, BigFloat other, out BigFloat remainder)
-    {
+    public static BigFloat DivideRemainder(BigFloat value, BigFloat other, out BigFloat remainder) {
         value = Divide(value, other);
 
         remainder = Remainder(value, other);
@@ -113,22 +97,18 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return value;
     }
 
-    public static BigFloat Pow(BigFloat value, int exponent)
-    {
-        if (value.Numerator.IsZero)
-        {
+    public static BigFloat Pow(BigFloat value, int exponent) {
+        if (value.Numerator.IsZero) {
             // Nothing to do
             return value;
         }
-        else if (exponent < 0)
-        {
+        else if (exponent < 0) {
             var savedNumerator = value.Numerator;
             var numerator = BigInteger.Pow(value.Denominator, -exponent);
             var denominator = BigInteger.Pow(savedNumerator, -exponent);
             return new(numerator, denominator);
         }
-        else
-        {
+        else {
             var numerator = BigInteger.Pow(value.Numerator, exponent);
             var denominator = BigInteger.Pow(value.Denominator, exponent);
             return new(numerator, denominator);
@@ -150,8 +130,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
     public static BigFloat Decrement(BigFloat value)
         => new(value.Numerator - value.Denominator, value.Denominator);
 
-    public static BigFloat Ceil(BigFloat value)
-    {
+    public static BigFloat Ceil(BigFloat value) {
         var numerator = value.Numerator;
         if (numerator < 0)
             numerator -= BigInteger.Remainder(numerator, value.Denominator);
@@ -161,8 +140,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return Factor(new(numerator, value.Denominator));
     }
 
-    public static BigFloat Floor(BigFloat value)
-    {
+    public static BigFloat Floor(BigFloat value) {
         var numerator = value.Numerator;
         if (numerator < 0)
             numerator += value.Denominator - BigInteger.Remainder(numerator, value.Denominator);
@@ -172,8 +150,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return Factor(new(numerator, value.Denominator));
     }
 
-    public static BigFloat Round(BigFloat value)
-    {
+    public static BigFloat Round(BigFloat value) {
         //get remainder. Over divisor see if it is > new BigFloat(0.5)
 
         if (BigFloat.Decimals(value).CompareTo(OneHalf) >= 0)
@@ -182,8 +159,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
             return Floor(value);
     }
 
-    public static BigFloat Truncate(BigFloat value)
-    {
+    public static BigFloat Truncate(BigFloat value) {
         var numerator = value.Numerator;
         numerator -= BigInteger.Remainder(numerator, value.Denominator);
 
@@ -193,8 +169,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
     public static BigFloat Decimals(BigFloat value)
         => new(BigInteger.Remainder(value.Numerator, value.Denominator), value.Denominator);
 
-    public static BigFloat ShiftDecimalLeft(BigFloat value, int shift)
-    {
+    public static BigFloat ShiftDecimalLeft(BigFloat value, int shift) {
         if (shift < 0)
             return ShiftDecimalRight(value, -shift);
 
@@ -202,8 +177,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return new(numerator, value.Denominator);
     }
 
-    public static BigFloat ShiftDecimalRight(BigFloat value, int shift)
-    {
+    public static BigFloat ShiftDecimalRight(BigFloat value, int shift) {
         if (shift < 0)
             return ShiftDecimalLeft(value, -shift);
 
@@ -221,8 +195,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         => BigInteger.Log(value.Numerator, baseValue) - BigInteger.Log(value.Numerator, baseValue);
 
     ///<summary> factoring can be very slow. So use only when neccessary (ToString, and comparisons) </summary>
-    public static BigFloat Factor(BigFloat value)
-    {
+    public static BigFloat Factor(BigFloat value) {
         if (value.Denominator == 1)
             return value;
 
@@ -235,8 +208,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
     public static string ToString(BigFloat value)
         => value.ToString();
 
-    public static BigFloat Parse(string value)
-    {
+    public static BigFloat Parse(string value) {
         if (value == null)
             throw new ArgumentNullException(nameof(value));
 
@@ -246,13 +218,11 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         var pos = value.IndexOf(nf.NumberDecimalSeparator);
         value = value.Replace(nf.NumberDecimalSeparator, "");
 
-        if (pos < 0)
-        {
+        if (pos < 0) {
             //no decimal point
             return Factor(BigInteger.Parse(value));
         }
-        else
-        {
+        else {
             //decimal point (length - pos - 1)
             var numerator = BigInteger.Parse(value);
             var denominator = BigInteger.Pow(10, value.Length - pos);
@@ -261,27 +231,22 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         }
     }
 
-    public static bool TryParse(string value, out BigFloat result)
-    {
-        try
-        {
+    public static bool TryParse(string value, out BigFloat result) {
+        try {
             result = BigFloat.Parse(value);
             return true;
         }
-        catch (ArgumentNullException)
-        {
+        catch (ArgumentNullException) {
             result = default;
             return false;
         }
-        catch (FormatException)
-        {
+        catch (FormatException) {
             result = default;
             return false;
         }
     }
 
-    public static int Compare(BigFloat left, BigFloat right)
-    {
+    public static int Compare(BigFloat left, BigFloat right) {
         return new BigFloat(left).CompareTo(right);
     }
 
@@ -293,8 +258,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         //default precision = 100
         => ToString(100);
 
-    public string ToString(int precision, bool trailingZeros = false)
-    {
+    public string ToString(int precision, bool trailingZeros = false) {
         var value = Factor(this);
         var nf = Threading.Thread.CurrentThread.CurrentCulture.NumberFormat;
 
@@ -314,8 +278,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
 
         var sb = new StringBuilder();
 
-        while (precision-- > 0)
-        {
+        while (precision-- > 0) {
             sb.Append(decimals % 10);
             decimals /= 10;
         }
@@ -324,8 +287,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return trailingZeros ? r : r.TrimEnd('0');
     }
 
-    public string ToMixString()
-    {
+    public string ToMixString() {
         var value = Factor(this);
 
         var result = BigInteger.DivRem(value.Numerator, value.Denominator, out var remainder);
@@ -336,14 +298,12 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
             return result + ", " + remainder + "/" + value.Denominator;
     }
 
-    public string ToRationalString()
-    {
+    public string ToRationalString() {
         var value = Factor(this);
         return value.Numerator + " / " + value.Denominator;
     }
 
-    public int CompareTo(BigFloat other)
-    {
+    public int CompareTo(BigFloat other) {
         //Make copies
         var one = Numerator;
         var two = other.Numerator;
@@ -356,8 +316,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return BigInteger.Compare(one, two);
     }
 
-    public int CompareTo(object obj)
-    {
+    public int CompareTo(object obj) {
         if (obj == null)
             throw new ArgumentNullException(nameof(obj));
 
@@ -367,8 +326,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return CompareTo(bf);
     }
 
-    public override bool Equals(object obj)
-    {
+    public override bool Equals(object obj) {
         if (obj is not BigFloat bf)
             return false;
 
@@ -455,8 +413,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
 
     #region Casts
 
-    public static explicit operator decimal(BigFloat value)
-    {
+    public static explicit operator decimal(BigFloat value) {
         if (decimal.MinValue > value)
             throw new OverflowException($"{nameof(value)} is less than decimal.MinValue.");
         if (decimal.MaxValue < value)
@@ -465,8 +422,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return (decimal)value.Numerator / (decimal)value.Denominator;
     }
 
-    public static explicit operator double(BigFloat value)
-    {
+    public static explicit operator double(BigFloat value) {
         if (double.MinValue > value)
             throw new OverflowException($"{nameof(value)} is less than double.MinValue.");
         if (double.MaxValue < value)
@@ -475,8 +431,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return (double)value.Numerator / (double)value.Denominator;
     }
 
-    public static explicit operator float(BigFloat value)
-    {
+    public static explicit operator float(BigFloat value) {
         if (float.MinValue > value)
             throw new OverflowException($"{nameof(value)} is less than float.MinValue.");
         if (float.MaxValue < value)
