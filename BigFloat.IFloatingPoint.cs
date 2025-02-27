@@ -3,21 +3,13 @@ using System.Globalization;
 
 namespace System.Numerics;
 
-file static class Constants
-{
-    public static readonly BigInteger TenPower40 = BigInteger.Pow(10, 40);
-    public static readonly BigFloat E = new(BigInteger.Parse("27182818284590452353602874713526624977572"), TenPower40);
-    public static readonly BigFloat Pi = new(BigInteger.Parse("31415926535897932384626433832795028841971"), TenPower40);
-    public static readonly BigFloat Tau = new(BigInteger.Parse("62831853071795864769252867665590057683943"), TenPower40);
-}
-
 partial struct BigFloat : IFloatingPoint<BigFloat>
 {
-    public static BigFloat E => Constants.E;
+    public static BigFloat E { get; } = Parse("2.7182818284590452353602874713526624977572");
 
-    public static BigFloat Pi => Constants.Pi;
+    public static BigFloat Pi { get; } = Parse("3.1415926535897932384626433832795028841971");
 
-    public static BigFloat Tau => Constants.Tau;
+    public static BigFloat Tau { get; } = Parse("6.2831853071795864769252867665590057683943");
 
     public static BigFloat NegativeOne => MinusOne;
 
