@@ -14,30 +14,30 @@ public class BigFloatUnitTest {
 
     [Fact]
     public void TestToStringDigits() {
-        for (var exp = 4; exp >= -4; exp--) {
-            var testDigits = (decimal)(Math.PI * Math.Pow(10.0, exp));
+        for (int exp = 4; exp >= -4; exp--) {
+            decimal testDigits = (decimal)(Math.PI * Math.Pow(10.0, exp));
             output.WriteLine(testDigits.ToString());
 
-            var bigFloat = new BigFloat(testDigits);
-            var str = bigFloat.ToString();
+            BigFloat bigFloat = new(testDigits);
+            string str = bigFloat.ToString();
             output.WriteLine(str);
 
-            var compare = decimal.Parse(str);
+            decimal compare = decimal.Parse(str);
             Assert.Equal(testDigits, compare);
         }
     }
 
     [Fact]
     public void TestToStringZeroes() {
-        for (var exp = 4; exp >= -4; exp--) {
-            var testDigits = (decimal)(Math.Pow(10.0, exp));
+        for (int exp = 4; exp >= -4; exp--) {
+            decimal testDigits = (decimal)(Math.Pow(10.0, exp));
             output.WriteLine(testDigits.ToString());
 
-            var bigFloat = new BigFloat(testDigits);
-            var str = bigFloat.ToString(20, true);
+            BigFloat bigFloat = new(testDigits);
+            string str = bigFloat.ToString(20, trailingPointZero: true);
             output.WriteLine(str);
 
-            var compare = decimal.Parse(str);
+            decimal compare = decimal.Parse(str);
             Assert.Equal(testDigits, compare);
         }
     }
