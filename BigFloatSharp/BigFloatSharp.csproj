@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="BigFloat.UnitTest\**" />
+    <EmbeddedResource Remove="BigFloat.UnitTest\**" />
+    <None Remove="BigFloat.UnitTest\**" />
+  </ItemGroup>
+  <PropertyGroup>
+    <PackageId>BigFloatSharp</PackageId>
+    <Description>An arbitrary size and precision floating-point number stored as the quotient of two BigIntegers.</Description>
+    <Version>1.0</Version>
+    <Authors>Joyless</Authors>
+    <Company></Company>
+    <Product></Product>
+    <RepositoryUrl>https://github.com/FaustVX/BigFloat</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>float; arbitrary; number</PackageTags>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Copyright>Joyless, FaustVX</Copyright>
+    <PackageProjectUrl>https://github.com/Joy-less/BigFloat</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="/" />
+    <None Include="../LICENSE" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

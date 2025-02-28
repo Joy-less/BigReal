@@ -5,7 +5,7 @@ using System.Globalization;
 namespace System.Numerics;
 
 [Serializable]
-public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat>, IFloatingPoint<BigFloat> {
+public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat> {
     public readonly BigInteger Numerator;
     public readonly BigInteger Denominator;
 
@@ -320,29 +320,17 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return value.Numerator.IsZero;
     }
 
+    /// <inheritdoc cref="INumberBase{BigFloat}.MaxMagnitude(BigFloat, BigFloat)"/>
     public static BigFloat MaxMagnitude(BigFloat x, BigFloat y) => x > y ? x : y;
-    public static BigFloat MaxMagnitudeNumber(BigFloat x, BigFloat y) => MaxMagnitude(x, y);
-    public static BigFloat MinMagnitude(BigFloat x, BigFloat y) => x < y ? x : y;
-    public static BigFloat MinMagnitudeNumber(BigFloat x, BigFloat y) => MinMagnitude(x, y);
 
-    static bool INumberBase<BigFloat>.TryConvertFromChecked<TOther>(TOther value, out BigFloat result) {
-        throw new NotImplementedException();
-    }
-    static bool INumberBase<BigFloat>.TryConvertFromSaturating<TOther>(TOther value, out BigFloat result) {
-        throw new NotImplementedException();
-    }
-    static bool INumberBase<BigFloat>.TryConvertFromTruncating<TOther>(TOther value, out BigFloat result) {
-        throw new NotImplementedException();
-    }
-    static bool INumberBase<BigFloat>.TryConvertToChecked<TOther>(BigFloat value, out TOther result) {
-        throw new NotImplementedException();
-    }
-    static bool INumberBase<BigFloat>.TryConvertToSaturating<TOther>(BigFloat value, out TOther result) {
-        throw new NotImplementedException();
-    }
-    static bool INumberBase<BigFloat>.TryConvertToTruncating<TOther>(BigFloat value, out TOther result) {
-        throw new NotImplementedException();
-    }
+    /// <inheritdoc cref="INumberBase{BigFloat}.MaxMagnitudeNumber(BigFloat, BigFloat)"/>
+    public static BigFloat MaxMagnitudeNumber(BigFloat x, BigFloat y) => MaxMagnitude(x, y);
+
+    /// <inheritdoc cref="INumberBase{BigFloat}.MinMagnitude(BigFloat, BigFloat)"/>
+    public static BigFloat MinMagnitude(BigFloat x, BigFloat y) => x < y ? x : y;
+
+    /// <inheritdoc cref="INumberBase{BigFloat}.MinMagnitudeNumber(BigFloat, BigFloat)"/>
+    public static BigFloat MinMagnitudeNumber(BigFloat x, BigFloat y) => MinMagnitude(x, y);
 
     #endregion
 
@@ -350,10 +338,6 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
 
     public override string ToString() {
         return ToString(precision: 100);
-    }
-    public string ToString(string? format, IFormatProvider? provider = null) {
-        return ToString();
-        throw new NotImplementedException();
     }
     /// <summary>
     /// Converts the <see cref="BigFloat"/> to a string, truncating at <paramref name="precision"/> decimal places.
@@ -404,15 +388,6 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         BigFloat value = Factor(this);
         return value.Numerator + " / " + value.Denominator;
     }
-    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null) {
-        string result = ToString(format.ToString(), provider);
-        if (!result.TryCopyTo(destination)) {
-            charsWritten = default;
-            return false;
-        }
-        charsWritten = result.Length;
-        return true;
-    }
     public int CompareTo(BigFloat other) {
         // Make copies
         BigInteger one = Numerator;
@@ -448,31 +423,6 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out BigInteger numerator, out BigInteger denominator) {
         (numerator, denominator) = (Numerator, Denominator);
-    }
-
-    int IFloatingPoint<BigFloat>.GetExponentByteCount() {
-        throw new NotImplementedException();
-    }
-    int IFloatingPoint<BigFloat>.GetExponentShortestBitLength() {
-        throw new NotImplementedException();
-    }
-    int IFloatingPoint<BigFloat>.GetSignificandBitLength() {
-        throw new NotImplementedException();
-    }
-    int IFloatingPoint<BigFloat>.GetSignificandByteCount() {
-        throw new NotImplementedException();
-    }
-    bool IFloatingPoint<BigFloat>.TryWriteExponentBigEndian(Span<byte> destination, out int bytesWritten) {
-        throw new NotImplementedException();
-    }
-    bool IFloatingPoint<BigFloat>.TryWriteExponentLittleEndian(Span<byte> destination, out int bytesWritten) {
-        throw new NotImplementedException();
-    }
-    bool IFloatingPoint<BigFloat>.TryWriteSignificandBigEndian(Span<byte> destination, out int bytesWritten) {
-        throw new NotImplementedException();
-    }
-    bool IFloatingPoint<BigFloat>.TryWriteSignificandLittleEndian(Span<byte> destination, out int bytesWritten) {
-        throw new NotImplementedException();
     }
 
     #endregion

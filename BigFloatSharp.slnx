@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="BigFloatSharp/BigFloatSharp.csproj" />
+  <Project Path="BigFloatSharp.Tests/BigFloatSharp.Tests.csproj" />
+  <Project Path="BigFloatSharp.Playground/BigFloatSharp.Playground.csproj" />
+</Solution>
