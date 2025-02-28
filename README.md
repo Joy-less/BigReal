@@ -1,2 +1,3 @@
 # BigFloat
-A struct for arbitrary precision float number
+
+An arbitrary size and precision floating-point number stored as the quotient of two BigIntegers.
