@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BigFloatSharp\BigFloatSharp.csproj" />
+    <ProjectReference Include="..\BigReal\BigReal.csproj" />
   </ItemGroup>
 
 </Project>

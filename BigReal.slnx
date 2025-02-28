@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="BigReal.Benchmarks/BigReal.Benchmarks.csproj" />
+  <Project Path="BigReal.Playground/BigReal.Playground.csproj" />
+  <Project Path="BigReal.Tests/BigReal.Tests.csproj" />
+  <Project Path="BigReal/BigReal.csproj" />
+</Solution>

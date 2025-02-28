@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Running;
 using ExtendedNumerics;
 
-namespace BigFloatSharp.Benchmarks;
+namespace ExtendedNumerics.Benchmarks;
 
 public class Program {
     public static void Main() {
@@ -40,7 +40,7 @@ public class Benchmarks {
 
     [Benchmark]
     public void DivideToString_BigFloat() {
-        BigFloat result = (BigFloat)10 / (BigFloat)3;
+        BigReal result = (BigReal)10 / (BigReal)3;
         result.ToString();
     }
     [Benchmark]

@@ -2,11 +2,11 @@ using System;
 using System.Numerics;
 using Xunit;
 using Xunit.Abstractions;
-using BigFloatSharp;
+using ExtendedNumerics;
 
 namespace UnitTests;
 
-public class BigFloatTests(ITestOutputHelper Output) {
+public class BigRealTests(ITestOutputHelper Output) {
     private readonly ITestOutputHelper Output = Output;
 
     [Theory]
@@ -17,7 +17,7 @@ public class BigFloatTests(ITestOutputHelper Output) {
             decimal testDigits = (decimal)(Math.PI * Math.Pow(10.0, exp));
             Output.WriteLine(testDigits.ToString());
 
-            BigFloat bigFloat = new(testDigits);
+            BigReal bigFloat = new(testDigits);
             string str = bigFloat.ToString(100, padDecimal: padDecimal);
             Output.WriteLine(str);
 
@@ -28,14 +28,14 @@ public class BigFloatTests(ITestOutputHelper Output) {
 
     [Fact]
     public void Signing() {
-        BigFloat a = new(new BigInteger(1), new BigInteger(1));
-        BigFloat b = new(new BigInteger(-1), new BigInteger(-1));
+        BigReal a = new(new BigInteger(1), new BigInteger(1));
+        BigReal b = new(new BigInteger(-1), new BigInteger(-1));
 
         Assert.Equal(1, a);
         Assert.Equal(1, b);
 
-        BigFloat c = new(new BigInteger(-1), new BigInteger(1));
-        BigFloat d = new(new BigInteger(1), new BigInteger(-1));
+        BigReal c = new(new BigInteger(-1), new BigInteger(1));
+        BigReal d = new(new BigInteger(1), new BigInteger(-1));
 
         Assert.Equal(-1, c);
         Assert.Equal(-1, d);
@@ -43,15 +43,15 @@ public class BigFloatTests(ITestOutputHelper Output) {
 
     [Fact]
     public void Equality() {
-        BigFloat a = new(new BigInteger(1), new BigInteger(1));
-        BigFloat b = new(new BigInteger(2), new BigInteger(2));
+        BigReal a = new(new BigInteger(1), new BigInteger(1));
+        BigReal b = new(new BigInteger(2), new BigInteger(2));
         Assert.Equal(b, a);
 
-        BigFloat c = new(new BigInteger(-1), new BigInteger(-1));
+        BigReal c = new(new BigInteger(-1), new BigInteger(-1));
         Assert.Equal(c, a);
 
-        BigFloat e = new(new BigInteger(-1), new BigInteger(1));
-        BigFloat f = new(new BigInteger(2), new BigInteger(-2));
+        BigReal e = new(new BigInteger(-1), new BigInteger(1));
+        BigReal f = new(new BigInteger(2), new BigInteger(-2));
         Assert.Equal(e, f);
     }
 }
