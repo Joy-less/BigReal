@@ -139,22 +139,34 @@ public readonly struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable
     /// Constructs a value from a <see cref="float"/>.
     /// </summary>
     public BigFloat(float value) {
-        // Optimise
-        (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+        if (value % 1 == 0) {
+            (Numerator, Denominator) = ((BigInteger)value, 1);
+        }
+        else {
+            (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+        }
     }
     /// <summary>
     /// Constructs a value from a <see cref="double"/>.
     /// </summary>
     public BigFloat(double value) {
-        // Optimise
-        (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+        if (value % 1 == 0) {
+            (Numerator, Denominator) = ((BigInteger)value, 1);
+        }
+        else {
+            (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+        }
     }
     /// <summary>
     /// Constructs a value from a <see cref="decimal"/>.
     /// </summary>
     public BigFloat(decimal value) {
-        // Optimise
-        (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+        if (value % 1 == 0) {
+            (Numerator, Denominator) = ((BigInteger)value, 1);
+        }
+        else {
+            (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+        }
     }
 
     #endregion
