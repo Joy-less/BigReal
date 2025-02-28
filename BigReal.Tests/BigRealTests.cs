@@ -63,4 +63,10 @@ public class BigRealTests(ITestOutputHelper Output) {
     public void RoundToEven(double input, double expected) {
         Assert.Equal(expected, BigReal.Round(input, MidpointRounding.ToEven));
     }
+    [Theory]
+    [InlineData(12.34, 1, 12.3)]
+    [InlineData(12.34, -1, 10)]
+    public void RoundToDecimals(double input, int digits, double expected) {
+        Assert.Equal(expected, BigReal.Round(input, digits));
+    }
 }

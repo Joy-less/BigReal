@@ -1,13 +1,6 @@
 ﻿using ExtendedNumerics;
 using System.Numerics;
 
-// -40, 20
-BigReal x = new(-40, 20);
-Console.WriteLine(x % 2);
-Console.WriteLine(BigReal.IsOddInteger(x));
-Console.WriteLine(BigReal.IsOddInteger(0.2));
-return;
-
 Console.WriteLine(new BigReal(0.012345).ToString(3));
 Console.WriteLine(new BigReal((BigInteger)1234500).ToString(3));
 Console.WriteLine(BigReal.Truncate(new BigReal(1234500.678)).ToString(3));

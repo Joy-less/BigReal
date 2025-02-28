@@ -333,22 +333,32 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// Returns the closest whole value to the given value, rounding midpoints away from zero.
     /// </summary>
     /// <remarks>
-    /// Note: <see cref="Math.Round(double)"/> defaults to banker's rounding (round half to even).
-    /// To use banker's rounding, pass <see cref="MidpointRounding.ToEven"/>.
+    /// Note: Pass <see cref="MidpointRounding.ToEven"/> to use banker's rounding (default for <see cref="Math.Round(double)"/>).
     /// </remarks>
     public static BigReal Round(BigReal value) {
         return Round(value, MidpointRounding.AwayFromZero);
     }
     /// <summary>
-    /// Returns the closest whole value to the given value according to the given <see cref="MidpointRounding"/>.
+    /// Returns the closest whole value to the given value, rounding midpoints away from zero.
     /// </summary>
-    public static BigReal Round(BigReal value, MidpointRounding mode) {
-        return Round(value, 0, mode);
+    /// <remarks>
+    /// Note: Pass <see cref="MidpointRounding.ToEven"/> to use banker's rounding (default for <see cref="Math.Round(double)"/>).
+    /// </remarks>
+    public static BigReal Round(BigReal value, int decimals) {
+        BigReal exponent = Pow(10, decimals);
+        return Round(value * exponent, MidpointRounding.AwayFromZero) / exponent;
     }
     /// <summary>
     /// Returns the closest whole value to the given value according to the given <see cref="MidpointRounding"/>.
     /// </summary>
     public static BigReal Round(BigReal value, int decimals, MidpointRounding mode) {
+        BigInteger exponent = BigInteger.Pow(10, decimals);
+        return Round(value * exponent, mode) / exponent;
+    }
+    /// <summary>
+    /// Returns the closest whole value to the given value according to the given <see cref="MidpointRounding"/>.
+    /// </summary>
+    public static BigReal Round(BigReal value, MidpointRounding mode) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
