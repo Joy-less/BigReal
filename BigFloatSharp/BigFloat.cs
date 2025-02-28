@@ -368,6 +368,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
             fractional /= 10;
         }
         fractionBuilder.Reverse();
+        fractionBuilder.TrimEnd('0');
         string fractionString = fractionBuilder.ToString();
 
         // Combine parts
