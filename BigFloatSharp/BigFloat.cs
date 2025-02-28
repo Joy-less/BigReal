@@ -169,19 +169,17 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
     public static BigFloat GetFractionalPart(BigFloat value) {
         return new BigFloat(BigInteger.Remainder(value.Numerator, value.Denominator), value.Denominator);
     }
-    public static BigFloat ShiftDecimalLeft(BigFloat value, int shift) {
+    public static BigFloat ShiftLeft(BigFloat value, int shift = 1, int numberBase = 2) {
         if (shift < 0) {
-            return ShiftDecimalRight(value, -shift);
+            return ShiftRight(value, -shift);
         }
-        BigInteger numerator = value.Numerator * BigInteger.Pow(10, shift);
-        return new(numerator, value.Denominator);
+        return new BigFloat(value.Numerator * BigInteger.Pow(numberBase, shift), value.Denominator);
     }
-    public static BigFloat ShiftDecimalRight(BigFloat value, int shift) {
+    public static BigFloat ShiftRight(BigFloat value, int shift = 1, int numberBase = 2) {
         if (shift < 0) {
-            return ShiftDecimalLeft(value, -shift);
+            return ShiftLeft(value, -shift);
         }
-        BigInteger denominator = value.Denominator * BigInteger.Pow(10, shift);
-        return new(value.Numerator, denominator);
+        return new BigFloat(value.Numerator, value.Denominator * BigInteger.Pow(numberBase, shift));
     }
     public static BigFloat Sqrt(BigFloat value) {
         return Divide(Math.Pow(10, BigInteger.Log10(value.Numerator) / 2), Math.Pow(10, BigInteger.Log10(value.Denominator) / 2));
@@ -429,8 +427,8 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
     public static BigFloat operator %(BigFloat left, BigFloat right) => Remainder(left, right);
     public static BigFloat operator *(BigFloat left, BigFloat right) => Multiply(left, right);
     public static BigFloat operator /(BigFloat left, BigFloat right) => Divide(left, right);
-    public static BigFloat operator >>(BigFloat value, int shift) => ShiftDecimalRight(value, shift);
-    public static BigFloat operator <<(BigFloat value, int shift) => ShiftDecimalLeft(value, shift);
+    public static BigFloat operator >>(BigFloat value, int shift) => ShiftRight(value, shift);
+    public static BigFloat operator <<(BigFloat value, int shift) => ShiftLeft(value, shift);
     public static BigFloat operator ~(BigFloat value) => Inverse(value);
     public static bool operator ==(BigFloat left, BigFloat right) => Compare(left, right) == 0;
     public static bool operator !=(BigFloat left, BigFloat right) => Compare(left, right) != 0;
