@@ -9,3 +9,7 @@ Console.WriteLine(BigFloat.ShiftLeft(new BigFloat(1234500.678), numberBase: 10).
 
 Console.WriteLine(BigFloat.Parse("nan"));
 Console.WriteLine(new BigFloat(23.4f));
+Console.WriteLine(double.NegativeInfinity);
+Console.WriteLine(double.Abs(double.NegativeInfinity));
+
+Console.WriteLine(BigFloat.Sqrt(100));

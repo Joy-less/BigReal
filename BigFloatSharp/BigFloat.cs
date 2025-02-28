@@ -174,28 +174,65 @@ public readonly struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable
     #region Static Methods
 
     public static BigFloat Add(BigFloat value, BigFloat other) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
+        if (IsInfinity(other) || IsNaN(other)) {
+            return value;
+        }
         BigInteger numerator = (value.Numerator * other.Denominator) + (other.Numerator * value.Denominator);
         return new BigFloat(numerator, value.Denominator * other.Denominator);
     }
     public static BigFloat Subtract(BigFloat value, BigFloat other) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
+        if (IsInfinity(other) || IsNaN(other)) {
+            return value;
+        }
         BigInteger numerator = (value.Numerator * other.Denominator) - (other.Numerator * value.Denominator);
         return new BigFloat(numerator, value.Denominator * other.Denominator);
     }
     public static BigFloat Multiply(BigFloat value, BigFloat other) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
+        if (IsInfinity(other) || IsNaN(other)) {
+            return value;
+        }
         return new BigFloat(value.Numerator * other.Numerator, value.Denominator * other.Denominator);
     }
     public static BigFloat Divide(BigFloat value, BigFloat other) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
+        if (IsInfinity(other) || IsNaN(other)) {
+            return value;
+        }
         return new BigFloat(value.Numerator * other.Denominator, value.Denominator * other.Numerator);
     }
     public static BigFloat Remainder(BigFloat value, BigFloat other) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
+        if (IsInfinity(other) || IsNaN(other)) {
+            return value;
+        }
         return value - Floor(value / other) * other;
     }
-    public static BigFloat DivideRemainder(BigFloat value, BigFloat other, out BigFloat remainder) {
+    public static BigFloat DivRem(BigFloat value, BigFloat other, out BigFloat remainder) {
         value = Divide(value, other);
         remainder = Remainder(value, other);
         return value;
     }
+    public static (BigFloat Quotient, BigFloat Remainder) DivRem(BigFloat value, BigFloat other) {
+        BigFloat quotient = DivRem(value, other, out BigFloat remainder);
+        return (quotient, remainder);
+    }
     public static BigFloat Pow(BigFloat value, int exponent) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         if (value.Numerator.IsZero) {
             return value;
         }
@@ -221,12 +258,21 @@ public readonly struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable
         return new BigFloat(value.Denominator, value.Numerator);
     }
     public static BigFloat Increment(BigFloat value) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         return new BigFloat(value.Numerator + value.Denominator, value.Denominator);
     }
     public static BigFloat Decrement(BigFloat value) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         return new BigFloat(value.Numerator - value.Denominator, value.Denominator);
     }
     public static BigFloat Ceil(BigFloat value) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         BigInteger numerator = value.Numerator;
         if (numerator < 0) {
             numerator -= BigInteger.Remainder(numerator, value.Denominator);
@@ -234,9 +280,12 @@ public readonly struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable
         else {
             numerator += value.Denominator - BigInteger.Remainder(numerator, value.Denominator);
         }
-        return Factorize(new BigFloat(numerator, value.Denominator));
+        return new BigFloat(numerator, value.Denominator);
     }
     public static BigFloat Floor(BigFloat value) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         BigInteger numerator = value.Numerator;
         if (numerator < 0) {
             numerator += value.Denominator - BigInteger.Remainder(numerator, value.Denominator);
@@ -244,9 +293,12 @@ public readonly struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable
         else {
             numerator -= BigInteger.Remainder(numerator, value.Denominator);
         }
-        return Factorize(new(numerator, value.Denominator));
+        return new BigFloat(numerator, value.Denominator);
     }
     public static BigFloat Round(BigFloat value) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         if (GetFractionalPart(value).CompareTo(OneHalf) >= 0) {
             return Ceil(value);
         }
@@ -255,37 +307,49 @@ public readonly struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable
         }
     }
     public static BigFloat Round(BigFloat value, int digits, MidpointRounding mode) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         throw new NotImplementedException();
     }
     public static BigFloat Truncate(BigFloat value) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         return GetWholePart(value);
     }
     public static BigInteger GetWholePart(BigFloat value) {
         return value.Numerator / value.Denominator;
     }
     public static BigFloat GetFractionalPart(BigFloat value) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         return new BigFloat(BigInteger.Remainder(value.Numerator, value.Denominator), value.Denominator);
     }
     public static BigFloat ShiftLeft(BigFloat value, int shift = 1, int numberBase = 2) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         if (shift < 0) {
             return ShiftRight(value, -shift);
         }
         return new BigFloat(value.Numerator * BigInteger.Pow(numberBase, shift), value.Denominator);
     }
     public static BigFloat ShiftRight(BigFloat value, int shift = 1, int numberBase = 2) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         if (shift < 0) {
             return ShiftLeft(value, -shift);
         }
         return new BigFloat(value.Numerator, value.Denominator * BigInteger.Pow(numberBase, shift));
     }
     public static BigFloat Sqrt(BigFloat value) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         return Divide(Math.Pow(10, BigInteger.Log10(value.Numerator) / 2), Math.Pow(10, BigInteger.Log10(value.Denominator) / 2));
-    }
-    public static double Log10(BigFloat value) {
-        return BigInteger.Log10(value.Numerator) - BigInteger.Log10(value.Denominator);
-    }
-    public static double Log(BigFloat value, double baseValue) {
-        return BigInteger.Log(value.Numerator, baseValue) - BigInteger.Log(value.Numerator, baseValue);
     }
     /// <summary>
     /// Simplifies the numerator and denominator to their canonical form.
@@ -294,6 +358,9 @@ public readonly struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable
     /// Factorizing can be very slow, so use only when necessary.
     /// </remarks>
     public static BigFloat Factorize(BigFloat value) {
+        if (IsInfinity(value) || IsNaN(value)) {
+            return value;
+        }
         if (value.Denominator.IsOne || value.Denominator.IsZero) {
             return value;
         }
@@ -499,11 +566,27 @@ public readonly struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable
     /// <summary>
     /// Returns the greater of the two values.
     /// </summary>
-    public static BigFloat Max(BigFloat x, BigFloat y) => x > y ? x : y;
+    public static BigFloat Max(BigFloat a, BigFloat b) {
+        return a > b ? a : b;
+    }
     /// <summary>
     /// Returns the lesser of the two values.
     /// </summary>
-    public static BigFloat Min(BigFloat x, BigFloat y) => x < y ? x : y;
+    public static BigFloat Min(BigFloat a, BigFloat b) {
+        return a < b ? a : b;
+    }
+    /// <summary>
+    /// Returns the linear interpolation between <paramref name="a"/> and <paramref name="b"/> by <paramref name="t"/>.
+    /// </summary>
+    public static BigFloat Lerp(BigFloat a, BigFloat b, BigFloat t) {
+        return a + (b - a) * t;
+    }
+    /// <summary>
+    /// Returns the inverse linear interpolation between <paramref name="a"/> and <paramref name="b"/> by <paramref name="t"/>.
+    /// </summary>
+    public static BigFloat InverseLerp(BigFloat a, BigFloat b, BigFloat value) {
+        return (value - a) / (b - a);
+    }
 
     #endregion
 
@@ -600,9 +683,15 @@ public readonly struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable
     public override bool Equals(object? other) {
         return other is BigFloat otherBigFloat && Equals(otherBigFloat);
     }
+    /// <summary>
+    /// Gets a hash code for the numerator and denominator of the value.
+    /// </summary>
     public override int GetHashCode() {
         return HashCode.Combine(Numerator, Denominator);
     }
+    /// <summary>
+    /// Gets the numerator and denominator of the value.
+    /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out BigInteger numerator, out BigInteger denominator) {
         (numerator, denominator) = (Numerator, Denominator);
