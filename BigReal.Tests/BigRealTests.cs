@@ -54,4 +54,13 @@ public class BigRealTests(ITestOutputHelper Output) {
         BigReal f = new(new BigInteger(2), new BigInteger(-2));
         Assert.Equal(e, f);
     }
+
+    [Theory]
+    [InlineData(1.5, 2)]
+    [InlineData(2.5, 2)]
+    [InlineData(-1.5, -2)]
+    [InlineData(-2.5, -2)]
+    public void RoundToEven(double input, double expected) {
+        Assert.Equal(expected, BigReal.Round(input, MidpointRounding.ToEven));
+    }
 }

@@ -106,36 +106,6 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         (Numerator, Denominator) = (value, BigInteger.One);
     }
     /// <summary>
-    /// Constructs a value from a <see cref="BigReal"/>.
-    /// </summary>
-    public BigReal(BigReal value) {
-        (Numerator, Denominator) = value;
-    }
-    /// <summary>
-    /// Constructs a value from an <see cref="int"/>.
-    /// </summary>
-    public BigReal(int value)
-        : this(new BigInteger(value)) {
-    }
-    /// <summary>
-    /// Constructs a value from a <see cref="uint"/>.
-    /// </summary>
-    public BigReal(uint value)
-        : this(new BigInteger(value)) {
-    }
-    /// <summary>
-    /// Constructs a value from a <see cref="long"/>.
-    /// </summary>
-    public BigReal(long value)
-        : this(new BigInteger(value)) {
-    }
-    /// <summary>
-    /// Constructs a value from a <see cref="ulong"/>.
-    /// </summary>
-    public BigReal(ulong value)
-        : this(new BigInteger(value)) {
-    }
-    /// <summary>
     /// Constructs a value from a <see cref="float"/>.
     /// </summary>
     public BigReal(float value) {
@@ -173,6 +143,9 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
 
     #region Static Methods
 
+    /// <summary>
+    /// Returns the result of adding two values.
+    /// </summary>
     public static BigReal Add(BigReal value, BigReal other) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
@@ -183,6 +156,9 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         BigInteger numerator = (value.Numerator * other.Denominator) + (other.Numerator * value.Denominator);
         return new BigReal(numerator, value.Denominator * other.Denominator);
     }
+    /// <summary>
+    /// Returns the result of subtracting two values.
+    /// </summary>
     public static BigReal Subtract(BigReal value, BigReal other) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
@@ -193,6 +169,9 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         BigInteger numerator = (value.Numerator * other.Denominator) - (other.Numerator * value.Denominator);
         return new BigReal(numerator, value.Denominator * other.Denominator);
     }
+    /// <summary>
+    /// Returns the result of multiplying two values.
+    /// </summary>
     public static BigReal Multiply(BigReal value, BigReal other) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
@@ -202,6 +181,9 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
         return new BigReal(value.Numerator * other.Numerator, value.Denominator * other.Denominator);
     }
+    /// <summary>
+    /// Returns the result of dividing two values.
+    /// </summary>
     public static BigReal Divide(BigReal value, BigReal other) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
@@ -211,6 +193,9 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
         return new BigReal(value.Numerator * other.Denominator, value.Denominator * other.Numerator);
     }
+    /// <summary>
+    /// Returns the remainder of integer-dividing two values.
+    /// </summary>
     public static BigReal Remainder(BigReal value, BigReal other) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
@@ -218,13 +203,23 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         if (IsInfinity(other) || IsNaN(other)) {
             return value;
         }
-        return value - Floor(value / other) * other;
+        // https://github.com/AdamWhiteHat/BigRational/blob/aaacc836b15f415d070ecff7a37f66c4d9a94076/BigRational/Fraction.cs#L380
+        return new BigReal(
+            BigInteger.Multiply(value.Numerator, other.Denominator) % BigInteger.Multiply(value.Denominator, other.Numerator),
+            BigInteger.Multiply(value.Denominator, other.Denominator)
+        );
     }
+    /// <summary>
+    /// Returns the result of integer-dividing two values and the remainder.
+    /// </summary>
     public static BigReal DivRem(BigReal value, BigReal other, out BigReal remainder) {
         value = Divide(value, other);
         remainder = Remainder(value, other);
         return value;
     }
+    /// <summary>
+    /// Returns the result of integer-dividing two values and the remainder.
+    /// </summary>
     public static (BigReal Quotient, BigReal Remainder) DivRem(BigReal value, BigReal other) {
         BigReal quotient = DivRem(value, other, out BigReal remainder);
         return (quotient, remainder);
@@ -254,36 +249,58 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
     }
     /// <summary>
-    /// <see href="https://github.com/AdamWhiteHat/BigRational/blob/aaacc836b15f415d070ecff7a37f66c4d9a94076/BigRational/Fraction.cs#L460"/>
+    /// Returns the result of the value to the power of the exponent, correct to <paramref name="precision"/> decimal places.
     /// </summary>
+    /// <remarks>
+    /// See <see href="https://stackoverflow.com/a/30225002"/> for why <paramref name="exponent"/>'s range is cast to <see cref="int"/>.
+    /// </remarks>
     public static BigReal Pow(BigReal value, BigReal exponent, int precision = 30) {
+        // https://github.com/AdamWhiteHat/BigRational/blob/aaacc836b15f415d070ecff7a37f66c4d9a94076/BigRational/Fraction.cs#L460
         return Divide(
             Root(Pow(value.Numerator, (int)exponent.Numerator), (int)exponent.Denominator, precision),
             Root(Pow(value.Denominator, (int)exponent.Numerator), (int)exponent.Denominator, precision)
         );
     }
+    /// <summary>
+    /// Returns the value as a positive number.
+    /// </summary>
     public static BigReal Abs(BigReal value) {
-        return new BigReal(BigInteger.Abs(value.Numerator), value.Denominator);
+        return new BigReal(BigInteger.Abs(value.Numerator), BigInteger.Abs(value.Denominator));
     }
+    /// <summary>
+    /// Returns the value multiplied by -1.
+    /// </summary>
     public static BigReal Negate(BigReal value) {
         return new BigReal(BigInteger.Negate(value.Numerator), value.Denominator);
     }
+    /// <summary>
+    /// Returns the reciprocal of the value (flips the fraction).
+    /// </summary>
     public static BigReal Inverse(BigReal value) {
         return new BigReal(value.Denominator, value.Numerator);
     }
+    /// <summary>
+    /// Returns the result of adding 1 to the value.
+    /// </summary>
     public static BigReal Increment(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
         return new BigReal(value.Numerator + value.Denominator, value.Denominator);
     }
+    /// <summary>
+    /// Returns the result of subtracting 1 from the value.
+    /// </summary>
     public static BigReal Decrement(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
         return new BigReal(value.Numerator - value.Denominator, value.Denominator);
     }
-    public static BigReal Ceil(BigReal value) {
+    /// <summary>
+    /// Returns the smallest whole value greater than or equal to the given value.
+    /// </summary>
+    public static BigReal Ceiling(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
@@ -296,6 +313,9 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
         return new BigReal(numerator, value.Denominator);
     }
+    /// <summary>
+    /// Returns the largest whole value less than or equal to the given value.
+    /// </summary>
     public static BigReal Floor(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
@@ -309,22 +329,70 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
         return new BigReal(numerator, value.Denominator);
     }
+    /// <summary>
+    /// Returns the closest whole value to the given value, rounding midpoints away from zero.
+    /// </summary>
+    /// <remarks>
+    /// Note: <see cref="Math.Round(double)"/> defaults to banker's rounding (round half to even).
+    /// To use banker's rounding, pass <see cref="MidpointRounding.ToEven"/>.
+    /// </remarks>
     public static BigReal Round(BigReal value) {
-        if (IsInfinity(value) || IsNaN(value)) {
-            return value;
-        }
-        if (GetFractionalPart(value).CompareTo(OneHalf) >= 0) {
-            return Ceil(value);
-        }
-        else {
-            return Floor(value);
-        }
+        return Round(value, MidpointRounding.AwayFromZero);
     }
-    public static BigReal Round(BigReal value, int digits, MidpointRounding mode) {
+    /// <summary>
+    /// Returns the closest whole value to the given value according to the given <see cref="MidpointRounding"/>.
+    /// </summary>
+    public static BigReal Round(BigReal value, MidpointRounding mode) {
+        return Round(value, 0, mode);
+    }
+    /// <summary>
+    /// Returns the closest whole value to the given value according to the given <see cref="MidpointRounding"/>.
+    /// </summary>
+    public static BigReal Round(BigReal value, int decimals, MidpointRounding mode) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
-        throw new NotImplementedException();
+        switch (mode) {
+            case MidpointRounding.ToEven: {
+                if (Abs(GetFractionalPart(value)) == OneHalf) {
+                    // Round away from zero
+                    value += OneHalf * value.Sign;
+                    // Move closer to zero if not even
+                    if (IsOddInteger(value)) {
+                        value -= One * value.Sign;
+                    }
+                    return value;
+                }
+                else {
+                    goto case MidpointRounding.AwayFromZero;
+                }
+            }
+            case MidpointRounding.AwayFromZero: {
+                if (GetFractionalPart(value) >= OneHalf) {
+                    return Ceiling(value);
+                }
+                else {
+                    return Floor(value);
+                }
+            }
+            case MidpointRounding.ToZero: {
+                if (value < Zero) {
+                    return Ceiling(value);
+                }
+                else {
+                    return Floor(value);
+                }
+            }
+            case MidpointRounding.ToNegativeInfinity: {
+                return Floor(value);
+            }
+            case MidpointRounding.ToPositiveInfinity: {
+                return Ceiling(value);
+            }
+            default: {
+                throw new NotImplementedException(mode.ToString());
+            }
+        }
     }
     public static BigReal Truncate(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -332,14 +400,20 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
         return GetWholePart(value);
     }
+    /// <summary>
+    /// Returns the part before the decimal point (e.g. -12.34 -> -12).
+    /// </summary>
     public static BigInteger GetWholePart(BigReal value) {
         return value.Numerator / value.Denominator;
     }
+    /// <summary>
+    /// Returns the part after the decimal point (e.g. -12.34 -> 0.34).
+    /// </summary>
     public static BigReal GetFractionalPart(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
-        return new BigReal(BigInteger.Remainder(value.Numerator, value.Denominator), value.Denominator);
+        return Abs(new BigReal(BigInteger.Remainder(value.Numerator, value.Denominator), value.Denominator));
     }
     public static BigReal ShiftLeft(BigReal value, int shift = 1, int numberBase = 2) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -359,13 +433,16 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
         return new BigReal(value.Numerator, value.Denominator * BigInteger.Pow(numberBase, shift));
     }
-    public static BigReal Sqrt(BigReal value, int precision = 100) {
-        return Root(value, 2, precision);
+    /// <summary>
+    /// Returns the square root of the value.
+    /// </summary>
+    public static BigReal Sqrt(BigReal value, int decimals = 100) {
+        return Root(value, 2, decimals);
     }
-    public static BigReal Cbrt(BigReal value, int precision = 100) {
-        return Root(value, 3, precision);
+    public static BigReal Cbrt(BigReal value, int decimals = 100) {
+        return Root(value, 3, decimals);
     }
-    public static BigReal Root(BigReal value, int root, int precision = 100) {
+    public static BigReal Root(BigReal value, int root, int decimals = 100) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
@@ -380,8 +457,8 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
             return One / Pow(value, -root);
         }
 
-        // Convert precision to epsilon (e.g. 3 -> 0.001)
-        BigReal epsilon = One / Pow(10, precision);
+        // Convert decimals to epsilon (e.g. 3 -> 0.001)
+        BigReal epsilon = One / Pow(10, decimals);
 
         // Use Newton's method to repeatedly get closer to the answer
         BigReal guess = value;
@@ -419,13 +496,13 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// <summary>
     /// Parses a value from the given string.
     /// </summary>
-    public static BigReal Parse(string value, IFormatProvider? provider = null) {
+    public static BigReal Parse(string value, IFormatProvider? provider) {
         return Parse(value, NumberStyles.Any, provider);
     }
     /// <summary>
     /// Parses a value from the given string.
     /// </summary>
-    public static BigReal Parse(string value, NumberStyles style = NumberStyles.Any, IFormatProvider? provider = null) {
+    public static BigReal Parse(string value, NumberStyles style, IFormatProvider? provider) {
         NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
 
         // Try parse named literal
@@ -498,28 +575,46 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
         return result;
     }
+    /// <summary>
+    /// Parses a value from the given span.
+    /// </summary>
     public static BigReal Parse(scoped ReadOnlySpan<char> value) {
         return Parse(value, null);
     }
-    public static BigReal Parse(scoped ReadOnlySpan<char> value, IFormatProvider? provider = null) {
+    /// <summary>
+    /// Parses a value from the given span.
+    /// </summary>
+    public static BigReal Parse(scoped ReadOnlySpan<char> value, IFormatProvider? provider) {
         return Parse(value, NumberStyles.Any, provider);
     }
-    public static BigReal Parse(scoped ReadOnlySpan<char> value, NumberStyles style = NumberStyles.Any, IFormatProvider? provider = null) {
+    /// <summary>
+    /// Parses a value from the given span.
+    /// </summary>
+    public static BigReal Parse(scoped ReadOnlySpan<char> value, NumberStyles style, IFormatProvider? provider) {
         return Parse(value.ToString(), style, provider);
     }
+    /// <summary>
+    /// Tries to parse a value from the given string.
+    /// </summary>
     public static bool TryParse([NotNullWhen(true)] string? value, out BigReal result) {
         return TryParse(value, null, out result);
     }
-    public static bool TryParse([NotNullWhen(true)] string? value, IFormatProvider? provider, [MaybeNullWhen(false)] out BigReal result) {
+    /// <summary>
+    /// Tries to parse a value from the given string.
+    /// </summary>
+    public static bool TryParse([NotNullWhen(true)] string? value, IFormatProvider? provider, out BigReal result) {
         return TryParse(value, NumberStyles.Any, provider, out result);
     }
-    public static bool TryParse([NotNullWhen(true)] string? value, NumberStyles style, IFormatProvider? provider, [MaybeNullWhen(false)] out BigReal result) {
+    /// <summary>
+    /// Tries to parse a value from the given string.
+    /// </summary>
+    public static bool TryParse([NotNullWhen(true)] string? value, NumberStyles style, IFormatProvider? provider, out BigReal result) {
         if (value is null) {
             result = default;
             return false;
         }
         try {
-            result = Parse(value);
+            result = Parse(value, style, provider);
             return true;
         }
         catch (Exception) {
@@ -527,35 +622,32 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
             return false;
         }
     }
-    public static bool TryParse(ReadOnlySpan<char> value, [MaybeNullWhen(false)] out BigReal result) {
+    /// <summary>
+    /// Tries to parse a value from the given span.
+    /// </summary>
+    public static bool TryParse(ReadOnlySpan<char> value, out BigReal result) {
         return TryParse(value, null, out result);
     }
-    public static bool TryParse(ReadOnlySpan<char> value, IFormatProvider? provider, [MaybeNullWhen(false)] out BigReal result) {
+    /// <summary>
+    /// Tries to parse a value from the given span.
+    /// </summary>
+    public static bool TryParse(ReadOnlySpan<char> value, IFormatProvider? provider, out BigReal result) {
         return TryParse(value, NumberStyles.Any, provider, out result);
     }
-    public static bool TryParse(ReadOnlySpan<char> value, NumberStyles style, IFormatProvider? provider, [MaybeNullWhen(false)] out BigReal result) {
+    /// <summary>
+    /// Tries to parse a value from the given span.
+    /// </summary>
+    public static bool TryParse(ReadOnlySpan<char> value, NumberStyles style, IFormatProvider? provider, out BigReal result) {
         return TryParse(value.ToString(), style, provider, out result);
     }
     public static int Compare(BigReal left, BigReal right) {
-        return new BigReal(left).CompareTo(right);
+        return left.CompareTo(right);
     }
     /// <summary>
     /// Returns whether the value is in its simplest form.
     /// </summary>
     public static bool IsCanonical(BigReal value) {
         return BigInteger.GreatestCommonDivisor(value.Numerator, value.Denominator).IsOne;
-    }
-    /// <summary>
-    /// Returns whether the value is divisible by 2.
-    /// </summary>
-    public static bool IsEven(BigReal value) {
-        return IsZero(value % 2);
-    }
-    /// <summary>
-    /// Returns whether the value is not divisible by 2.
-    /// </summary>
-    public static bool IsOdd(BigReal value) {
-        return !IsZero(value % 2);
     }
     /// <summary>
     /// Returns whether the value is a whole number.
@@ -567,13 +659,13 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// Returns whether the value is a whole number divisible by 2.
     /// </summary>
     public static bool IsEvenInteger(BigReal value) {
-        return IsEven(value) && IsInteger(value);
+        return IsInteger(value) && GetWholePart(value).IsEven;
     }
     /// <summary>
     /// Returns whether the value is a whole number not divisible by 2.
     /// </summary>
     public static bool IsOddInteger(BigReal value) {
-        return IsOdd(value) && IsInteger(value);
+        return IsInteger(value) && !GetWholePart(value).IsEven;
     }
     /// <summary>
     /// Returns whether the value is not a number.
@@ -662,13 +754,13 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// Stringifies the value as a decimal, truncating at 100 decimal places.
     /// </summary>
     public override string ToString() {
-        return ToString(precision: 100);
+        return ToString(decimals: 100);
     }
     /// <summary>
-    /// Stringifies the value as a decimal, truncating at <paramref name="precision"/> decimal places.<br/>
+    /// Stringifies the value as a decimal, truncating at <paramref name="decimals"/> decimal places.<br/>
     /// The number is optionally padded with <c>.0</c> if it's an integer.
     /// </summary>
-    public string ToString(int precision, IFormatProvider? provider = null, bool padDecimal = false) {
+    public string ToString(int decimals, IFormatProvider? provider = null, bool padDecimal = false) {
         NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
 
         // Infinity
@@ -688,6 +780,11 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         BigInteger whole = BigInteger.DivRem(Numerator, Denominator, out BigInteger remainder);
         string wholeString = whole.ToString(numberFormat);
 
+        // Ensure whole number has negative sign if zero and negative (e.g. -0.5)
+        if (!BigInteger.IsNegative(whole) && IsNegative(this)) {
+            wholeString = numberFormat.NegativeSign + wholeString;
+        }
+
         // Number is whole
         if (remainder.IsZero) {
             if (padDecimal) {
@@ -696,13 +793,12 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
             return wholeString;
         }
 
-        // Get decimal as scaled integer (e.g. 123.45 -> 1234500000)
-        BigInteger fractional = (Numerator * BigInteger.Pow(10, precision)) / Denominator;
+        // Get number as positive scaled integer (e.g. 123.45 -> 1234500000)
+        BigInteger fractional = BigInteger.Abs(Numerator * BigInteger.Pow(10, decimals) / Denominator);
 
         // Get fraction part (e.g. 123.45 -> 4500000)
         using ValueStringBuilder fractionBuilder = new(stackalloc char[64]);
-        for (int columnNumber = 0; columnNumber < precision; columnNumber++) {
-            // Add column digit
+        for (int columnNumber = 0; columnNumber < decimals; columnNumber++) {
             fractionBuilder.Append(fractional % 10);
             fractional /= 10;
         }
@@ -729,16 +825,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         return value.Numerator + " / " + value.Denominator;
     }
     public int CompareTo(BigReal other) {
-        // Make copies
-        BigInteger one = Numerator;
-        BigInteger two = other.Numerator;
-
-        // Cross-multiply
-        one *= other.Denominator;
-        two *= Denominator;
-
-        // Test
-        return BigInteger.Compare(one, two);
+        return BigInteger.Compare(Numerator * other.Denominator, other.Numerator * Denominator);
     }
     public int CompareTo(object? other) {
         if (other is null) {
@@ -757,12 +844,6 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     public override bool Equals(object? other) {
         return other is BigReal otherBigFloat && Equals(otherBigFloat);
     }
-    /*public bool ApproximateEquals(BigReal other, BigReal epsilon) {
-        if (this == other) {
-            return true;
-        }
-        return Abs(this - other) < epsilon;
-    }*/
     /// <summary>
     /// Gets a hash code for the numerator and denominator of the value.
     /// </summary>
@@ -804,61 +885,42 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
 
     #region Casts
 
-    public static explicit operator Half(BigReal value) {
-        if (value < Half.MinValue) {
-            throw new OverflowException($"{nameof(value)} is less than Half.MinValue.");
-        }
-        if (value > Half.MaxValue) {
-            throw new OverflowException($"{nameof(value)} is greater than Half.MaxValue.");
-        }
-        return (Half)value.Numerator / (Half)value.Denominator;
-    }
-    public static explicit operator float(BigReal value) {
-        if (value < float.MinValue) {
-            throw new OverflowException($"{nameof(value)} is less than float.MinValue.");
-        }
-        if (value > float.MaxValue) {
-            throw new OverflowException($"{nameof(value)} is greater than float.MaxValue.");
-        }
-        return (float)value.Numerator / (float)value.Denominator;
-    }
-    public static explicit operator double(BigReal value) {
-        if (value < double.MinValue) {
-            throw new OverflowException($"{nameof(value)} is less than double.MinValue.");
-        }
-        if (value > double.MaxValue) {
-            throw new OverflowException($"{nameof(value)} is greater than double.MaxValue.");
-        }
-        return (double)value.Numerator / (double)value.Denominator;
-    }
-    public static explicit operator decimal(BigReal value) {
-        if (value < decimal.MinValue) {
-            throw new OverflowException($"{nameof(value)} is less than decimal.MinValue.");
-        }
-        if (value > decimal.MaxValue) {
-            throw new OverflowException($"{nameof(value)} is greater than decimal.MaxValue.");
-        }
-        return (decimal)value.Numerator / (decimal)value.Denominator;
-    }
+    public static explicit operator BigInteger(BigReal value) => GetWholePart(value);
 
-    public static implicit operator BigReal(sbyte value) => new(value);
-    public static implicit operator BigReal(byte value) => new((uint)value);
-    public static implicit operator BigReal(short value) => new(value);
-    public static implicit operator BigReal(ushort value) => new((uint)value);
-    public static implicit operator BigReal(int value) => new(value);
-    public static implicit operator BigReal(uint value) => new(value);
-    public static implicit operator BigReal(long value) => new(value);
-    public static implicit operator BigReal(ulong value) => new(value);
-    public static implicit operator BigReal(Int128 value) => new(value);
-    public static implicit operator BigReal(UInt128 value) => new(value);
+    public static explicit operator Half(BigReal value) => TryCast(value, Half.MinValue, Half.MaxValue, value => (Half)value.Numerator / (Half)value.Denominator);
+    public static explicit operator float(BigReal value) => TryCast(value, float.MinValue, float.MaxValue, value => (float)value.Numerator / (float)value.Denominator);
+    public static explicit operator double(BigReal value) => TryCast(value, double.MinValue, double.MaxValue, value => (double)value.Numerator / (double)value.Denominator);
+    public static explicit operator decimal(BigReal value) => TryCast(value, decimal.MinValue, decimal.MaxValue, value => (decimal)value.Numerator / (decimal)value.Denominator);
+
+    public static implicit operator BigReal(sbyte value) => new((BigInteger)value);
+    public static implicit operator BigReal(byte value) => new((BigInteger)value);
+    public static implicit operator BigReal(short value) => new((BigInteger)value);
+    public static implicit operator BigReal(ushort value) => new((BigInteger)value);
+    public static implicit operator BigReal(int value) => new((BigInteger)value);
+    public static implicit operator BigReal(uint value) => new((BigInteger)value);
+    public static implicit operator BigReal(long value) => new((BigInteger)value);
+    public static implicit operator BigReal(ulong value) => new((BigInteger)value);
+    public static implicit operator BigReal(Int128 value) => new((BigInteger)value);
+    public static implicit operator BigReal(UInt128 value) => new((BigInteger)value);
+    public static implicit operator BigReal(char value) => new((BigInteger)value);
+    public static implicit operator BigReal(nint value) => new((BigInteger)value);
+    public static implicit operator BigReal(nuint value) => new((BigInteger)value);
+    public static implicit operator BigReal(BigInteger value) => new(value);
+
     public static implicit operator BigReal(Half value) => new((float)value);
     public static implicit operator BigReal(float value) => new(value);
     public static implicit operator BigReal(double value) => new(value);
     public static implicit operator BigReal(decimal value) => new(value);
-    public static implicit operator BigReal(char value) => new(value);
-    public static implicit operator BigReal(nint value) => new((BigInteger)value);
-    public static implicit operator BigReal(nuint value) => new((BigInteger)value);
-    public static implicit operator BigReal(BigInteger value) => new(value);
+
+    private static T TryCast<T>(BigReal value, BigReal MinValue, BigReal MaxValue, Func<BigReal, T> Cast) {
+        if (value < MinValue) {
+            throw new OverflowException($"{nameof(value)} is less than {typeof(T).Name}.MinValue.");
+        }
+        if (value > MaxValue) {
+            throw new OverflowException($"{nameof(value)} is greater than {typeof(T).Name}.MaxValue.");
+        }
+        return Cast(value);
+    }
 
     #endregion
 }
