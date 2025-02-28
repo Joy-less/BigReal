@@ -1,5 +1,6 @@
 <Solution>
-  <Project Path="BigFloatSharp/BigFloatSharp.csproj" />
-  <Project Path="BigFloatSharp.Tests/BigFloatSharp.Tests.csproj" />
+  <Project Path="BigFloatSharp.Benchmarks/BigFloatSharp.Benchmarks.csproj" Id="7ba19cef-e4ed-4d7a-80a1-844e35feae50" />
   <Project Path="BigFloatSharp.Playground/BigFloatSharp.Playground.csproj" />
+  <Project Path="BigFloatSharp.Tests/BigFloatSharp.Tests.csproj" />
+  <Project Path="BigFloatSharp/BigFloatSharp.csproj" />
 </Solution>

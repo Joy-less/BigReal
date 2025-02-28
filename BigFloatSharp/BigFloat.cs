@@ -1,8 +1,10 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Numerics;
+using LinkDotNet.StringBuilder;
 
-namespace System.Numerics;
+namespace BigFloatSharp;
 
 [Serializable]
 public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable<BigFloat> {
@@ -88,6 +90,9 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         }
         return new BigFloat(value.Numerator * other.Denominator, value.Denominator * other.Numerator);
     }
+    public static BigFloat Remainder(BigFloat value) {
+        return new BigFloat(BigInteger.Remainder(value.Numerator, value.Denominator), value.Denominator);
+    }
     public static BigFloat Remainder(BigFloat value, BigFloat other) {
         return value - Floor(value / other) * other;
     }
@@ -148,7 +153,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return Factor(new(numerator, value.Denominator));
     }
     public static BigFloat Round(BigFloat value) {
-        if (GetFractionalPart(value).CompareTo(OneHalf) >= 0) {
+        if (Remainder(value).CompareTo(OneHalf) >= 0) {
             return Ceil(value);
         }
         else {
@@ -163,11 +168,13 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         numerator -= BigInteger.Remainder(numerator, value.Denominator);
         return Factor(new BigFloat(numerator, value.Denominator));
     }
-    public static BigFloat GetWholePart(BigFloat value) {
-        return Truncate(value);
+    public static BigInteger GetWholePart(BigFloat value) {
+        BigInteger numerator = value.Numerator;
+        numerator -= BigInteger.Remainder(numerator, value.Denominator);
+        return numerator / value.Denominator;
     }
-    public static BigFloat GetFractionalPart(BigFloat value) {
-        return new BigFloat(BigInteger.Remainder(value.Numerator, value.Denominator), value.Denominator);
+    public static BigInteger GetFractionalPart(BigFloat value) {
+        return BigInteger.Remainder(value.Numerator, value.Denominator);
     }
     public static BigFloat ShiftDecimalLeft(BigFloat value, int shift) {
         if (shift < 0) {
@@ -347,6 +354,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
 
         // Get whole part (e.g. 123.45 -> 123)
         BigInteger whole = BigInteger.DivRem(Numerator, Denominator, out BigInteger remainder);
+        // Stringify whole part
         string wholeString = whole.ToString(numberFormat);
 
         // Number is whole
@@ -362,7 +370,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         // Get decimal as scaled integer (e.g. 123.45 -> 1234500000)
         BigInteger fractional = (Numerator * BigInteger.Pow(10, precision)) / Denominator;
 
-        // Get fraction part (e.g. 123.45 -> 4500000)
+        /*// Get fraction part (e.g. 123.45 -> 4500000)
         BigInteger fraction = 0;
         BigInteger columnMagnitude = 1;
         for (int columnNumber = 0; columnNumber < precision; columnNumber++) {
@@ -372,6 +380,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
             // Multiply next column
             columnMagnitude *= 10;
         }
+        // Stringify fraction part
         string fractionString = fraction.ToString(numberFormat);
 
         // Add leading zeroes to fraction (e.g. 0.00123 -> 123 -> 00123)
@@ -382,7 +391,20 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         fractionString = fractionString.TrimEnd('0');
 
         // Combine parts
-        return $"{wholeString}{numberFormat.NumberDecimalSeparator}{fractionString}";
+        return wholeString + numberFormat.NumberDecimalSeparator + fractionString;*/
+
+        // Get fraction part (e.g. 123.45 -> 4500000)
+        using ValueStringBuilder fractionBuilder = new(stackalloc char[64]);
+        for (int columnNumber = 0; columnNumber < precision; columnNumber++) {
+            // Add column digit
+            fractionBuilder.Append(fractional % 10);
+            fractional /= 10;
+        }
+        fractionBuilder.Reverse();
+        string fractionString = fractionBuilder.ToString();
+
+        // Combine parts
+        return wholeString + numberFormat.NumberDecimalSeparator + fractionString;
     }
     public string ToRationalString() {
         BigFloat value = Factor(this);
