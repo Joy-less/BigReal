@@ -6,32 +6,19 @@ using BigFloatSharp;
 
 namespace UnitTests;
 
-public class BigFloatUnitTest(ITestOutputHelper Output) {
+public class BigFloatTests(ITestOutputHelper Output) {
     private readonly ITestOutputHelper Output = Output;
 
-    [Fact]
-    public void TestToStringDigits() {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TestToStringDigits(bool padDecimal) {
         for (int exp = 4; exp >= -4; exp--) {
             decimal testDigits = (decimal)(Math.PI * Math.Pow(10.0, exp));
             Output.WriteLine(testDigits.ToString());
 
             BigFloat bigFloat = new(testDigits);
-            string str = bigFloat.ToString();
-            Output.WriteLine(str);
-
-            decimal compare = decimal.Parse(str);
-            Assert.Equal(testDigits, compare);
-        }
-    }
-
-    [Fact]
-    public void TestToStringZeroes() {
-        for (int exp = 4; exp >= -4; exp--) {
-            decimal testDigits = (decimal)(Math.Pow(10.0, exp));
-            Output.WriteLine(testDigits.ToString());
-
-            BigFloat bigFloat = new(testDigits);
-            string str = bigFloat.ToString(20, padDecimal: true);
+            string str = bigFloat.ToString(100, padDecimal: padDecimal);
             Output.WriteLine(str);
 
             decimal compare = decimal.Parse(str);
