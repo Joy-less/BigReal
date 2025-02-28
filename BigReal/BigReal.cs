@@ -229,6 +229,12 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         BigReal quotient = DivRem(value, other, out BigReal remainder);
         return (quotient, remainder);
     }
+    /// <summary>
+    /// Calculates <paramref name="value"/> to the power of <paramref name="exponent"/>.
+    /// </summary>
+    /// <remarks>
+    /// See <see href="https://stackoverflow.com/a/30225002"/> for why <paramref name="exponent"/> is an <see cref="int"/> rather than a <see cref="BigInteger"/>.
+    /// </remarks>
     public static BigReal Pow(BigReal value, int exponent) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
@@ -236,17 +242,25 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         if (value.Numerator.IsZero) {
             return value;
         }
-        else if (exponent < 0) {
-            BigInteger savedNumerator = value.Numerator;
+        if (exponent < 0) {
             BigInteger numerator = BigInteger.Pow(value.Denominator, -exponent);
-            BigInteger denominator = BigInteger.Pow(savedNumerator, -exponent);
-            return new(numerator, denominator);
+            BigInteger denominator = BigInteger.Pow(value.Numerator, -exponent);
+            return new BigReal(numerator, denominator);
         }
         else {
             BigInteger numerator = BigInteger.Pow(value.Numerator, exponent);
             BigInteger denominator = BigInteger.Pow(value.Denominator, exponent);
-            return new(numerator, denominator);
+            return new BigReal(numerator, denominator);
         }
+    }
+    /// <summary>
+    /// <see href="https://github.com/AdamWhiteHat/BigRational/blob/aaacc836b15f415d070ecff7a37f66c4d9a94076/BigRational/Fraction.cs#L460"/>
+    /// </summary>
+    public static BigReal Pow(BigReal value, BigReal exponent, int precision = 30) {
+        return Divide(
+            Root(Pow(value.Numerator, (int)exponent.Numerator), (int)exponent.Denominator, precision),
+            Root(Pow(value.Denominator, (int)exponent.Numerator), (int)exponent.Denominator, precision)
+        );
     }
     public static BigReal Abs(BigReal value) {
         return new BigReal(BigInteger.Abs(value.Numerator), value.Denominator);
@@ -345,19 +359,48 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
         return new BigReal(value.Numerator, value.Denominator * BigInteger.Pow(numberBase, shift));
     }
-    public static BigReal Sqrt(BigReal value) {
+    public static BigReal Sqrt(BigReal value, int precision = 100) {
+        return Root(value, 2, precision);
+    }
+    public static BigReal Cbrt(BigReal value, int precision = 100) {
+        return Root(value, 3, precision);
+    }
+    public static BigReal Root(BigReal value, int root, int precision = 100) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
-        return Divide(Math.Pow(10, BigInteger.Log10(value.Numerator) / 2), Math.Pow(10, BigInteger.Log10(value.Denominator) / 2));
+
+        // Can't root a negative number
+        if (value < Zero) {
+            return NaN;
+        }
+
+        // Root is negative
+        if (root < 0) {
+            return One / Pow(value, -root);
+        }
+
+        // Convert precision to epsilon (e.g. 3 -> 0.001)
+        BigReal epsilon = One / Pow(10, precision);
+
+        // Use Newton's method to repeatedly get closer to the answer
+        BigReal guess = value;
+        while (true) {
+            BigReal next_guess = ((root - 1) * guess + value / Pow(guess, root - 1)) / root;
+            if (Abs(next_guess - guess) < epsilon) {
+                break;
+            }
+            guess = next_guess;
+        }
+        return guess;
     }
     /// <summary>
-    /// Simplifies the numerator and denominator to their canonical form.
+    /// Factorizes the numerator and denominator to their canonical form.
     /// </summary>
     /// <remarks>
-    /// Factorizing can be very slow, so use only when necessary.
+    /// This can be very slow, so use only when necessary.
     /// </remarks>
-    public static BigReal Factorize(BigReal value) {
+    public static BigReal Simplify(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
@@ -377,12 +420,12 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// Parses a value from the given string.
     /// </summary>
     public static BigReal Parse(string value, IFormatProvider? provider = null) {
-        return Parse(value, NumberStyles.Float, provider);
+        return Parse(value, NumberStyles.Any, provider);
     }
     /// <summary>
     /// Parses a value from the given string.
     /// </summary>
-    public static BigReal Parse(string value, NumberStyles style = NumberStyles.Float, IFormatProvider? provider = null) {
+    public static BigReal Parse(string value, NumberStyles style = NumberStyles.Any, IFormatProvider? provider = null) {
         NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
 
         // Try parse named literal
@@ -424,34 +467,51 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
             }
         }
 
+        // Find exponent
+        int exponentPos = value.IndexOf('e', StringComparison.OrdinalIgnoreCase);
+        // Found exponent
+        BigReal exponent = 0;
+        if (exponentPos > 0) {
+            // Get exponent
+            exponent = Parse(value[(exponentPos + 1)..]);
+            // Remove exponent
+            value = value[..exponentPos];
+        }
+
         // Find decimal point
-        int decimalPointPos = value.IndexOf(numberFormat.NumberDecimalSeparator);
+        int decimalPointPos = value.IndexOf(numberFormat.NumberDecimalSeparator, StringComparison.OrdinalIgnoreCase);
         // No decimal point
         if (decimalPointPos < 0) {
-            return Factorize(BigInteger.Parse(value, style, provider));
+            return BigInteger.Parse(value, style, provider);
         }
 
         // Remove decimal point
-        value = value.Replace(numberFormat.NumberDecimalSeparator, "");
+        value = value.Replace(numberFormat.NumberDecimalSeparator, "", StringComparison.OrdinalIgnoreCase);
         // Get numerator and denominator
         BigInteger numerator = BigInteger.Parse(value, style, provider);
         BigInteger denominator = BigInteger.Pow(10, value.Length - decimalPointPos);
-        return new BigReal(numerator, denominator);
+        BigReal result = new(numerator, denominator);
+
+        // Multiply by 10 ^ exponent
+        if (!IsZero(exponent)) {
+            result *= Pow(10, exponent);
+        }
+        return result;
     }
     public static BigReal Parse(scoped ReadOnlySpan<char> value) {
         return Parse(value, null);
     }
     public static BigReal Parse(scoped ReadOnlySpan<char> value, IFormatProvider? provider = null) {
-        return Parse(value, NumberStyles.Float, provider);
+        return Parse(value, NumberStyles.Any, provider);
     }
-    public static BigReal Parse(scoped ReadOnlySpan<char> value, NumberStyles style = NumberStyles.Float, IFormatProvider? provider = null) {
+    public static BigReal Parse(scoped ReadOnlySpan<char> value, NumberStyles style = NumberStyles.Any, IFormatProvider? provider = null) {
         return Parse(value.ToString(), style, provider);
     }
     public static bool TryParse([NotNullWhen(true)] string? value, out BigReal result) {
         return TryParse(value, null, out result);
     }
     public static bool TryParse([NotNullWhen(true)] string? value, IFormatProvider? provider, [MaybeNullWhen(false)] out BigReal result) {
-        return TryParse(value, NumberStyles.Float, provider, out result);
+        return TryParse(value, NumberStyles.Any, provider, out result);
     }
     public static bool TryParse([NotNullWhen(true)] string? value, NumberStyles style, IFormatProvider? provider, [MaybeNullWhen(false)] out BigReal result) {
         if (value is null) {
@@ -471,7 +531,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         return TryParse(value, null, out result);
     }
     public static bool TryParse(ReadOnlySpan<char> value, IFormatProvider? provider, [MaybeNullWhen(false)] out BigReal result) {
-        return TryParse(value, NumberStyles.Float, provider, out result);
+        return TryParse(value, NumberStyles.Any, provider, out result);
     }
     public static bool TryParse(ReadOnlySpan<char> value, NumberStyles style, IFormatProvider? provider, [MaybeNullWhen(false)] out BigReal result) {
         return TryParse(value.ToString(), style, provider, out result);
@@ -489,13 +549,13 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// Returns whether the value is divisible by 2.
     /// </summary>
     public static bool IsEven(BigReal value) {
-        return value % 2 == 0;
+        return IsZero(value % 2);
     }
     /// <summary>
     /// Returns whether the value is not divisible by 2.
     /// </summary>
     public static bool IsOdd(BigReal value) {
-        return value % 2 != 0;
+        return !IsZero(value % 2);
     }
     /// <summary>
     /// Returns whether the value is a whole number.
@@ -562,6 +622,12 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// </summary>
     public static bool IsZero(BigReal value) {
         return value.Numerator.IsZero;
+    }
+    /// <summary>
+    /// Returns whether the value is zero.
+    /// </summary>
+    public static bool IsOne(BigReal value) {
+        return value.Numerator == value.Denominator;
     }
     /// <summary>
     /// Returns the greater of the two values.
@@ -644,6 +710,14 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         fractionBuilder.TrimEnd('0');
         string fractionString = fractionBuilder.ToString();
 
+        // Number at given precision is whole
+        if (fractionString.Length == 0) {
+            if (padDecimal) {
+                return wholeString + numberFormat.NumberDecimalSeparator + "0";
+            }
+            return wholeString;
+        }
+
         // Combine parts
         return wholeString + numberFormat.NumberDecimalSeparator + fractionString;
     }
@@ -651,7 +725,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// Stringifies the value as a simplified rational (numerator / denominator).
     /// </summary>
     public string ToRationalString() {
-        BigReal value = Factorize(this);
+        BigReal value = Simplify(this);
         return value.Numerator + " / " + value.Denominator;
     }
     public int CompareTo(BigReal other) {
@@ -683,6 +757,12 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     public override bool Equals(object? other) {
         return other is BigReal otherBigFloat && Equals(otherBigFloat);
     }
+    /*public bool ApproximateEquals(BigReal other, BigReal epsilon) {
+        if (this == other) {
+            return true;
+        }
+        return Abs(this - other) < epsilon;
+    }*/
     /// <summary>
     /// Gets a hash code for the numerator and denominator of the value.
     /// </summary>
