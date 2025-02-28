@@ -27,7 +27,4 @@
     <None Include="README.md" Pack="true" PackagePath="/" />
     <None Include="LICENSE" Pack="true" PackagePath="/" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="LinkDotNet.StringBuilder" Version="2.4.0" />
-  </ItemGroup>
 </Project>

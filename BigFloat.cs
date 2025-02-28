@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using LinkDotNet.StringBuilder;
 
 namespace System.Numerics;
 
@@ -59,13 +58,13 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         : this(new BigInteger(value)) {
     }
     public BigFloat(float value) {
-        (Numerator, Denominator) = Parse(value.ToString("N99"));
+        (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
     }
     public BigFloat(double value) {
-        (Numerator, Denominator) = Parse(value.ToString("N99"));
+        (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
     }
     public BigFloat(decimal value) {
-        (Numerator, Denominator) = Parse(value.ToString("N99"));
+        (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
     }
 
     #endregion
@@ -204,7 +203,7 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return new BigFloat(value.Numerator / factor, value.Denominator / factor);
     }
     public static BigFloat Parse(string value) {
-        return Parse(value.AsSpan());
+        return Parse(value, null);
     }
     public static BigFloat Parse(string value, IFormatProvider? provider = null) {
         return Parse(value, NumberStyles.Float, provider);
@@ -352,42 +351,54 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
     public override string ToString() {
         return ToString(precision: 100);
     }
-    public string ToString(string? format, IFormatProvider? provider) {
-        return ToString(precision: 100, provider);
+    public string ToString(string? format, IFormatProvider? provider = null) {
+        return ToString();
+        throw new NotImplementedException();
     }
-    public string ToString(int precision, IFormatProvider? provider = null, bool trailingPointZero = false) {
+    /// <summary>
+    /// Converts the <see cref="BigFloat"/> to a string, truncating at <paramref name="precision"/> decimal places.
+    /// </summary>
+    public string ToString(int precision, IFormatProvider? provider = null, bool padDecimal = false) {
         NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
 
-        BigInteger result = BigInteger.DivRem(Numerator, Denominator, out BigInteger remainder);
+        // Get whole part (e.g. 123.45 -> 123)
+        BigInteger whole = BigInteger.DivRem(Numerator, Denominator, out BigInteger remainder);
+        string wholeString = whole.ToString(numberFormat);
+
+        // Number is whole
         if (remainder.IsZero) {
-            if (trailingPointZero) {
-                return result + numberFormat.NumberDecimalSeparator + "0";
+            if (padDecimal) {
+                return wholeString + numberFormat.NumberDecimalSeparator + "0";
             }
             else {
-                return result.ToString(numberFormat);
+                return wholeString;
             }
         }
 
-        BigInteger decimals = (Numerator * BigInteger.Pow(10, precision)) / Denominator;
-        if (decimals.IsZero) {
-            if (trailingPointZero) {
-                return result + numberFormat.NumberDecimalSeparator + "0";
-            }
-            else {
-                return result.ToString(numberFormat);
-            }
-        }
-        
-        using ValueStringBuilder stringBuilder = new(stackalloc char[64]);
-        while (precision > 0) {
-            stringBuilder.Append(decimals % 10);
-            decimals /= 10;
-            precision--;
-        }
-        stringBuilder.Reverse();
-        ReadOnlySpan<char> decimalsString = stringBuilder.AsSpan();
+        // Get decimal as scaled integer (e.g. 123.45 -> 1234500000)
+        BigInteger fractional = (Numerator * BigInteger.Pow(10, precision)) / Denominator;
 
-        return string.Concat(result.ToString(), numberFormat.NumberDecimalSeparator, decimalsString).TrimEnd('0');
+        // Get fraction part (e.g. 123.45 -> 4500000)
+        BigInteger fraction = 0;
+        BigInteger columnMagnitude = 1;
+        for (int columnNumber = 0; columnNumber < precision; columnNumber++) {
+            // Add value of column
+            fraction += (fractional % 10) * columnMagnitude;
+            fractional /= 10;
+            // Multiply next column
+            columnMagnitude *= 10;
+        }
+        string fractionString = fraction.ToString(numberFormat);
+
+        // Add leading zeroes to fraction (e.g. 0.00123 -> 123 -> 00123)
+        int fractionLeadingZeroes = precision - fractionString.Length;
+        fractionString = fractionString.PadLeft(fractionString.Length + fractionLeadingZeroes, '0');
+
+        // Remove trailing zeroes from fraction
+        fractionString = fractionString.TrimEnd('0');
+
+        // Combine parts
+        return $"{wholeString}{numberFormat.NumberDecimalSeparator}{fractionString}";
     }
     public string ToRationalString() {
         BigFloat value = Factor(this);
@@ -519,21 +530,21 @@ public readonly partial struct BigFloat : IComparable, IComparable<BigFloat>, IE
         return (decimal)value.Numerator / (decimal)value.Denominator;
     }
 
-    public static implicit operator BigFloat(byte value) => new((BigInteger)value);
-    public static implicit operator BigFloat(sbyte value) => new((BigInteger)value);
-    public static implicit operator BigFloat(short value) => new((BigInteger)value);
-    public static implicit operator BigFloat(ushort value) => new((BigInteger)value);
-    public static implicit operator BigFloat(int value) => new((BigInteger)value);
-    public static implicit operator BigFloat(uint value) => new((BigInteger)value);
-    public static implicit operator BigFloat(long value) => new((BigInteger)value);
-    public static implicit operator BigFloat(ulong value) => new((BigInteger)value);
-    public static implicit operator BigFloat(Int128 value) => new((BigInteger)value);
-    public static implicit operator BigFloat(UInt128 value) => new((BigInteger)value);
-    public static implicit operator BigFloat(Half value) => new((BigInteger)value);
-    public static implicit operator BigFloat(float value) => new((BigInteger)value);
-    public static implicit operator BigFloat(double value) => new((BigInteger)value);
-    public static implicit operator BigFloat(decimal value) => new((BigInteger)value);
-    public static implicit operator BigFloat(char value) => new((BigInteger)value);
+    public static implicit operator BigFloat(sbyte value) => new(value);
+    public static implicit operator BigFloat(byte value) => new((uint)value);
+    public static implicit operator BigFloat(short value) => new(value);
+    public static implicit operator BigFloat(ushort value) => new((uint)value);
+    public static implicit operator BigFloat(int value) => new(value);
+    public static implicit operator BigFloat(uint value) => new(value);
+    public static implicit operator BigFloat(long value) => new(value);
+    public static implicit operator BigFloat(ulong value) => new(value);
+    public static implicit operator BigFloat(Int128 value) => new(value);
+    public static implicit operator BigFloat(UInt128 value) => new(value);
+    public static implicit operator BigFloat(Half value) => new((float)value);
+    public static implicit operator BigFloat(float value) => new(value);
+    public static implicit operator BigFloat(double value) => new(value);
+    public static implicit operator BigFloat(decimal value) => new(value);
+    public static implicit operator BigFloat(char value) => new(value);
     public static implicit operator BigFloat(nint value) => new((BigInteger)value);
     public static implicit operator BigFloat(nuint value) => new((BigInteger)value);
     public static implicit operator BigFloat(BigInteger value) => new(value);
