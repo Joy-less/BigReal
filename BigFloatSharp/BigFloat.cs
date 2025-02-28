@@ -724,6 +724,15 @@ public readonly struct BigFloat : IComparable, IComparable<BigFloat>, IEquatable
 
     #region Casts
 
+    public static explicit operator Half(BigFloat value) {
+        if (value < Half.MinValue) {
+            throw new OverflowException($"{nameof(value)} is less than Half.MinValue.");
+        }
+        if (value > Half.MaxValue) {
+            throw new OverflowException($"{nameof(value)} is greater than Half.MaxValue.");
+        }
+        return (Half)value.Numerator / (Half)value.Denominator;
+    }
     public static explicit operator float(BigFloat value) {
         if (value < float.MinValue) {
             throw new OverflowException($"{nameof(value)} is less than float.MinValue.");
