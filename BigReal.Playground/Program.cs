@@ -1,5 +1,17 @@
 ﻿using ExtendedNumerics;
 
+Console.WriteLine(new BigReal(100)); // 100
+Console.WriteLine((BigReal)3.14); // 3.14
+Console.WriteLine(new BigReal(4, 3).ToString(4)); // 1.3333
+
+Console.WriteLine((BigReal)3 * (BigReal)5); // 15
+Console.WriteLine(BigReal.Pow(3.4, 2)); // 11.56
+
+Console.WriteLine(BigReal.Parse("12.34")); // 12.34
+Console.WriteLine(BigReal.Parse("2e2.5").ToString(2)); // 632.45
+
+Console.WriteLine("===========================");
+
 Console.WriteLine(new BigReal(0.012345).ToString(3));
 Console.WriteLine(new BigReal(1234500).ToString(3));
 Console.WriteLine(BigReal.Truncate(new BigReal(1234500.678)).ToString(3));
