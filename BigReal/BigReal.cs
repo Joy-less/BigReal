@@ -76,11 +76,11 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     public static BigReal MultiplicativeIdentity => One;
 
     /// <summary>
-    /// Gets a number that indicates the sign of this number.
+    /// Returns:
     /// <list type="bullet">
-    /// <item>1 if positive</item>
-    /// <item>0 if zero</item>
-    /// <item>-1 if negative</item>
+    ///   <item>1 if the value is greater than zero</item>
+    ///   <item>0 if the value is zero</item>
+    ///   <item>-1 if the value is less than zero</item>
     /// </list>
     /// </summary>
     public int Sign => (Numerator.Sign + Denominator.Sign) switch {
@@ -237,7 +237,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     #region Static Methods
 
     /// <summary>
-    /// Returns the result of adding two values.
+    /// Returns the result of adding <paramref name="value"/> and <paramref name="other"/>.
     /// </summary>
     public static BigReal Add(BigReal value, BigReal other) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -250,7 +250,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(numerator, value.Denominator * other.Denominator);
     }
     /// <summary>
-    /// Returns the result of subtracting two values.
+    /// Returns the result of subtracting <paramref name="value"/> and <paramref name="other"/>.
     /// </summary>
     public static BigReal Subtract(BigReal value, BigReal other) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -263,7 +263,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(numerator, value.Denominator * other.Denominator);
     }
     /// <summary>
-    /// Returns the result of multiplying two values.
+    /// Returns the result of multiplying <paramref name="value"/> and <paramref name="other"/>.
     /// </summary>
     public static BigReal Multiply(BigReal value, BigReal other) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -275,7 +275,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(value.Numerator * other.Numerator, value.Denominator * other.Denominator);
     }
     /// <summary>
-    /// Returns the result of dividing two values.
+    /// Returns the result of dividing <paramref name="value"/> and <paramref name="other"/>.
     /// </summary>
     public static BigReal Divide(BigReal value, BigReal other) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -287,7 +287,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(value.Numerator * other.Denominator, value.Denominator * other.Numerator);
     }
     /// <summary>
-    /// Returns the remainder of integer-dividing two values.
+    /// Returns the remainder of integer-dividing <paramref name="value"/> and <paramref name="other"/>.
     /// </summary>
     public static BigReal Remainder(BigReal value, BigReal other) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -303,7 +303,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         );
     }
     /// <summary>
-    /// Returns the result of integer-dividing two values and the remainder.
+    /// Returns the result of dividing <paramref name="value"/> and <paramref name="other"/> and the remainder of integer-dividing them.
     /// </summary>
     public static BigReal DivRem(BigReal value, BigReal other, out BigReal remainder) {
         value = Divide(value, other);
@@ -311,14 +311,14 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return value;
     }
     /// <summary>
-    /// Returns the result of integer-dividing two values and the remainder.
+    /// Returns the result of dividing <paramref name="value"/> and <paramref name="other"/> and the remainder of integer-dividing them.
     /// </summary>
     public static (BigReal Quotient, BigReal Remainder) DivRem(BigReal value, BigReal other) {
         BigReal quotient = DivRem(value, other, out BigReal remainder);
         return (quotient, remainder);
     }
     /// <summary>
-    /// Calculates <paramref name="value"/> to the power of <paramref name="exponent"/>.
+    /// Returns <paramref name="value"/> to the power of <paramref name="exponent"/>.
     /// </summary>
     /// <remarks>
     /// See <see href="https://stackoverflow.com/a/30225002"/> for why <paramref name="exponent"/> is <see cref="int"/> rather than <see cref="BigInteger"/>.
@@ -342,7 +342,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         }
     }
     /// <summary>
-    /// Returns the result of the value to the power of the exponent, correct to <paramref name="decimals"/> decimal places.
+    /// Returns <paramref name="value"/> to the power of <paramref name="exponent"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
     /// This can be extremely slow, so use only when necessary (consider using <see cref="Math.Pow(double, double)"/> instead).<br/>
@@ -356,49 +356,49 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return Root(Pow(value, power), root, decimals);
     }
     /// <summary>
-    /// Returns the natural (base e) logarithm of the value.
+    /// Returns the base e (natural) logarithm of <paramref name="value"/>.
     /// </summary>
     public static double Log(BigReal value) {
         return BigInteger.Log(value.Numerator) - BigInteger.Log(value.Denominator);
     }
     /// <summary>
-    /// Returns the base <paramref name="baseValue"/> logarithm of the value.
+    /// Returns the base <paramref name="baseValue"/> logarithm of <paramref name="value"/>.
     /// </summary>
     public static double Log(BigReal value, double baseValue) {
         return BigInteger.Log(value.Numerator, baseValue) - BigInteger.Log(value.Denominator, baseValue);
     }
     /// <summary>
-    /// Returns the base 10 logarithm of the value.
+    /// Returns the base 10 logarithm of <paramref name="value"/>.
     /// </summary>
     public static double Log10(BigReal value) {
         return BigInteger.Log10(value.Numerator) - BigInteger.Log10(value.Denominator);
     }
     /// <summary>
-    /// Returns the whole part of the base 2 logarithm of the value.
+    /// Returns the whole part of the base 2 logarithm of <paramref name="value"/>.
     /// </summary>
     public static BigInteger Log2(BigReal value) {
         return BigInteger.Log2(value.Numerator) - BigInteger.Log2(value.Denominator);
     }
     /// <summary>
-    /// Returns the value as a positive number.
+    /// Returns <paramref name="value"/> as a positive number.
     /// </summary>
     public static BigReal Abs(BigReal value) {
         return new BigReal(BigInteger.Abs(value.Numerator), BigInteger.Abs(value.Denominator));
     }
     /// <summary>
-    /// Returns the value multiplied by -1.
+    /// Returns <paramref name="value"/> multiplied by -1.
     /// </summary>
     public static BigReal Negate(BigReal value) {
         return new BigReal(BigInteger.Negate(value.Numerator), value.Denominator);
     }
     /// <summary>
-    /// Returns the reciprocal of the value (flips the fraction).
+    /// Returns the reciprocal of <paramref name="value"/> (flips the fraction).
     /// </summary>
     public static BigReal Inverse(BigReal value) {
         return new BigReal(value.Denominator, value.Numerator);
     }
     /// <summary>
-    /// Returns the result of adding 1 to the value.
+    /// Returns the result of adding <paramref name="value"/> and 1.
     /// </summary>
     public static BigReal Increment(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -407,7 +407,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(value.Numerator + value.Denominator, value.Denominator);
     }
     /// <summary>
-    /// Returns the result of subtracting 1 from the value.
+    /// Returns the result of subtracting <paramref name="value"/> and 1.
     /// </summary>
     public static BigReal Decrement(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -416,7 +416,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(value.Numerator - value.Denominator, value.Denominator);
     }
     /// <summary>
-    /// Returns the smallest whole value greater than or equal to the given value.
+    /// Returns the smallest whole value greater than or equal to <paramref name="value"/>.
     /// </summary>
     public static BigReal Ceiling(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -432,7 +432,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(numerator, value.Denominator);
     }
     /// <summary>
-    /// Returns the largest whole value less than or equal to the given value.
+    /// Returns the largest whole value less than or equal to <paramref name="value"/>.
     /// </summary>
     public static BigReal Floor(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -451,7 +451,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Returns the closest whole value to <paramref name="value"/>, rounding midpoints away from zero.
     /// </summary>
     /// <remarks>
-    /// Note: Pass <see cref="MidpointRounding.ToEven"/> to use banker's rounding (default for <see cref="Math.Round(double)"/>).
+    /// Note: Pass <see cref="MidpointRounding.ToEven"/> to use banker's rounding (the default for <see cref="Math.Round(double)"/>).
     /// </remarks>
     public static BigReal Round(BigReal value) {
         return Round(value, MidpointRounding.AwayFromZero);
@@ -460,21 +460,21 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Returns the closest value with <paramref name="decimals"/> decimal places to <paramref name="value"/>, rounding midpoints away from zero.
     /// </summary>
     /// <remarks>
-    /// Note: Pass <see cref="MidpointRounding.ToEven"/> to use banker's rounding (default for <see cref="Math.Round(double)"/>).
+    /// Note: Pass <see cref="MidpointRounding.ToEven"/> to use banker's rounding (the default for <see cref="Math.Round(double)"/>).
     /// </remarks>
     public static BigReal Round(BigReal value, int decimals) {
         BigReal exponent = Pow(10, decimals);
         return Round(value * exponent, MidpointRounding.AwayFromZero) / exponent;
     }
     /// <summary>
-    /// Returns the closest value with <paramref name="decimals"/> decimal places to <paramref name="value"/> according to the <paramref name="mode"/>.
+    /// Returns the closest value with <paramref name="decimals"/> decimal places to <paramref name="value"/> according to the rounding <paramref name="mode"/>.
     /// </summary>
     public static BigReal Round(BigReal value, int decimals, MidpointRounding mode) {
         BigInteger exponent = BigInteger.Pow(10, decimals);
         return Round(value * exponent, mode) / exponent;
     }
     /// <summary>
-    /// Returns the closest whole value to <paramref name="value"/> according to the <paramref name="mode"/>.
+    /// Returns the closest whole value to <paramref name="value"/> according to the rounding <paramref name="mode"/>.
     /// </summary>
     public static BigReal Round(BigReal value, MidpointRounding mode) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -504,7 +504,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
                 }
             }
             case MidpointRounding.ToZero: {
-                if (value < Zero) {
+                if (IsNegative(value)) {
                     return Ceiling(value);
                 }
                 else {
@@ -523,7 +523,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         }
     }
     /// <summary>
-    /// Removes the fractional part from the value.
+    /// Returns <paramref name="value"/> without the fractional part.
     /// </summary>
     public static BigReal Truncate(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -532,20 +532,20 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return GetWholePart(value);
     }
     /// <summary>
-    /// Zeroes the digits after <paramref name="decimals"/> decimal places.
+    /// Returns <paramref name="value"/> with the digits after <paramref name="decimals"/> decimal places zeroed.
     /// </summary>
     public static BigReal Truncate(BigReal value, int decimals) {
         BigReal exponent = Pow(10, decimals);
         return Truncate(value * exponent) / exponent;
     }
     /// <summary>
-    /// Returns the part before the decimal point (e.g. -12.34 -> -12).
+    /// Returns the part of <paramref name="value"/> before the decimal point (e.g. -12.34 -> -12).
     /// </summary>
     public static BigInteger GetWholePart(BigReal value) {
         return value.Numerator / value.Denominator;
     }
     /// <summary>
-    /// Returns the part after the decimal point (e.g. -12.34 -> 0.34).
+    /// Returns the part of <paramref name="value"/> after the decimal point (e.g. -12.34 -> 0.34).
     /// </summary>
     public static BigReal GetFractionalPart(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -554,7 +554,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return Abs(new BigReal(BigInteger.Remainder(value.Numerator, value.Denominator), value.Denominator));
     }
     /// <summary>
-    /// Shifts the value's digits to the left <paramref name="shift"/> times according to the given <paramref name="numberBase"/>.<br/>
+    /// Shifts <paramref name="value"/>'s digits to the left <paramref name="shift"/> times according to the given <paramref name="numberBase"/>.<br/>
     /// This is the same as dividing by <paramref name="numberBase"/> to the power of <paramref name="shift"/>.
     /// </summary>
     public static BigReal LeftShift(BigReal value, int shift = 1, int numberBase = 2) {
@@ -567,7 +567,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(value.Numerator * BigInteger.Pow(numberBase, shift), value.Denominator);
     }
     /// <summary>
-    /// Shifts the value's digits to the right <paramref name="shift"/> times according to the given <paramref name="numberBase"/>.<br/>
+    /// Shifts <paramref name="value"/>'s digits to the right <paramref name="shift"/> times according to the given <paramref name="numberBase"/>.<br/>
     /// This is the same as multiplying by <paramref name="numberBase"/> to the power of <paramref name="shift"/>.
     /// </summary>
     public static BigReal RightShift(BigReal value, int shift = 1, int numberBase = 2) {
@@ -580,19 +580,19 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(value.Numerator, value.Denominator * BigInteger.Pow(numberBase, shift));
     }
     /// <summary>
-    /// Returns the square root of the value, correct to <paramref name="decimals"/> decimal places.
+    /// Returns the square root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal Sqrt(BigReal value, int decimals = 100) {
         return Root(value, 2, decimals);
     }
     /// <summary>
-    /// Returns the cube root of the value, correct to <paramref name="decimals"/> decimal places.
+    /// Returns the cube root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal Cbrt(BigReal value, int decimals = 100) {
         return Root(value, 3, decimals);
     }
     /// <summary>
-    /// Returns the nth root of the value, correct to <paramref name="decimals"/> decimal places.
+    /// Returns the nth root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal Root(BigReal value, int root, int decimals = 100) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -627,7 +627,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Factorizes the numerator and denominator to their canonical form.
     /// </summary>
     /// <remarks>
-    /// This can be very slow, so use only when necessary.
+    /// This can be very slow, so use only when necessary (consider leaving the fraction in an unsimplified form).
     /// </remarks>
     public static BigReal Simplify(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -640,25 +640,25 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(value.Numerator / factor, value.Denominator / factor);
     }
     /// <summary>
-    /// Parses a value from the given string.
+    /// Parses a value from <paramref name="input"/>.
     /// </summary>
-    public static BigReal Parse(string value) {
-        return Parse(value, null);
+    public static BigReal Parse(string input) {
+        return Parse(input, null);
     }
     /// <summary>
-    /// Parses a value from the given string.
+    /// Parses a value from <paramref name="input"/>.
     /// </summary>
-    public static BigReal Parse(string value, IFormatProvider? provider) {
-        return Parse(value, NumberStyles.Any, provider);
+    public static BigReal Parse(string input, IFormatProvider? provider) {
+        return Parse(input, NumberStyles.Any, provider);
     }
     /// <summary>
-    /// Parses a value from the given string.
+    /// Parses a value from <paramref name="input"/>.
     /// </summary>
-    public static BigReal Parse(string value, NumberStyles style, IFormatProvider? provider) {
+    public static BigReal Parse(string input, NumberStyles style, IFormatProvider? provider) {
         NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
 
         // Try parse named literal
-        ReadOnlySpan<char> trimmedValue = value.AsSpan().Trim();
+        ReadOnlySpan<char> trimmedValue = input.AsSpan().Trim();
         // Infinity
         if (trimmedValue.Equals(numberFormat.PositiveInfinitySymbol, StringComparison.OrdinalIgnoreCase)) {
             return PositiveInfinity;
@@ -697,31 +697,31 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         }
 
         // Find exponent
-        int exponentPos = value.IndexOf('e', StringComparison.OrdinalIgnoreCase);
+        int exponentPos = input.IndexOf('e', StringComparison.OrdinalIgnoreCase);
         // Found exponent
         BigReal exponent = Zero;
         if (exponentPos > 0) {
             // Get exponent
-            exponent = Parse(value[(exponentPos + 1)..]);
+            exponent = Parse(input[(exponentPos + 1)..], style, provider);
             // Remove exponent
-            value = value[..exponentPos];
+            input = input[..exponentPos];
         }
 
         // Find decimal point
-        int decimalPointPos = value.IndexOf(numberFormat.NumberDecimalSeparator, StringComparison.OrdinalIgnoreCase);
+        int decimalPointPos = input.IndexOf(numberFormat.NumberDecimalSeparator, StringComparison.OrdinalIgnoreCase);
 
         BigReal result;
         // No decimal point
         if (decimalPointPos < 0) {
             // Parse integer
-            result = BigInteger.Parse(value, style, provider);
+            result = BigInteger.Parse(input, style, provider);
         }
         else {
             // Remove decimal point
-            value = value.Replace(numberFormat.NumberDecimalSeparator, "", StringComparison.OrdinalIgnoreCase);
+            input = input.Replace(numberFormat.NumberDecimalSeparator, "", StringComparison.OrdinalIgnoreCase);
             // Get numerator and denominator
-            BigInteger numerator = BigInteger.Parse(value, style, provider);
-            BigInteger denominator = BigInteger.Pow(10, value.Length - decimalPointPos);
+            BigInteger numerator = BigInteger.Parse(input, style, provider);
+            BigInteger denominator = BigInteger.Pow(10, input.Length - decimalPointPos);
             result = new BigReal(numerator, denominator);
         }
 
@@ -732,45 +732,45 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return result;
     }
     /// <summary>
-    /// Parses a value from the given span.
+    /// Parses a value from <paramref name="input"/>.
     /// </summary>
-    public static BigReal Parse(scoped ReadOnlySpan<char> value) {
-        return Parse(value, null);
+    public static BigReal Parse(scoped ReadOnlySpan<char> input) {
+        return Parse(input, null);
     }
     /// <summary>
-    /// Parses a value from the given span.
+    /// Parses a value from <paramref name="input"/>.
     /// </summary>
-    public static BigReal Parse(scoped ReadOnlySpan<char> value, IFormatProvider? provider) {
-        return Parse(value, NumberStyles.Any, provider);
+    public static BigReal Parse(scoped ReadOnlySpan<char> input, IFormatProvider? provider) {
+        return Parse(input, NumberStyles.Any, provider);
     }
     /// <summary>
-    /// Parses a value from the given span.
+    /// Parses a value from <paramref name="input"/>.
     /// </summary>
-    public static BigReal Parse(scoped ReadOnlySpan<char> value, NumberStyles style, IFormatProvider? provider) {
-        return Parse(value.ToString(), style, provider);
+    public static BigReal Parse(scoped ReadOnlySpan<char> input, NumberStyles style, IFormatProvider? provider) {
+        return Parse(input.ToString(), style, provider);
     }
     /// <summary>
-    /// Tries to parse a value from the given string.
+    /// Tries to parse a value from <paramref name="input"/>.
     /// </summary>
-    public static bool TryParse([NotNullWhen(true)] string? value, out BigReal result) {
-        return TryParse(value, null, out result);
+    public static bool TryParse([NotNullWhen(true)] string? input, out BigReal result) {
+        return TryParse(input, null, out result);
     }
     /// <summary>
-    /// Tries to parse a value from the given string.
+    /// Tries to parse a value from <paramref name="input"/>.
     /// </summary>
-    public static bool TryParse([NotNullWhen(true)] string? value, IFormatProvider? provider, out BigReal result) {
-        return TryParse(value, NumberStyles.Any, provider, out result);
+    public static bool TryParse([NotNullWhen(true)] string? input, IFormatProvider? provider, out BigReal result) {
+        return TryParse(input, NumberStyles.Any, provider, out result);
     }
     /// <summary>
-    /// Tries to parse a value from the given string.
+    /// Tries to parse a value from <paramref name="input"/>.
     /// </summary>
-    public static bool TryParse([NotNullWhen(true)] string? value, NumberStyles style, IFormatProvider? provider, out BigReal result) {
-        if (value is null) {
+    public static bool TryParse([NotNullWhen(true)] string? input, NumberStyles style, IFormatProvider? provider, out BigReal result) {
+        if (input is null) {
             result = default;
             return false;
         }
         try {
-            result = Parse(value, style, provider);
+            result = Parse(input, style, provider);
             return true;
         }
         catch (Exception) {
@@ -779,22 +779,22 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         }
     }
     /// <summary>
-    /// Tries to parse a value from the given span.
+    /// Tries to parse a value from <paramref name="input"/>.
     /// </summary>
-    public static bool TryParse(ReadOnlySpan<char> value, out BigReal result) {
-        return TryParse(value, null, out result);
+    public static bool TryParse(ReadOnlySpan<char> input, out BigReal result) {
+        return TryParse(input, null, out result);
     }
     /// <summary>
-    /// Tries to parse a value from the given span.
+    /// Tries to parse a value from <paramref name="input"/>.
     /// </summary>
-    public static bool TryParse(ReadOnlySpan<char> value, IFormatProvider? provider, out BigReal result) {
-        return TryParse(value, NumberStyles.Any, provider, out result);
+    public static bool TryParse(ReadOnlySpan<char> input, IFormatProvider? provider, out BigReal result) {
+        return TryParse(input, NumberStyles.Any, provider, out result);
     }
     /// <summary>
-    /// Tries to parse a value from the given span.
+    /// Tries to parse a value from <paramref name="input"/>.
     /// </summary>
-    public static bool TryParse(ReadOnlySpan<char> value, NumberStyles style, IFormatProvider? provider, out BigReal result) {
-        return TryParse(value.ToString(), style, provider, out result);
+    public static bool TryParse(ReadOnlySpan<char> input, NumberStyles style, IFormatProvider? provider, out BigReal result) {
+        return TryParse(input.ToString(), style, provider, out result);
     }
     /// <inheritdoc cref="CompareTo(BigReal)"/>
     public static int Compare(BigReal left, BigReal right) {
@@ -805,91 +805,91 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return left.Equals(right);
     }
     /// <summary>
-    /// Returns whether the value is in its simplest form.
+    /// Returns whether <paramref name="value"/> is in its simplest form.
     /// </summary>
     public static bool IsCanonical(BigReal value) {
         return BigInteger.GreatestCommonDivisor(value.Numerator, value.Denominator).IsOne;
     }
     /// <summary>
-    /// Returns whether the value is a whole number.
+    /// Returns whether <paramref name="value"/> is a whole number.
     /// </summary>
     public static bool IsInteger(BigReal value) {
         return BigInteger.Remainder(value.Numerator, value.Denominator).IsZero;
     }
     /// <summary>
-    /// Returns whether the value is a whole number divisible by 2.
+    /// Returns whether <paramref name="value"/> is a whole number divisible by 2.
     /// </summary>
     public static bool IsEvenInteger(BigReal value) {
         return IsInteger(value) && GetWholePart(value).IsEven;
     }
     /// <summary>
-    /// Returns whether the value is a whole number not divisible by 2.
+    /// Returns whether <paramref name="value"/> is a whole number not divisible by 2.
     /// </summary>
     public static bool IsOddInteger(BigReal value) {
         return IsInteger(value) && !GetWholePart(value).IsEven;
     }
     /// <summary>
-    /// Returns whether the value is not a number.
+    /// Returns whether <paramref name="value"/> is not a number.
     /// </summary>
     public static bool IsNaN(BigReal value) {
         return value.Numerator.IsZero && value.Denominator.IsZero;
     }
     /// <summary>
-    /// Returns whether the value is finite (not infinity or NaN).
+    /// Returns whether <paramref name="value"/> is not (infinity or NaN).
     /// </summary>
     public static bool IsFinite(BigReal value) {
         return !value.Denominator.IsZero;
     }
     /// <summary>
-    /// Returns whether the value represents infinity.
+    /// Returns whether <paramref name="value"/> represents positive or negative infinity.
     /// </summary>
     public static bool IsInfinity(BigReal value) {
         return !value.Numerator.IsZero && value.Denominator.IsZero;
     }
     /// <summary>
-    /// Returns whether the value represents positive infinity.
+    /// Returns whether <paramref name="value"/> represents positive infinity.
     /// </summary>
     public static bool IsPositiveInfinity(BigReal value) {
         return value.Numerator.Sign > 0 && value.Denominator.IsZero;
     }
     /// <summary>
-    /// Returns whether the value represents negative infinity.
+    /// Returns whether <paramref name="value"/> represents negative infinity.
     /// </summary>
     public static bool IsNegativeInfinity(BigReal value) {
         return value.Numerator.Sign < 0 && value.Denominator.IsZero;
     }
     /// <summary>
-    /// Returns whether the value is greater than zero.
+    /// Returns whether <paramref name="value"/> is greater than or equal to zero.
     /// </summary>
     public static bool IsPositive(BigReal value) {
-        return (value.Numerator.Sign > 0) ^ (value.Denominator.Sign > 0);
+        return BigInteger.IsPositive(value.Numerator) ^ BigInteger.IsPositive(value.Denominator);
     }
     /// <summary>
-    /// Returns whether the value is less than zero.
+    /// Returns whether <paramref name="value"/> is less than zero.
     /// </summary>
     public static bool IsNegative(BigReal value) {
-        return (value.Numerator.Sign < 0) ^ (value.Denominator.Sign < 0);
+        return BigInteger.IsNegative(value.Numerator) ^ BigInteger.IsNegative(value.Denominator);
     }
     /// <summary>
-    /// Returns whether the value is zero.
+    /// Returns whether <paramref name="value"/> is zero.
     /// </summary>
     public static bool IsZero(BigReal value) {
-        return value.Numerator.IsZero;
+        return value.Numerator.IsZero && !value.Denominator.IsZero;
     }
     /// <summary>
-    /// Returns whether the value is zero.
+    /// Returns whether <paramref name="value"/> is one.
     /// </summary>
     public static bool IsOne(BigReal value) {
-        return value.Numerator == value.Denominator;
+        return !value.Numerator.IsZero && !value.Denominator.IsZero && value.Numerator == value.Denominator;
     }
     /// <summary>
-    /// Returns the greater of the two values.
+    /// Returns the greater of <paramref name="a"/> and <paramref name="b"/>.
     /// </summary>
     public static BigReal Max(BigReal a, BigReal b) {
         return a > b ? a : b;
     }
     /// <summary>
-    /// Returns the lesser of the two values.
+    /// Returns the lesser of <paramref name="a"/> and <paramref name="b"/>.
     /// </summary>
     public static BigReal Min(BigReal a, BigReal b) {
         return a < b ? a : b;
@@ -912,14 +912,14 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     #region Instance Methods
 
     /// <summary>
-    /// Stringifies the value as a decimal, truncating at 100 decimal places.
+    /// Stringifies this value as a decimal, truncating at 100 decimal places.
     /// </summary>
     public override string ToString() {
         return ToString(decimals: 100);
     }
     /// <summary>
-    /// Stringifies the value as a decimal, truncating at <paramref name="decimals"/> decimal places.<br/>
-    /// The number is optionally padded with <c>.0</c> if it's an integer.
+    /// Stringifies this value as a decimal, truncating at <paramref name="decimals"/> decimal places.<br/>
+    /// The number is optionally padded with <c>.0</c>.
     /// </summary>
     public string ToString(int decimals, IFormatProvider? provider = null, bool padDecimal = false) {
         NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
@@ -979,17 +979,33 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return wholeString + numberFormat.NumberDecimalSeparator + fractionString;
     }
     /// <summary>
-    /// Stringifies the value as a simplified rational (numerator / denominator).
+    /// Stringifies this value as a simplified rational (numerator / denominator).
     /// </summary>
     public string ToRationalString() {
         BigReal value = Simplify(this);
         return value.Numerator + " / " + value.Denominator;
     }
-    /// <inheritdoc/>
+    /// <summary>
+    /// Returns:
+    /// <list type="bullet">
+    ///   <item>1 if this value is greater than <paramref name="other"/></item>
+    ///   <item>0 if this value is equal to <paramref name="other"/></item>
+    ///   <item>-1 if this value is less than <paramref name="other"/></item>
+    /// </list>
+    /// </summary>
     public int CompareTo(BigReal other) {
         return BigInteger.Compare(Numerator * other.Denominator, other.Numerator * Denominator);
     }
-    /// <inheritdoc/>
+    /// <summary>
+    /// Returns:
+    /// <list type="bullet">
+    ///   <item>1 if this value is greater than <paramref name="other"/></item>
+    ///   <item>0 if this value is equal to <paramref name="other"/></item>
+    ///   <item>-1 if this value is less than <paramref name="other"/></item>
+    ///   <item>1 if other is <see langword="null"/> (<see langword="null"/> is less than any value)</item>
+    ///   <item>throws an exception if <paramref name="other"/> is not <see cref="BigReal"/></item>
+    /// </list>
+    /// </summary>
     public int CompareTo(object? other) {
         if (other is null) {
             return 1;
@@ -1002,25 +1018,25 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         }
     }
     /// <summary>
-    /// Returns whether this value is exactly equal to the other value.
+    /// Returns whether this value is exactly equal to <paramref name="other"/>.
     /// </summary>
     public bool Equals(BigReal other) {
         return other.Numerator * Denominator == Numerator * other.Denominator;
     }
     /// <summary>
-    /// Returns whether the other object is a value and this value is exactly equal to the other value.
+    /// Returns whether <paramref name="other"/> is a value and this value is exactly equal to <paramref name="other"/>.
     /// </summary>
     public override bool Equals(object? other) {
         return other is BigReal otherBigFloat && Equals(otherBigFloat);
     }
     /// <summary>
-    /// Gets a hash code for the numerator and denominator of the value.
+    /// Returns a dictionary hash code for the numerator and denominator of this value.
     /// </summary>
     public override int GetHashCode() {
         return HashCode.Combine(Numerator, Denominator);
     }
     /// <summary>
-    /// Gets the numerator and denominator of the value.
+    /// Returns the numerator and denominator of this value.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out BigInteger numerator, out BigInteger denominator) {
@@ -1036,38 +1052,38 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return Negate(value);
     }
     /// <inheritdoc cref="Subtract(BigReal, BigReal)"/>
-    public static BigReal operator -(BigReal left, BigReal right) {
-        return Subtract(left, right);
+    public static BigReal operator -(BigReal value, BigReal other) {
+        return Subtract(value, other);
     }
     /// <inheritdoc cref="Decrement(BigReal)"/>
     public static BigReal operator --(BigReal value) {
         return Decrement(value);
     }
     /// <summary>
-    /// Returns the value verbatim.
+    /// Returns <paramref name="value"/> verbatim.
     /// </summary>
     public static BigReal operator +(BigReal value) {
         return value;
     }
     /// <inheritdoc cref="Add(BigReal, BigReal)"/>
-    public static BigReal operator +(BigReal left, BigReal right) {
-        return Add(left, right);
+    public static BigReal operator +(BigReal value, BigReal other) {
+        return Add(value, other);
     }
     /// <inheritdoc cref="Increment(BigReal)"/>
     public static BigReal operator ++(BigReal value) {
         return Increment(value);
     }
     /// <inheritdoc cref="Remainder(BigReal, BigReal)"/>
-    public static BigReal operator %(BigReal left, BigReal right) {
-        return Remainder(left, right);
+    public static BigReal operator %(BigReal value, BigReal other) {
+        return Remainder(value, other);
     }
     /// <inheritdoc cref="Multiply(BigReal, BigReal)"/>
-    public static BigReal operator *(BigReal left, BigReal right) {
-        return Multiply(left, right);
+    public static BigReal operator *(BigReal value, BigReal other) {
+        return Multiply(value, other);
     }
     /// <inheritdoc cref="Divide(BigReal, BigReal)"/>
-    public static BigReal operator /(BigReal left, BigReal right) {
-        return Divide(left, right);
+    public static BigReal operator /(BigReal value, BigReal other) {
+        return Divide(value, other);
     }
     /// <inheritdoc cref="LeftShift(BigReal, int, int)"/>
     public static BigReal operator <<(BigReal value, int shift) {
@@ -1078,40 +1094,40 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return RightShift(value, shift);
     }
     /// <summary>
-    /// Returns whether the value is exactly equal to the other value.
+    /// Returns whether <paramref name="value"/> is exactly equal to <paramref name="other"/>.
     /// </summary>
-    public static bool operator ==(BigReal left, BigReal right) {
-        return Equals(left, right);
+    public static bool operator ==(BigReal value, BigReal other) {
+        return Equals(value, other);
     }
     /// <summary>
-    /// Returns whether the value is not exactly equal to the other value.
+    /// Returns whether <paramref name="value"/> is not exactly equal to <paramref name="other"/>.
     /// </summary>
-    public static bool operator !=(BigReal left, BigReal right) {
-        return !Equals(left, right);
+    public static bool operator !=(BigReal value, BigReal other) {
+        return !Equals(value, other);
     }
     /// <summary>
-    /// Returns whether the value is less than the other value.
+    /// Returns whether <paramref name="value"/> is less than <paramref name="other"/>.
     /// </summary>
-    public static bool operator <(BigReal left, BigReal right) {
-        return Compare(left, right) < 0;
+    public static bool operator <(BigReal value, BigReal other) {
+        return Compare(value, other) < 0;
     }
     /// <summary>
-    /// Returns whether the value is less than or equal to the other value.
+    /// Returns whether <paramref name="value"/> is less than or equal to <paramref name="other"/>.
     /// </summary>
-    public static bool operator <=(BigReal left, BigReal right) {
-        return Compare(left, right) <= 0;
+    public static bool operator <=(BigReal value, BigReal other) {
+        return Compare(value, other) <= 0;
     }
     /// <summary>
-    /// Returns whether the value is greater than the other value.
+    /// Returns whether <paramref name="value"/> is greater than <paramref name="other"/>.
     /// </summary>
-    public static bool operator >(BigReal left, BigReal right) {
-        return Compare(left, right) > 0;
+    public static bool operator >(BigReal value, BigReal other) {
+        return Compare(value, other) > 0;
     }
     /// <summary>
-    /// Returns whether the value is greater than or equal to the other value.
+    /// Returns whether <paramref name="value"/> is greater than or equal to <paramref name="other"/>.
     /// </summary>
-    public static bool operator >=(BigReal left, BigReal right) {
-        return Compare(left, right) >= 0;
+    public static bool operator >=(BigReal value, BigReal other) {
+        return Compare(value, other) >= 0;
     }
 
     #endregion
@@ -1195,14 +1211,14 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// <summary>
     /// Attempts to convert <paramref name="value"/> to <typeparamref name="T"/>, throwing if the value is outside the supported range.
     /// </summary>
-    private static T NarrowConvert<T>(BigReal value, BigReal MinValue, BigReal MaxValue, Func<BigReal, T> Convert) {
-        if (value < MinValue) {
+    private static T NarrowConvert<T>(BigReal value, BigReal minValue, BigReal maxValue, Func<BigReal, T> convert) {
+        if (value < minValue) {
             throw new OverflowException($"{nameof(value)} is less than {typeof(T).Name}.MinValue.");
         }
-        if (value > MaxValue) {
+        if (value > maxValue) {
             throw new OverflowException($"{nameof(value)} is greater than {typeof(T).Name}.MaxValue.");
         }
-        return Convert(value);
+        return convert(value);
     }
 
     #endregion
