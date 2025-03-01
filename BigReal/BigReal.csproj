@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <VersionPrefix>1.0</VersionPrefix>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -13,7 +14,6 @@
   <PropertyGroup>
     <PackageId>BigReal</PackageId>
     <Description>An arbitrary size and precision rational number stored using two BigIntegers.</Description>
-    <Version>1.0</Version>
     <Authors>Joyless</Authors>
     <RepositoryUrl>https://github.com/Joy-less/BigReal</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
