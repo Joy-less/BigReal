@@ -11,16 +11,14 @@
     <None Remove="BigFloat.UnitTest\**" />
   </ItemGroup>
   <PropertyGroup>
-    <PackageId>BigFloatSharp</PackageId>
-    <Description>An arbitrary size and precision floating-point number stored as the quotient of two BigIntegers.</Description>
+    <PackageId>BigReal</PackageId>
+    <Description>An arbitrary size and precision rational number stored using two BigIntegers.</Description>
     <Version>1.0</Version>
     <Authors>Joyless</Authors>
-    <Company></Company>
-    <Product></Product>
-    <RepositoryUrl>https://github.com/FaustVX/BigFloat</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Joy-less/BigReal</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>float; arbitrary; number</PackageTags>
+    <PackageTags>float; arbitrary; number; rational</PackageTags>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Copyright>Joyless, FaustVX</Copyright>
