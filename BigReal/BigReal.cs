@@ -627,7 +627,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         // Find exponent
         int exponentPos = value.IndexOf('e', StringComparison.OrdinalIgnoreCase);
         // Found exponent
-        BigReal exponent = 0;
+        BigReal exponent = Zero;
         if (exponentPos > 0) {
             // Get exponent
             exponent = Parse(value[(exponentPos + 1)..]);
@@ -637,17 +637,21 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
 
         // Find decimal point
         int decimalPointPos = value.IndexOf(numberFormat.NumberDecimalSeparator, StringComparison.OrdinalIgnoreCase);
+
+        BigReal result;
         // No decimal point
         if (decimalPointPos < 0) {
-            return BigInteger.Parse(value, style, provider);
+            // Parse integer
+            result = BigInteger.Parse(value, style, provider);
         }
-
-        // Remove decimal point
-        value = value.Replace(numberFormat.NumberDecimalSeparator, "", StringComparison.OrdinalIgnoreCase);
-        // Get numerator and denominator
-        BigInteger numerator = BigInteger.Parse(value, style, provider);
-        BigInteger denominator = BigInteger.Pow(10, value.Length - decimalPointPos);
-        BigReal result = new(numerator, denominator);
+        else {
+            // Remove decimal point
+            value = value.Replace(numberFormat.NumberDecimalSeparator, "", StringComparison.OrdinalIgnoreCase);
+            // Get numerator and denominator
+            BigInteger numerator = BigInteger.Parse(value, style, provider);
+            BigInteger denominator = BigInteger.Pow(10, value.Length - decimalPointPos);
+            result = new BigReal(numerator, denominator);
+        }
 
         // Multiply by 10 ^ exponent
         if (!IsZero(exponent)) {
