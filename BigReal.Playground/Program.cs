@@ -1,8 +1,7 @@
 ﻿using ExtendedNumerics;
-using System.Numerics;
 
 Console.WriteLine(new BigReal(0.012345).ToString(3));
-Console.WriteLine(new BigReal((BigInteger)1234500).ToString(3));
+Console.WriteLine(new BigReal(1234500).ToString(3));
 Console.WriteLine(BigReal.Truncate(new BigReal(1234500.678)).ToString(3));
 Console.WriteLine(BigReal.ShiftLeft(new BigReal(1234500.678), numberBase: 10).ToString(3));
 Console.WriteLine(default(BigReal) * 3);
@@ -19,3 +18,13 @@ Console.WriteLine(BigReal.Pow(4, -2));
 Console.WriteLine(BigReal.Pow(-4, 2));
 Console.WriteLine(BigReal.Sqrt(4));
 Console.WriteLine(BigReal.Root(4, -1));
+
+Console.WriteLine(BigReal.Log(5));
+Console.WriteLine(BigReal.Log10(5));
+Console.WriteLine(BigReal.Log(100, 2));
+Console.WriteLine(BigReal.Log2(100));
+
+Console.WriteLine(BigReal.Pow(4.5, 4.5));
+
+Console.WriteLine(BigReal.ShiftLeft(new BigReal(10)));
+Console.WriteLine(BigReal.ShiftRight(new BigReal(10)));

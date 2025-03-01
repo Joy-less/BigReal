@@ -25,6 +25,10 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// </summary>
     public static BigReal One { get; } = new(BigInteger.One);
     /// <summary>
+    /// A value representing the number 10.
+    /// </summary>
+    public static BigReal Ten { get; } = new(new BigInteger(10));
+    /// <summary>
     /// A value representing the number 0.
     /// </summary>
     public static BigReal Zero { get; } = new(BigInteger.Zero);
@@ -104,6 +108,30 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// </summary>
     public BigReal(BigInteger value) {
         (Numerator, Denominator) = (value, BigInteger.One);
+    }
+    /// <summary>
+    /// Constructs a value from an <see cref="int"/>.
+    /// </summary>
+    public BigReal(int value)
+        : this(new BigInteger(value)) {
+    }
+    /// <summary>
+    /// Constructs a value from a <see cref="uint"/>.
+    /// </summary>
+    public BigReal(uint value)
+        : this(new BigInteger(value)) {
+    }
+    /// <summary>
+    /// Constructs a value from a <see cref="long"/>.
+    /// </summary>
+    public BigReal(long value)
+        : this(new BigInteger(value)) {
+    }
+    /// <summary>
+    /// Constructs a value from a <see cref="ulong"/>.
+    /// </summary>
+    public BigReal(ulong value)
+        : this(new BigInteger(value)) {
     }
     /// <summary>
     /// Constructs a value from a <see cref="float"/>.
@@ -228,7 +256,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// Calculates <paramref name="value"/> to the power of <paramref name="exponent"/>.
     /// </summary>
     /// <remarks>
-    /// See <see href="https://stackoverflow.com/a/30225002"/> for why <paramref name="exponent"/> is an <see cref="int"/> rather than a <see cref="BigInteger"/>.
+    /// See <see href="https://stackoverflow.com/a/30225002"/> for why <paramref name="exponent"/> is <see cref="int"/> rather than <see cref="BigInteger"/>.
     /// </remarks>
     public static BigReal Pow(BigReal value, int exponent) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -249,17 +277,42 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
     }
     /// <summary>
-    /// Returns the result of the value to the power of the exponent, correct to <paramref name="precision"/> decimal places.
+    /// Returns the result of the value to the power of the exponent, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// See <see href="https://stackoverflow.com/a/30225002"/> for why <paramref name="exponent"/>'s range is cast to <see cref="int"/>.
+    /// This can be extremely slow, so use only when necessary (consider using <see cref="Math.Pow(double, double)"/> instead).<br/>
+    /// See <see href="https://stackoverflow.com/a/30225002"/> for why <paramref name="exponent"/>'s numerator and denominator are cast to <see cref="int"/>.
     /// </remarks>
-    public static BigReal Pow(BigReal value, BigReal exponent, int precision = 30) {
-        // https://github.com/AdamWhiteHat/BigRational/blob/aaacc836b15f415d070ecff7a37f66c4d9a94076/BigRational/Fraction.cs#L460
-        return Divide(
-            Root(Pow(value.Numerator, (int)exponent.Numerator), (int)exponent.Denominator, precision),
-            Root(Pow(value.Denominator, (int)exponent.Numerator), (int)exponent.Denominator, precision)
-        );
+    public static BigReal Pow(BigReal value, BigReal exponent, int decimals = 10) {
+        value = Simplify(value);
+        exponent = Simplify(exponent);
+        int power = (int)exponent.Numerator;
+        int root = (int)exponent.Denominator;
+        return Root(Pow(value, power), root, decimals);
+    }
+    /// <summary>
+    /// Returns the natural (base e) logarithm of the value.
+    /// </summary>
+    public static double Log(BigReal value) {
+        return BigInteger.Log(value.Numerator) - BigInteger.Log(value.Denominator);
+    }
+    /// <summary>
+    /// Returns the base <paramref name="baseValue"/> logarithm of the value.
+    /// </summary>
+    public static double Log(BigReal value, double baseValue) {
+        return BigInteger.Log(value.Numerator, baseValue) - BigInteger.Log(value.Denominator, baseValue);
+    }
+    /// <summary>
+    /// Returns the base 10 logarithm of the value.
+    /// </summary>
+    public static double Log10(BigReal value) {
+        return BigInteger.Log10(value.Numerator) - BigInteger.Log10(value.Denominator);
+    }
+    /// <summary>
+    /// Returns the whole part of the base 2 logarithm of the value.
+    /// </summary>
+    public static BigInteger Log2(BigReal value) {
+        return BigInteger.Log2(value.Numerator) - BigInteger.Log2(value.Denominator);
     }
     /// <summary>
     /// Returns the value as a positive number.
@@ -305,7 +358,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
             return value;
         }
         BigInteger numerator = value.Numerator;
-        if (numerator < 0) {
+        if (BigInteger.IsNegative(numerator)) {
             numerator -= BigInteger.Remainder(numerator, value.Denominator);
         }
         else {
@@ -321,7 +374,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
             return value;
         }
         BigInteger numerator = value.Numerator;
-        if (numerator < 0) {
+        if (BigInteger.IsNegative(numerator)) {
             numerator += value.Denominator - BigInteger.Remainder(numerator, value.Denominator);
         }
         else {
@@ -404,6 +457,9 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
             }
         }
     }
+    /// <summary>
+    /// Removes the fractional part from the value.
+    /// </summary>
     public static BigReal Truncate(BigReal value) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
@@ -425,6 +481,10 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
         return Abs(new BigReal(BigInteger.Remainder(value.Numerator, value.Denominator), value.Denominator));
     }
+    /// <summary>
+    /// Shifts the value's digits to the left <paramref name="shift"/> times according to the given <paramref name="numberBase"/>.<br/>
+    /// This is the same as dividing by <paramref name="numberBase"/> to the power of <paramref name="shift"/>.
+    /// </summary>
     public static BigReal ShiftLeft(BigReal value, int shift = 1, int numberBase = 2) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
@@ -434,6 +494,10 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
         return new BigReal(value.Numerator * BigInteger.Pow(numberBase, shift), value.Denominator);
     }
+    /// <summary>
+    /// Shifts the value's digits to the right <paramref name="shift"/> times according to the given <paramref name="numberBase"/>.<br/>
+    /// This is the same as multiplying by <paramref name="numberBase"/> to the power of <paramref name="shift"/>.
+    /// </summary>
     public static BigReal ShiftRight(BigReal value, int shift = 1, int numberBase = 2) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
@@ -444,21 +508,27 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         return new BigReal(value.Numerator, value.Denominator * BigInteger.Pow(numberBase, shift));
     }
     /// <summary>
-    /// Returns the square root of the value.
+    /// Returns the square root of the value, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal Sqrt(BigReal value, int decimals = 100) {
         return Root(value, 2, decimals);
     }
+    /// <summary>
+    /// Returns the cube root of the value, correct to <paramref name="decimals"/> decimal places.
+    /// </summary>
     public static BigReal Cbrt(BigReal value, int decimals = 100) {
         return Root(value, 3, decimals);
     }
+    /// <summary>
+    /// Returns the nth root of the value, correct to <paramref name="decimals"/> decimal places.
+    /// </summary>
     public static BigReal Root(BigReal value, int root, int decimals = 100) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
 
         // Can't root a negative number
-        if (value < Zero) {
+        if (IsNegative(value)) {
             return NaN;
         }
 
@@ -468,16 +538,16 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
 
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
-        BigReal epsilon = One / Pow(10, decimals);
+        BigReal epsilon = One / Pow(Ten, decimals);
 
         // Use Newton's method to repeatedly get closer to the answer
-        BigReal guess = value;
+        BigReal guess = value / root;
         while (true) {
-            BigReal next_guess = ((root - 1) * guess + value / Pow(guess, root - 1)) / root;
-            if (Abs(next_guess - guess) < epsilon) {
+            BigReal nextGuess = (((root - 1) * guess) + (value / Pow(guess, root - 1))) / root;
+            if (Abs(nextGuess - guess) < epsilon) {
                 break;
             }
-            guess = next_guess;
+            guess = nextGuess;
         }
         return guess;
     }
@@ -581,7 +651,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
 
         // Multiply by 10 ^ exponent
         if (!IsZero(exponent)) {
-            result *= Pow(10, exponent);
+            result *= Pow(Ten, exponent);
         }
         return result;
     }
@@ -699,25 +769,25 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// Returns whether the value represents positive infinity.
     /// </summary>
     public static bool IsPositiveInfinity(BigReal value) {
-        return value.Numerator > 0 && value.Denominator.IsZero;
+        return value.Numerator.Sign > 0 && value.Denominator.IsZero;
     }
     /// <summary>
     /// Returns whether the value represents negative infinity.
     /// </summary>
     public static bool IsNegativeInfinity(BigReal value) {
-        return value.Numerator < 0 && value.Denominator.IsZero;
+        return value.Numerator.Sign < 0 && value.Denominator.IsZero;
     }
     /// <summary>
     /// Returns whether the value is greater than zero.
     /// </summary>
     public static bool IsPositive(BigReal value) {
-        return (value.Numerator > 0) ^ (value.Denominator > 0);
+        return (value.Numerator.Sign > 0) ^ (value.Denominator.Sign > 0);
     }
     /// <summary>
     /// Returns whether the value is less than zero.
     /// </summary>
     public static bool IsNegative(BigReal value) {
-        return (value.Numerator < 0) ^ (value.Denominator < 0);
+        return (value.Numerator.Sign < 0) ^ (value.Denominator.Sign < 0);
     }
     /// <summary>
     /// Returns whether the value is zero.
