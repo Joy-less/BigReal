@@ -54,5 +54,9 @@ Notes:
 
 ## Background
 
-`BigReal` is based on [`BigFloat`](https://github.com/FaustVX/BigFloat) by FaustVX.
-Significant changes were made by Joyless.
+`BigReal` is made by Joyless and based on [`BigFloat`](https://github.com/FaustVX/BigFloat) by FaustVX.
+
+## Gotchas
+
+- The `default` value of `BigReal` is NaN, since 0 / 0 is NaN.
+- Dividing by 0 gives positive or negative infinity depending on the numerator.
