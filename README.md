@@ -1,5 +1,7 @@
 # BigReal
 
+[![NuGet](https://img.shields.io/nuget/v/BigReal.svg)](https://www.nuget.org/packages/BigReal)
+
 An arbitrary size and precision rational number stored using two BigIntegers.
 
 ## Usage
