@@ -92,49 +92,114 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     #region Constructors
 
     /// <summary>
-    /// Constructs a value of 0.
+    /// Constructs <see cref="BigReal"/> from 0.
     /// </summary>
     public BigReal() {
         (Numerator, Denominator) = (BigInteger.Zero, BigInteger.One);
     }
     /// <summary>
-    /// Constructs a value from a numerator and denominator.
+    /// Constructs <see cref="BigReal"/> from a numerator and denominator.
     /// </summary>
     public BigReal(BigInteger numerator, BigInteger denominator) {
         (Numerator, Denominator) = (numerator, denominator);
     }
     /// <summary>
-    /// Constructs a value from a <see cref="BigInteger"/>.
+    /// Constructs <see cref="BigReal"/> from <see cref="BigInteger"/>.
     /// </summary>
     public BigReal(BigInteger value) {
         (Numerator, Denominator) = (value, BigInteger.One);
     }
     /// <summary>
-    /// Constructs a value from an <see cref="int"/>.
+    /// Constructs <see cref="BigReal"/> from <see cref="sbyte"/>.
+    /// </summary>
+    public BigReal(sbyte value)
+        : this((BigInteger)value) {
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="byte"/>.
+    /// </summary>
+    public BigReal(byte value)
+        : this((BigInteger)value) {
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="short"/>.
+    /// </summary>
+    public BigReal(short value)
+        : this((BigInteger)value) {
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="ushort"/>.
+    /// </summary>
+    public BigReal(ushort value)
+        : this((BigInteger)value) {
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="int"/>.
     /// </summary>
     public BigReal(int value)
-        : this(new BigInteger(value)) {
+        : this((BigInteger)value) {
     }
     /// <summary>
-    /// Constructs a value from a <see cref="uint"/>.
+    /// Constructs <see cref="BigReal"/> from <see cref="uint"/>.
     /// </summary>
     public BigReal(uint value)
-        : this(new BigInteger(value)) {
+        : this((BigInteger)value) {
     }
     /// <summary>
-    /// Constructs a value from a <see cref="long"/>.
+    /// Constructs <see cref="BigReal"/> from <see cref="long"/>.
     /// </summary>
     public BigReal(long value)
-        : this(new BigInteger(value)) {
+        : this((BigInteger)value) {
     }
     /// <summary>
-    /// Constructs a value from a <see cref="ulong"/>.
+    /// Constructs <see cref="BigReal"/> from <see cref="ulong"/>.
     /// </summary>
     public BigReal(ulong value)
-        : this(new BigInteger(value)) {
+        : this((BigInteger)value) {
     }
     /// <summary>
-    /// Constructs a value from a <see cref="float"/>.
+    /// Constructs <see cref="BigReal"/> from <see cref="Int128"/>.
+    /// </summary>
+    public BigReal(Int128 value)
+        : this((BigInteger)value) {
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="UInt128"/>.
+    /// </summary>
+    public BigReal(UInt128 value)
+        : this((BigInteger)value) {
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="char"/>.
+    /// </summary>
+    public BigReal(char value)
+        : this((BigInteger)value) {
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="nint"/>.
+    /// </summary>
+    public BigReal(nint value)
+        : this((BigInteger)value) {
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="nuint"/>.
+    /// </summary>
+    public BigReal(nuint value)
+        : this((BigInteger)value) {
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="Half"/>.
+    /// </summary>
+    public BigReal(Half value) {
+        if (value % Half.One == Half.Zero) {
+            (Numerator, Denominator) = ((BigInteger)value, 1);
+        }
+        else {
+            (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+        }
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="float"/>.
     /// </summary>
     public BigReal(float value) {
         if (value % 1 == 0) {
@@ -145,7 +210,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
     }
     /// <summary>
-    /// Constructs a value from a <see cref="double"/>.
+    /// Constructs <see cref="BigReal"/> from <see cref="double"/>.
     /// </summary>
     public BigReal(double value) {
         if (value % 1 == 0) {
@@ -156,7 +221,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         }
     }
     /// <summary>
-    /// Constructs a value from a <see cref="decimal"/>.
+    /// Constructs <see cref="BigReal"/> from <see cref="decimal"/>.
     /// </summary>
     public BigReal(decimal value) {
         if (value % 1 == 0) {
@@ -1140,55 +1205,55 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// <summary>
     /// Converts from <see cref="sbyte"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(sbyte value) => new((BigInteger)value);
+    public static implicit operator BigReal(sbyte value) => new(value);
     /// <summary>
     /// Converts from <see cref="byte"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(byte value) => new((BigInteger)value);
+    public static implicit operator BigReal(byte value) => new(value);
     /// <summary>
     /// Converts from <see cref="short"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(short value) => new((BigInteger)value);
+    public static implicit operator BigReal(short value) => new(value);
     /// <summary>
     /// Converts from <see cref="ushort"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(ushort value) => new((BigInteger)value);
+    public static implicit operator BigReal(ushort value) => new(value);
     /// <summary>
     /// Converts from <see cref="int"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(int value) => new((BigInteger)value);
+    public static implicit operator BigReal(int value) => new(value);
     /// <summary>
     /// Converts from <see cref="uint"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(uint value) => new((BigInteger)value);
+    public static implicit operator BigReal(uint value) => new(value);
     /// <summary>
     /// Converts from <see cref="long"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(long value) => new((BigInteger)value);
+    public static implicit operator BigReal(long value) => new(value);
     /// <summary>
     /// Converts from <see cref="ulong"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(ulong value) => new((BigInteger)value);
+    public static implicit operator BigReal(ulong value) => new(value);
     /// <summary>
     /// Converts from <see cref="Int128"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(Int128 value) => new((BigInteger)value);
+    public static implicit operator BigReal(Int128 value) => new(value);
     /// <summary>
     /// Converts from <see cref="UInt128"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(UInt128 value) => new((BigInteger)value);
+    public static implicit operator BigReal(UInt128 value) => new(value);
     /// <summary>
     /// Converts from <see cref="char"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(char value) => new((BigInteger)value);
+    public static implicit operator BigReal(char value) => new(value);
     /// <summary>
     /// Converts from <see cref="nint"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(nint value) => new((BigInteger)value);
+    public static implicit operator BigReal(nint value) => new(value);
     /// <summary>
     /// Converts from <see cref="nuint"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(nuint value) => new((BigInteger)value);
+    public static implicit operator BigReal(nuint value) => new(value);
     /// <summary>
     /// Converts from <see cref="BigInteger"/> to <see cref="BigReal"/>.
     /// </summary>
@@ -1197,7 +1262,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// <summary>
     /// Converts from <see cref="Half"/> to <see cref="BigReal"/>.
     /// </summary>
-    public static implicit operator BigReal(Half value) => new((float)value);
+    public static implicit operator BigReal(Half value) => new(value);
     /// <summary>
     /// Converts from <see cref="float"/> to <see cref="BigReal"/>.
     /// </summary>
