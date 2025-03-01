@@ -3,7 +3,7 @@
 Console.WriteLine(new BigReal(0.012345).ToString(3));
 Console.WriteLine(new BigReal(1234500).ToString(3));
 Console.WriteLine(BigReal.Truncate(new BigReal(1234500.678)).ToString(3));
-Console.WriteLine(BigReal.ShiftLeft(new BigReal(1234500.678), numberBase: 10).ToString(3));
+Console.WriteLine(BigReal.LeftShift(new BigReal(1234500.678), numberBase: 10).ToString(3));
 Console.WriteLine(default(BigReal) * 3);
 
 Console.WriteLine(BigReal.Parse("nan"));
@@ -26,5 +26,5 @@ Console.WriteLine(BigReal.Log2(100));
 
 Console.WriteLine(BigReal.Pow(4.5, 4.5));
 
-Console.WriteLine(BigReal.ShiftLeft(new BigReal(10)));
-Console.WriteLine(BigReal.ShiftRight(new BigReal(10)));
+Console.WriteLine(BigReal.LeftShift(new BigReal(10)));
+Console.WriteLine(BigReal.RightShift(new BigReal(10)));

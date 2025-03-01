@@ -485,12 +485,12 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// Shifts the value's digits to the left <paramref name="shift"/> times according to the given <paramref name="numberBase"/>.<br/>
     /// This is the same as dividing by <paramref name="numberBase"/> to the power of <paramref name="shift"/>.
     /// </summary>
-    public static BigReal ShiftLeft(BigReal value, int shift = 1, int numberBase = 2) {
+    public static BigReal LeftShift(BigReal value, int shift = 1, int numberBase = 2) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
         if (shift < 0) {
-            return ShiftRight(value, -shift);
+            return RightShift(value, -shift);
         }
         return new BigReal(value.Numerator * BigInteger.Pow(numberBase, shift), value.Denominator);
     }
@@ -498,12 +498,12 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     /// Shifts the value's digits to the right <paramref name="shift"/> times according to the given <paramref name="numberBase"/>.<br/>
     /// This is the same as multiplying by <paramref name="numberBase"/> to the power of <paramref name="shift"/>.
     /// </summary>
-    public static BigReal ShiftRight(BigReal value, int shift = 1, int numberBase = 2) {
+    public static BigReal RightShift(BigReal value, int shift = 1, int numberBase = 2) {
         if (IsInfinity(value) || IsNaN(value)) {
             return value;
         }
         if (shift < 0) {
-            return ShiftLeft(value, -shift);
+            return LeftShift(value, -shift);
         }
         return new BigReal(value.Numerator, value.Denominator * BigInteger.Pow(numberBase, shift));
     }
@@ -720,8 +720,13 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
     public static bool TryParse(ReadOnlySpan<char> value, NumberStyles style, IFormatProvider? provider, out BigReal result) {
         return TryParse(value.ToString(), style, provider, out result);
     }
+    /// <inheritdoc cref="CompareTo(BigReal)"/>
     public static int Compare(BigReal left, BigReal right) {
         return left.CompareTo(right);
+    }
+    /// <inheritdoc cref="Equals(BigReal)"/>
+    public static bool Equals(BigReal left, BigReal right) {
+        return left.Equals(right);
     }
     /// <summary>
     /// Returns whether the value is in its simplest form.
@@ -820,7 +825,7 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         return a + (b - a) * t;
     }
     /// <summary>
-    /// Returns the inverse linear interpolation between <paramref name="a"/> and <paramref name="b"/> by <paramref name="t"/>.
+    /// Returns the inverse linear interpolation between <paramref name="a"/> and <paramref name="b"/> by <paramref name="value"/>.
     /// </summary>
     public static BigReal InverseLerp(BigReal a, BigReal b, BigReal value) {
         return (value - a) / (b - a);
@@ -904,9 +909,11 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
         BigReal value = Simplify(this);
         return value.Numerator + " / " + value.Denominator;
     }
+    /// <inheritdoc/>
     public int CompareTo(BigReal other) {
         return BigInteger.Compare(Numerator * other.Denominator, other.Numerator * Denominator);
     }
+    /// <inheritdoc/>
     public int CompareTo(object? other) {
         if (other is null) {
             return 1;
@@ -915,12 +922,18 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
             return CompareTo(otherBigFloat);
         }
         else {
-            throw new ArgumentException($"{nameof(other)} is not a {nameof(BigReal)}");
+            throw new ArgumentException($"{nameof(other)} is not {nameof(BigReal)}");
         }
     }
+    /// <summary>
+    /// Returns whether this value is exactly equal to the other value.
+    /// </summary>
     public bool Equals(BigReal other) {
         return other.Numerator * Denominator == Numerator * other.Denominator;
     }
+    /// <summary>
+    /// Returns whether the other object is a value and this value is exactly equal to the other value.
+    /// </summary>
     public override bool Equals(object? other) {
         return other is BigReal otherBigFloat && Equals(otherBigFloat);
     }
@@ -942,65 +955,257 @@ public readonly struct BigReal : IComparable, IComparable<BigReal>, IEquatable<B
 
     #region Operators
 
-    public static BigReal operator -(BigReal value) => Negate(value);
-    public static BigReal operator -(BigReal left, BigReal right) => Subtract(left, right);
-    public static BigReal operator --(BigReal value) => Decrement(value);
-    public static BigReal operator +(BigReal value) => value;
-    public static BigReal operator +(BigReal left, BigReal right) => Add(left, right);
-    public static BigReal operator ++(BigReal value) => Increment(value);
-    public static BigReal operator %(BigReal left, BigReal right) => Remainder(left, right);
-    public static BigReal operator *(BigReal left, BigReal right) => Multiply(left, right);
-    public static BigReal operator /(BigReal left, BigReal right) => Divide(left, right);
-    public static BigReal operator >>(BigReal value, int shift) => ShiftRight(value, shift);
-    public static BigReal operator <<(BigReal value, int shift) => ShiftLeft(value, shift);
-    public static BigReal operator ~(BigReal value) => Inverse(value);
-    public static bool operator ==(BigReal left, BigReal right) => Compare(left, right) == 0;
-    public static bool operator !=(BigReal left, BigReal right) => Compare(left, right) != 0;
-    public static bool operator <(BigReal left, BigReal right) => Compare(left, right) < 0;
-    public static bool operator <=(BigReal left, BigReal right) => Compare(left, right) <= 0;
-    public static bool operator >(BigReal left, BigReal right) => Compare(left, right) > 0;
-    public static bool operator >=(BigReal left, BigReal right) => Compare(left, right) >= 0;
+    /// <inheritdoc cref="Negate(BigReal)"/>
+    public static BigReal operator -(BigReal value) {
+        return Negate(value);
+    }
+    /// <inheritdoc cref="Subtract(BigReal, BigReal)"/>
+    public static BigReal operator -(BigReal left, BigReal right) {
+        return Subtract(left, right);
+    }
+    /// <inheritdoc cref="Decrement(BigReal)"/>
+    public static BigReal operator --(BigReal value) {
+        return Decrement(value);
+    }
+    /// <summary>
+    /// Returns the value verbatim.
+    /// </summary>
+    public static BigReal operator +(BigReal value) {
+        return value;
+    }
+    /// <inheritdoc cref="Add(BigReal, BigReal)"/>
+    public static BigReal operator +(BigReal left, BigReal right) {
+        return Add(left, right);
+    }
+    /// <inheritdoc cref="Increment(BigReal)"/>
+    public static BigReal operator ++(BigReal value) {
+        return Increment(value);
+    }
+    /// <inheritdoc cref="Remainder(BigReal, BigReal)"/>
+    public static BigReal operator %(BigReal left, BigReal right) {
+        return Remainder(left, right);
+    }
+    /// <inheritdoc cref="Multiply(BigReal, BigReal)"/>
+    public static BigReal operator *(BigReal left, BigReal right) {
+        return Multiply(left, right);
+    }
+    /// <inheritdoc cref="Divide(BigReal, BigReal)"/>
+    public static BigReal operator /(BigReal left, BigReal right) {
+        return Divide(left, right);
+    }
+    /// <inheritdoc cref="LeftShift(BigReal, int, int)"/>
+    public static BigReal operator <<(BigReal value, int shift) {
+        return LeftShift(value, shift);
+    }
+    /// <inheritdoc cref="RightShift(BigReal, int, int)"/>
+    public static BigReal operator >>(BigReal value, int shift) {
+        return RightShift(value, shift);
+    }
+    /// <summary>
+    /// Returns whether the value is exactly equal to the other value.
+    /// </summary>
+    public static bool operator ==(BigReal left, BigReal right) {
+        return Equals(left, right);
+    }
+    /// <summary>
+    /// Returns whether the value is not exactly equal to the other value.
+    /// </summary>
+    public static bool operator !=(BigReal left, BigReal right) {
+        return !Equals(left, right);
+    }
+    /// <summary>
+    /// Returns whether the value is less than the other value.
+    /// </summary>
+    public static bool operator <(BigReal left, BigReal right) {
+        return Compare(left, right) < 0;
+    }
+    /// <summary>
+    /// Returns whether the value is less than or equal to the other value.
+    /// </summary>
+    public static bool operator <=(BigReal left, BigReal right) {
+        return Compare(left, right) <= 0;
+    }
+    /// <summary>
+    /// Returns whether the value is greater than the other value.
+    /// </summary>
+    public static bool operator >(BigReal left, BigReal right) {
+        return Compare(left, right) > 0;
+    }
+    /// <summary>
+    /// Returns whether the value is greater than or equal to the other value.
+    /// </summary>
+    public static bool operator >=(BigReal left, BigReal right) {
+        return Compare(left, right) >= 0;
+    }
 
     #endregion
 
-    #region Casts
+    #region Casts From BigReal
 
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="sbyte"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator sbyte(BigReal value) => NarrowConvert(value, sbyte.MinValue, sbyte.MaxValue, value => (sbyte)((sbyte)value.Numerator / (sbyte)value.Denominator));
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="byte"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator byte(BigReal value) => NarrowConvert(value, byte.MinValue, byte.MaxValue, value => (byte)((byte)value.Numerator / (byte)value.Denominator));
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="short"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator short(BigReal value) => NarrowConvert(value, short.MinValue, short.MaxValue, value => (short)((short)value.Numerator / (short)value.Denominator));
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="ushort"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator ushort(BigReal value) => NarrowConvert(value, ushort.MinValue, ushort.MaxValue, value => (ushort)((ushort)value.Numerator / (ushort)value.Denominator));
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="int"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator int(BigReal value) => NarrowConvert(value, int.MinValue, int.MaxValue, value => (int)value.Numerator / (int)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="uint"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator uint(BigReal value) => NarrowConvert(value, uint.MinValue, uint.MaxValue, value => (uint)value.Numerator / (uint)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="long"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator long(BigReal value) => NarrowConvert(value, long.MinValue, long.MaxValue, value => (long)value.Numerator / (long)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="ulong"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator ulong(BigReal value) => NarrowConvert(value, ulong.MinValue, ulong.MaxValue, value => (ulong)value.Numerator / (ulong)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="Int128"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator Int128(BigReal value) => NarrowConvert(value, Int128.MinValue, Int128.MaxValue, value => (Int128)value.Numerator / (Int128)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="UInt128"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator UInt128(BigReal value) => NarrowConvert(value, UInt128.MinValue, UInt128.MaxValue, value => (UInt128)value.Numerator / (UInt128)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="char"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator char(BigReal value) => NarrowConvert(value, char.MinValue, char.MaxValue, value => (char)((char)value.Numerator / (char)value.Denominator));
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="nint"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator nint(BigReal value) => NarrowConvert(value, nint.MinValue, nint.MaxValue, value => (nint)value.Numerator / (nint)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="nuint"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator nuint(BigReal value) => NarrowConvert(value, nuint.MinValue, nuint.MaxValue, value => (nuint)value.Numerator / (nuint)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="BigInteger"/> using a narrowing conversion.
+    /// </summary>
     public static explicit operator BigInteger(BigReal value) => GetWholePart(value);
 
-    public static explicit operator Half(BigReal value) => TryCast(value, Half.MinValue, Half.MaxValue, value => (Half)value.Numerator / (Half)value.Denominator);
-    public static explicit operator float(BigReal value) => TryCast(value, float.MinValue, float.MaxValue, value => (float)value.Numerator / (float)value.Denominator);
-    public static explicit operator double(BigReal value) => TryCast(value, double.MinValue, double.MaxValue, value => (double)value.Numerator / (double)value.Denominator);
-    public static explicit operator decimal(BigReal value) => TryCast(value, decimal.MinValue, decimal.MaxValue, value => (decimal)value.Numerator / (decimal)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="Half"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator Half(BigReal value) => NarrowConvert(value, Half.MinValue, Half.MaxValue, value => (Half)value.Numerator / (Half)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="float"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator float(BigReal value) => NarrowConvert(value, float.MinValue, float.MaxValue, value => (float)value.Numerator / (float)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="double"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator double(BigReal value) => NarrowConvert(value, double.MinValue, double.MaxValue, value => (double)value.Numerator / (double)value.Denominator);
+    /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="decimal"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator decimal(BigReal value) => NarrowConvert(value, decimal.MinValue, decimal.MaxValue, value => (decimal)value.Numerator / (decimal)value.Denominator);
 
-    public static implicit operator BigReal(sbyte value) => new((BigInteger)value);
-    public static implicit operator BigReal(byte value) => new((BigInteger)value);
-    public static implicit operator BigReal(short value) => new((BigInteger)value);
-    public static implicit operator BigReal(ushort value) => new((BigInteger)value);
-    public static implicit operator BigReal(int value) => new((BigInteger)value);
-    public static implicit operator BigReal(uint value) => new((BigInteger)value);
-    public static implicit operator BigReal(long value) => new((BigInteger)value);
-    public static implicit operator BigReal(ulong value) => new((BigInteger)value);
-    public static implicit operator BigReal(Int128 value) => new((BigInteger)value);
-    public static implicit operator BigReal(UInt128 value) => new((BigInteger)value);
-    public static implicit operator BigReal(char value) => new((BigInteger)value);
-    public static implicit operator BigReal(nint value) => new((BigInteger)value);
-    public static implicit operator BigReal(nuint value) => new((BigInteger)value);
-    public static implicit operator BigReal(BigInteger value) => new(value);
-
-    public static implicit operator BigReal(Half value) => new((float)value);
-    public static implicit operator BigReal(float value) => new(value);
-    public static implicit operator BigReal(double value) => new(value);
-    public static implicit operator BigReal(decimal value) => new(value);
-
-    private static T TryCast<T>(BigReal value, BigReal MinValue, BigReal MaxValue, Func<BigReal, T> Cast) {
+    /// <summary>
+    /// Attempts to convert <paramref name="value"/> to <typeparamref name="T"/>, throwing if the value is outside the supported range.
+    /// </summary>
+    private static T NarrowConvert<T>(BigReal value, BigReal MinValue, BigReal MaxValue, Func<BigReal, T> Convert) {
         if (value < MinValue) {
             throw new OverflowException($"{nameof(value)} is less than {typeof(T).Name}.MinValue.");
         }
         if (value > MaxValue) {
             throw new OverflowException($"{nameof(value)} is greater than {typeof(T).Name}.MaxValue.");
         }
-        return Cast(value);
+        return Convert(value);
     }
+
+    #endregion
+
+    #region Casts To BigReal
+
+    /// <summary>
+    /// Converts from <see cref="sbyte"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(sbyte value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="byte"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(byte value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="short"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(short value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="ushort"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(ushort value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="int"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(int value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="uint"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(uint value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="long"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(long value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="ulong"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(ulong value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="Int128"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(Int128 value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="UInt128"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(UInt128 value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="char"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(char value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="nint"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(nint value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="nuint"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(nuint value) => new((BigInteger)value);
+    /// <summary>
+    /// Converts from <see cref="BigInteger"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(BigInteger value) => new(value);
+
+    /// <summary>
+    /// Converts from <see cref="Half"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(Half value) => new((float)value);
+    /// <summary>
+    /// Converts from <see cref="float"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(float value) => new(value);
+    /// <summary>
+    /// Converts from <see cref="double"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(double value) => new(value);
+    /// <summary>
+    /// Converts from <see cref="decimal"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(decimal value) => new(value);
 
     #endregion
 }
