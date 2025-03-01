@@ -448,7 +448,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return new BigReal(numerator, value.Denominator);
     }
     /// <summary>
-    /// Returns the closest whole value to the given value, rounding midpoints away from zero.
+    /// Returns the closest whole value to <paramref name="value"/>, rounding midpoints away from zero.
     /// </summary>
     /// <remarks>
     /// Note: Pass <see cref="MidpointRounding.ToEven"/> to use banker's rounding (default for <see cref="Math.Round(double)"/>).
@@ -457,7 +457,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return Round(value, MidpointRounding.AwayFromZero);
     }
     /// <summary>
-    /// Returns the closest whole value to the given value, rounding midpoints away from zero.
+    /// Returns the closest value with <paramref name="decimals"/> decimal places to <paramref name="value"/>, rounding midpoints away from zero.
     /// </summary>
     /// <remarks>
     /// Note: Pass <see cref="MidpointRounding.ToEven"/> to use banker's rounding (default for <see cref="Math.Round(double)"/>).
@@ -467,14 +467,14 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return Round(value * exponent, MidpointRounding.AwayFromZero) / exponent;
     }
     /// <summary>
-    /// Returns the closest whole value to the given value according to the given <see cref="MidpointRounding"/>.
+    /// Returns the closest value with <paramref name="decimals"/> decimal places to <paramref name="value"/> according to the <paramref name="mode"/>.
     /// </summary>
     public static BigReal Round(BigReal value, int decimals, MidpointRounding mode) {
         BigInteger exponent = BigInteger.Pow(10, decimals);
         return Round(value * exponent, mode) / exponent;
     }
     /// <summary>
-    /// Returns the closest whole value to the given value according to the given <see cref="MidpointRounding"/>.
+    /// Returns the closest whole value to <paramref name="value"/> according to the <paramref name="mode"/>.
     /// </summary>
     public static BigReal Round(BigReal value, MidpointRounding mode) {
         if (IsInfinity(value) || IsNaN(value)) {
@@ -530,6 +530,13 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
             return value;
         }
         return GetWholePart(value);
+    }
+    /// <summary>
+    /// Zeroes the digits after <paramref name="decimals"/> decimal places.
+    /// </summary>
+    public static BigReal Truncate(BigReal value, int decimals) {
+        BigReal exponent = Pow(10, decimals);
+        return Truncate(value * exponent) / exponent;
     }
     /// <summary>
     /// Returns the part before the decimal point (e.g. -12.34 -> -12).
