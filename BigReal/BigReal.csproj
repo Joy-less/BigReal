@@ -6,11 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="BigFloat.UnitTest\**" />
-    <EmbeddedResource Remove="BigFloat.UnitTest\**" />
-    <None Remove="BigFloat.UnitTest\**" />
-  </ItemGroup>
   <PropertyGroup>
     <PackageId>BigReal</PackageId>
     <Description>An arbitrary size and precision rational number stored using two BigIntegers.</Description>
