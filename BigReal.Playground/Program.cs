@@ -10,6 +10,11 @@ Console.WriteLine(BigReal.Pow(3.4, 2)); // 11.56
 Console.WriteLine(BigReal.Parse("12.34")); // 12.34
 Console.WriteLine(BigReal.Parse("2e2.5").ToString(2)); // 632.45
 
+Console.WriteLine(BigReal.Sin(100).ToString(20)); // -0.50636564110975879365
+Console.WriteLine(BigReal.Cos(100).ToString(20)); // 0.8623188722876839341
+Console.WriteLine(BigReal.Tan(100).ToString(20)); // -0.58721391515692907667
+return;
+
 Console.WriteLine("===========================");
 
 Console.WriteLine(new BigReal(0.012345).ToString(3));

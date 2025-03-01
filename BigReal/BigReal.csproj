@@ -5,7 +5,11 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <NoWarn>
+      IDE0130; <!-- Namespace does not match folder structure -->
+    </NoWarn>
   </PropertyGroup>
+  
   <PropertyGroup>
     <PackageId>BigReal</PackageId>
     <Description>An arbitrary size and precision rational number stored using two BigIntegers.</Description>
@@ -21,10 +25,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
+  
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="/" />
     <None Include="../LICENSE" Pack="true" PackagePath="/" />
   </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="LinkDotNet.StringBuilder" Version="2.4.0" />
   </ItemGroup>

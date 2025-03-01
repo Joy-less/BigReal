@@ -25,6 +25,11 @@ Console.WriteLine(BigReal.Parse("12.34")); // 12.34
 Console.WriteLine(BigReal.Parse("2e2.5").ToString(2)); // 632.45
 ```
 
+Trigonometry:
+```cs
+Console.WriteLine(BigReal.Sin(100).ToString(20)); // -0.50636564110975879365
+```
+
 ## Performance
 
 Basic operations comparing `BigReal`, [`BigDecimal`](https://github.com/AdamWhiteHat/BigDecimal), and [`BigFloat`](https://github.com/FaustVX/BigFloat):
