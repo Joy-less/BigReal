@@ -64,4 +64,31 @@ partial struct BigReal {
     public static BigReal Tan(BigReal radians, int decimals = 20) {
         return Sin(radians, decimals) / Cos(radians, decimals);
     }
+    /// <summary>
+    /// Returns the secant of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
+    /// </summary>
+    /// <remarks>
+    /// The result is undefined when <paramref name="radians"/> is an odd multiple of π/2.
+    /// </remarks>
+    public static BigReal Sec(BigReal radians, int decimals = 20) {
+        return One / Cos(radians, decimals);
+    }
+    /// <summary>
+    /// Returns the secant of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
+    /// </summary>
+    /// <remarks>
+    /// The result is undefined when <paramref name="radians"/> is a multiple of π.
+    /// </remarks>
+    public static BigReal Cosec(BigReal radians, int decimals = 20) {
+        return One / Sin(radians, decimals);
+    }
+    /// <summary>
+    /// Returns the cotangent of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
+    /// </summary>
+    /// <remarks>
+    /// The result is undefined when <paramref name="radians"/> is a multiple of π.
+    /// </remarks>
+    public static BigReal Cot(BigReal radians, int decimals = 20) {
+        return Cos(radians, decimals) / Sin(radians, decimals);
+    }
 }

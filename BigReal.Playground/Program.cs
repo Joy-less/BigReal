@@ -13,6 +13,10 @@ Console.WriteLine(BigReal.Parse("2e2.5").ToString(2)); // 632.45
 Console.WriteLine(BigReal.Truncate(BigReal.Sin(100), 20)); // -0.50636564110975879365
 Console.WriteLine(BigReal.Truncate(BigReal.Cos(100), 20)); // 0.8623188722876839341
 Console.WriteLine(BigReal.Truncate(BigReal.Tan(100), 20)); // -0.58721391515692907667
+
+Console.WriteLine(BigReal.Truncate(BigReal.Sec(100), 20)); // 1.15966382290469383255
+Console.WriteLine(BigReal.Truncate(BigReal.Cosec(100), 20)); // -1.97485753142409996121
+Console.WriteLine(BigReal.Truncate(BigReal.Cot(100), 20)); // -1.7029569194264692161
 return;
 
 Console.WriteLine("===========================");
