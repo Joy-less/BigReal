@@ -895,16 +895,16 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return a < b ? a : b;
     }
     /// <summary>
-    /// Returns the linear interpolation between <paramref name="a"/> and <paramref name="b"/> by <paramref name="t"/>.
+    /// Returns the linear interpolation between <paramref name="from"/> and <paramref name="to"/> by <paramref name="weight"/>.
     /// </summary>
-    public static BigReal Lerp(BigReal a, BigReal b, BigReal t) {
-        return a + (b - a) * t;
+    public static BigReal Lerp(BigReal from, BigReal to, BigReal weight) {
+        return from + ((to - from) * weight);
     }
     /// <summary>
-    /// Returns the inverse linear interpolation between <paramref name="a"/> and <paramref name="b"/> by <paramref name="value"/>.
+    /// Returns the inverse linear interpolation between <paramref name="from"/> and <paramref name="to"/> by <paramref name="weight"/>.
     /// </summary>
-    public static BigReal InverseLerp(BigReal a, BigReal b, BigReal value) {
-        return (value - a) / (b - a);
+    public static BigReal InverseLerp(BigReal from, BigReal to, BigReal weight) {
+        return (weight - from) / (to - from);
     }
 
     #endregion
