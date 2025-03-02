@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <VersionPrefix>1.3</VersionPrefix>
+    <VersionPrefix>1.4</VersionPrefix>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -16,7 +16,7 @@
     <Authors>Joyless</Authors>
     <RepositoryUrl>https://github.com/Joy-less/BigReal</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>float; arbitrary; number; rational</PackageTags>
+    <PackageTags>float; arbitrary; number; rational; fraction</PackageTags>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Copyright>Joyless, FaustVX</Copyright>
