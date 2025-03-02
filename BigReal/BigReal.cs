@@ -84,7 +84,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// </list>
     /// </summary>
     public int Sign => (Numerator.Sign + Denominator.Sign) switch {
-        2 or -2 => 1,
+        >= 2 or <= -2 => 1,
         0 => -1,
         _ => 0,
     };
