@@ -10,7 +10,7 @@ namespace ExtendedNumerics;
 /// An arbitrary size and precision floating-point number stored as the quotient of two BigIntegers.
 /// </summary>
 [Serializable]
-public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEquatable<BigReal>, IConvertible {
+public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEquatable<BigReal>, IConvertible, INumber<BigReal> {
     /// <summary>
     /// The dividend (top of the fraction).
     /// </summary>
@@ -482,44 +482,44 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         }
         switch (mode) {
             case MidpointRounding.ToEven: {
-                if (Abs(GetFractionalPart(value)) == OneHalf) {
-                    // Round away from zero
-                    value += OneHalf * value.Sign;
-                    // Move closer to zero if not even
-                    if (IsOddInteger(value)) {
-                        value -= One * value.Sign;
+                    if (Abs(GetFractionalPart(value)) == OneHalf) {
+                        // Round away from zero
+                        value += OneHalf * value.Sign;
+                        // Move closer to zero if not even
+                        if (IsOddInteger(value)) {
+                            value -= One * value.Sign;
+                        }
+                        return value;
                     }
-                    return value;
+                    else {
+                        goto case MidpointRounding.AwayFromZero;
+                    }
                 }
-                else {
-                    goto case MidpointRounding.AwayFromZero;
-                }
-            }
             case MidpointRounding.AwayFromZero: {
-                if (GetFractionalPart(value) >= OneHalf) {
-                    return Ceiling(value);
+                    if (GetFractionalPart(value) >= OneHalf) {
+                        return Ceiling(value);
+                    }
+                    else {
+                        return Floor(value);
+                    }
                 }
-                else {
-                    return Floor(value);
-                }
-            }
             case MidpointRounding.ToZero: {
-                if (IsNegative(value)) {
-                    return Ceiling(value);
+                    if (IsNegative(value)) {
+                        return Ceiling(value);
+                    }
+                    else {
+                        return Floor(value);
+                    }
                 }
-                else {
+            case MidpointRounding.ToNegativeInfinity: {
                     return Floor(value);
                 }
-            }
-            case MidpointRounding.ToNegativeInfinity: {
-                return Floor(value);
-            }
             case MidpointRounding.ToPositiveInfinity: {
-                return Ceiling(value);
-            }
+                    return Ceiling(value);
+                }
             default: {
-                throw new NotImplementedException(mode.ToString());
-            }
+                    throw new NotImplementedException(mode.ToString());
+                }
         }
     }
     /// <summary>
@@ -796,11 +796,20 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     public static bool TryParse(ReadOnlySpan<char> input, NumberStyles style, IFormatProvider? provider, out BigReal result) {
         return TryParse(input.ToString(), style, provider, out result);
     }
-    /// <inheritdoc cref="CompareTo(BigReal)"/>
+    /// <summary>
+    /// Returns:
+    /// <list type="bullet">
+    ///   <item>1 if <paramref name="left"/> &gt; <paramref name="right"/></item>
+    ///   <item>0 if <paramref name="left"/> == <paramref name="right"/></item>
+    ///   <item>-1 if <paramref name="left"/> &lt; <paramref name="right"/></item>
+    /// </list>
+    /// </summary>
     public static int Compare(BigReal left, BigReal right) {
         return left.CompareTo(right);
     }
-    /// <inheritdoc cref="Equals(BigReal)"/>
+    /// <summary>
+    /// Returns whether <paramref name="left"/> is exactly equal to <paramref name="right"/>.
+    /// </summary>
     public static bool Equals(BigReal left, BigReal right) {
         return left.Equals(right);
     }
@@ -886,24 +895,36 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Returns the greater of <paramref name="a"/> and <paramref name="b"/>.
     /// </summary>
     public static BigReal Max(BigReal a, BigReal b) {
+        if (IsNaN(a) || IsNaN(b)) {
+            return NaN;
+        }
         return a > b ? a : b;
     }
     /// <summary>
     /// Returns the lesser of <paramref name="a"/> and <paramref name="b"/>.
     /// </summary>
     public static BigReal Min(BigReal a, BigReal b) {
+        if (IsNaN(a) || IsNaN(b)) {
+            return NaN;
+        }
         return a < b ? a : b;
     }
     /// <summary>
     /// Returns the linear interpolation between <paramref name="from"/> and <paramref name="to"/> by <paramref name="weight"/>.
     /// </summary>
     public static BigReal Lerp(BigReal from, BigReal to, BigReal weight) {
+        if (IsNaN(from) || IsNaN(to) || IsNaN(weight)) {
+            return NaN;
+        }
         return from + ((to - from) * weight);
     }
     /// <summary>
     /// Returns the inverse linear interpolation between <paramref name="from"/> and <paramref name="to"/> by <paramref name="weight"/>.
     /// </summary>
     public static BigReal InverseLerp(BigReal from, BigReal to, BigReal weight) {
+        if (IsNaN(from) || IsNaN(to) || IsNaN(weight)) {
+            return NaN;
+        }
         return (weight - from) / (to - from);
     }
 
@@ -930,6 +951,13 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     public string ToString(int decimals, IFormatProvider? provider = null, bool padDecimal = false) {
         NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
 
+        string StringifyInteger(string wholeString) {
+            if (padDecimal) {
+                return wholeString + numberFormat.NumberDecimalSeparator + "0";
+            }
+            return wholeString;
+        }
+
         // Infinity
         if (IsPositiveInfinity(this)) {
             return numberFormat.PositiveInfinitySymbol;
@@ -954,10 +982,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
 
         // Number is whole
         if (remainder.IsZero) {
-            if (padDecimal) {
-                return wholeString + numberFormat.NumberDecimalSeparator + "0";
-            }
-            return wholeString;
+            return StringifyInteger(wholeString);
         }
 
         // Get number as positive scaled integer (e.g. 123.45 -> 1234500000)
@@ -975,10 +1000,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
 
         // Number at given precision is whole
         if (fractionString.Length == 0) {
-            if (padDecimal) {
-                return wholeString + numberFormat.NumberDecimalSeparator + "0";
-            }
-            return wholeString;
+            return StringifyInteger(wholeString);
         }
 
         // Combine parts
@@ -994,9 +1016,9 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// <summary>
     /// Returns:
     /// <list type="bullet">
-    ///   <item>1 if this value is greater than <paramref name="other"/></item>
-    ///   <item>0 if this value is equal to <paramref name="other"/></item>
-    ///   <item>-1 if this value is less than <paramref name="other"/></item>
+    ///   <item>1 if this value &gt; <paramref name="other"/></item>
+    ///   <item>0 if this value == <paramref name="other"/></item>
+    ///   <item>-1 if this value &lt; <paramref name="other"/></item>
     /// </list>
     /// </summary>
     public int CompareTo(BigReal other) {
@@ -1005,9 +1027,9 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// <summary>
     /// Returns:
     /// <list type="bullet">
-    ///   <item>1 if this value is greater than <paramref name="other"/></item>
-    ///   <item>0 if this value is equal to <paramref name="other"/></item>
-    ///   <item>-1 if this value is less than <paramref name="other"/></item>
+    ///   <item>1 if this value &gt; <paramref name="other"/></item>
+    ///   <item>0 if this value == <paramref name="other"/></item>
+    ///   <item>-1 if this value &lt; <paramref name="other"/></item>
     ///   <item>1 if other is <see langword="null"/> (<see langword="null"/> is less than any value)</item>
     ///   <item>throws an exception if <paramref name="other"/> is not <see cref="BigReal"/></item>
     /// </list>
@@ -1027,6 +1049,9 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Returns whether this value is exactly equal to <paramref name="other"/>.
     /// </summary>
     public bool Equals(BigReal other) {
+        if (IsNaN(this) || IsNaN(other)) {
+            return false;
+        }
         return other.Numerator * Denominator == Numerator * other.Denominator;
     }
     /// <summary>
@@ -1047,73 +1072,6 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out BigInteger numerator, out BigInteger denominator) {
         (numerator, denominator) = (Numerator, Denominator);
-    }
-
-    #endregion
-
-    #region IConvertible
-
-    TypeCode IConvertible.GetTypeCode() => TypeCode.Object;
-    bool IConvertible.ToBoolean(IFormatProvider? provider) => !IsZero(this);
-    sbyte IConvertible.ToSByte(IFormatProvider? provider) => (sbyte)this;
-    byte IConvertible.ToByte(IFormatProvider? provider) => (byte)this;
-    short IConvertible.ToInt16(IFormatProvider? provider) => (short)this;
-    ushort IConvertible.ToUInt16(IFormatProvider? provider) => (ushort)this;
-    int IConvertible.ToInt32(IFormatProvider? provider) => (int)this;
-    uint IConvertible.ToUInt32(IFormatProvider? provider) => (uint)this;
-    long IConvertible.ToInt64(IFormatProvider? provider) => (long)this;
-    ulong IConvertible.ToUInt64(IFormatProvider? provider) => (ulong)this;
-    char IConvertible.ToChar(IFormatProvider? provider) => (char)this;
-    float IConvertible.ToSingle(IFormatProvider? provider) => (float)this;
-    double IConvertible.ToDouble(IFormatProvider? provider) => (double)this;
-    decimal IConvertible.ToDecimal(IFormatProvider? provider) => (decimal)this;
-    DateTime IConvertible.ToDateTime(IFormatProvider? provider) => throw new InvalidCastException($"Cannot convert {nameof(BigReal)} to {nameof(DateTime)}");
-    object IConvertible.ToType(Type conversionType, IFormatProvider? provider) {
-        if (ReferenceEquals(conversionType, typeof(BigReal))) {
-            return this;
-        }
-        else if (ReferenceEquals(conversionType, typeof(bool))) {
-            return ((IConvertible)this).ToBoolean(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(sbyte))) {
-            return ((IConvertible)this).ToSByte(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(byte))) {
-            return ((IConvertible)this).ToByte(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(short))) {
-            return ((IConvertible)this).ToInt16(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(ushort))) {
-            return ((IConvertible)this).ToUInt16(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(int))) {
-            return ((IConvertible)this).ToInt32(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(uint))) {
-            return ((IConvertible)this).ToUInt32(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(long))) {
-            return ((IConvertible)this).ToInt64(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(ulong))) {
-            return ((IConvertible)this).ToUInt64(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(float))) {
-            return ((IConvertible)this).ToSingle(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(double))) {
-            return ((IConvertible)this).ToDouble(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(decimal))) {
-            return ((IConvertible)this).ToDecimal(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(DateTime))) {
-            return ((IConvertible)this).ToDateTime(provider);
-        }
-        else {
-            throw new InvalidCastException($"Cannot convert {nameof(BigReal)} to {conversionType.Name}");
-        }
     }
 
     #endregion
@@ -1371,6 +1329,234 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Converts from <see cref="decimal"/> to <see cref="BigReal"/>.
     /// </summary>
     public static implicit operator BigReal(decimal value) => new(value);
+
+    #endregion
+
+    #region IConvertible
+
+    TypeCode IConvertible.GetTypeCode() => TypeCode.Object;
+    bool IConvertible.ToBoolean(IFormatProvider? provider) => !IsZero(this);
+    sbyte IConvertible.ToSByte(IFormatProvider? provider) => (sbyte)this;
+    byte IConvertible.ToByte(IFormatProvider? provider) => (byte)this;
+    short IConvertible.ToInt16(IFormatProvider? provider) => (short)this;
+    ushort IConvertible.ToUInt16(IFormatProvider? provider) => (ushort)this;
+    int IConvertible.ToInt32(IFormatProvider? provider) => (int)this;
+    uint IConvertible.ToUInt32(IFormatProvider? provider) => (uint)this;
+    long IConvertible.ToInt64(IFormatProvider? provider) => (long)this;
+    ulong IConvertible.ToUInt64(IFormatProvider? provider) => (ulong)this;
+    char IConvertible.ToChar(IFormatProvider? provider) => (char)this;
+    float IConvertible.ToSingle(IFormatProvider? provider) => (float)this;
+    double IConvertible.ToDouble(IFormatProvider? provider) => (double)this;
+    decimal IConvertible.ToDecimal(IFormatProvider? provider) => (decimal)this;
+    DateTime IConvertible.ToDateTime(IFormatProvider? provider) => throw new InvalidCastException($"Cannot convert {nameof(BigReal)} to {nameof(DateTime)}");
+    object IConvertible.ToType(Type conversionType, IFormatProvider? provider) {
+        if (ReferenceEquals(conversionType, typeof(BigReal))) {
+            return this;
+        }
+        else if (ReferenceEquals(conversionType, typeof(bool))) {
+            return ((IConvertible)this).ToBoolean(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(sbyte))) {
+            return ((IConvertible)this).ToSByte(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(byte))) {
+            return ((IConvertible)this).ToByte(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(short))) {
+            return ((IConvertible)this).ToInt16(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(ushort))) {
+            return ((IConvertible)this).ToUInt16(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(int))) {
+            return ((IConvertible)this).ToInt32(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(uint))) {
+            return ((IConvertible)this).ToUInt32(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(long))) {
+            return ((IConvertible)this).ToInt64(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(ulong))) {
+            return ((IConvertible)this).ToUInt64(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(float))) {
+            return ((IConvertible)this).ToSingle(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(double))) {
+            return ((IConvertible)this).ToDouble(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(decimal))) {
+            return ((IConvertible)this).ToDecimal(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(DateTime))) {
+            return ((IConvertible)this).ToDateTime(provider);
+        }
+        else {
+            throw new InvalidCastException($"Cannot convert {nameof(BigReal)} to {conversionType.Name}");
+        }
+    }
+
+    #endregion
+
+    #region INumber
+
+    /// <inheritdoc/>
+    static int INumberBase<BigReal>.Radix => 2;
+    /// <inheritdoc/>
+    public static bool IsComplexNumber(BigReal value) {
+        return false;
+    }
+    /// <inheritdoc/>
+    public static bool IsImaginaryNumber(BigReal value) {
+        return false;
+    }
+    /// <inheritdoc/>
+    public static bool IsNormal(BigReal value) {
+        return !IsNaN(value) && !IsInfinity(value) && !IsZero(value);
+    }
+    /// <inheritdoc/>
+    public static bool IsSubnormal(BigReal value) {
+        return false;
+    }
+    /// <inheritdoc/>
+    public static bool IsRealNumber(BigReal value) {
+        return !IsNaN(value);
+    }
+    /// <inheritdoc/>
+    public static BigReal MaxMagnitude(BigReal x, BigReal y) {
+        return Max(Abs(x), Abs(y));
+    }
+    /// <inheritdoc/>
+    public static BigReal MaxMagnitudeNumber(BigReal x, BigReal y) {
+        if (IsNaN(x)) {
+            return y;
+        }
+        if (IsNaN(y)) {
+            return x;
+        }
+        return MaxMagnitude(x, y);
+    }
+    /// <inheritdoc/>
+    public static BigReal MinMagnitude(BigReal x, BigReal y) {
+        return Min(Abs(x), Abs(y));
+    }
+    /// <inheritdoc/>
+    public static BigReal MinMagnitudeNumber(BigReal x, BigReal y) {
+        if (IsNaN(x)) {
+            return y;
+        }
+        if (IsNaN(y)) {
+            return x;
+        }
+        return MinMagnitude(x, y);
+    }
+    /// <inheritdoc/>
+    public static bool TryConvertFromChecked<TOther>(TOther value, out BigReal result) where TOther : INumberBase<TOther> {
+        return TryParse(value.ToString(null, null), out result);
+
+        /*switch (value) {
+            case bool boolValue:
+                result = boolValue ? 1 : 0;
+                return true;
+            case sbyte sbyteValue:
+                result = sbyteValue;
+                return true;
+            case byte byteValue:
+                result = byteValue;
+                return true;
+            case short shortValue:
+                result = shortValue;
+                return true;
+            case ushort ushortValue:
+                result = ushortValue;
+                return true;
+            case int intValue:
+                result = intValue;
+                return true;
+            case uint uintValue:
+                result = uintValue;
+                return true;
+            case long longValue:
+                result = longValue;
+                return true;
+            case ulong ulongValue:
+                result = ulongValue;
+                return true;
+            case Int128 int128Value:
+                result = int128Value;
+                return true;
+            case UInt128 uint128Value:
+                result = uint128Value;
+                return true;
+            case char charValue:
+                result = charValue;
+                return true;
+            case nint nintValue:
+                result = nintValue;
+                return true;
+            case nuint nuintValue:
+                result = nuintValue;
+                return true;
+            case BigInteger bigIntegerValue:
+                result = bigIntegerValue;
+                return true;
+            case Half halfValue:
+                result = halfValue;
+                return true;
+            case float floatValue:
+                result = floatValue;
+                return true;
+            case double doubleValue:
+                result = doubleValue;
+                return true;
+            case decimal decimalValue:
+                result = decimalValue;
+                return true;
+        }*/
+    }
+    /// <inheritdoc/>
+    public static bool TryConvertFromSaturating<TOther>(TOther value, out BigReal result) where TOther : INumberBase<TOther> {
+        return TryConvertFromChecked(value, out result);
+    }
+    /// <inheritdoc/>
+    public static bool TryConvertFromTruncating<TOther>(TOther value, out BigReal result) where TOther : INumberBase<TOther> {
+        return TryConvertFromChecked(value, out result);
+    }
+    /// <inheritdoc/>
+    public static bool TryConvertToChecked<TOther>(BigReal value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
+        return TOther.TryConvertFromChecked(value, out result);
+    }
+    /// <inheritdoc/>
+    public static bool TryConvertToSaturating<TOther>(BigReal value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
+        return TOther.TryConvertFromSaturating(value, out result);
+    }
+    /// <inheritdoc/>
+    public static bool TryConvertToTruncating<TOther>(BigReal value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
+        return TOther.TryConvertFromTruncating(value, out result);
+    }
+    /// <inheritdoc/>
+    string IFormattable.ToString(string? format, IFormatProvider? provider) {
+        if (string.IsNullOrEmpty(format)) {
+            return ToString(provider);
+        }
+        throw new NotImplementedException($"Format strings not implemented on {nameof(BigReal)}");
+    }
+    /// <inheritdoc/>
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) {
+        if (format.IsEmpty) {
+            string result = ToString(provider);
+
+            if (!result.TryCopyTo(destination)) {
+                charsWritten = default;
+                return false;
+            }
+
+            charsWritten = result.Length;
+            return true;
+        }
+        throw new NotImplementedException($"Format strings not implemented on {nameof(BigReal)}");
+    }
 
     #endregion
 }
