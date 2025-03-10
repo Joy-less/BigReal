@@ -7,7 +7,11 @@
     <Nullable>enable</Nullable>
     <!-- IDE0130: Namespace does not match folder structure -->
     <NoWarn>IDE0130</NoWarn>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <IsAotCompatible>true</IsAotCompatible>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
   
   <PropertyGroup>
