@@ -198,7 +198,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         BigReal epsilon = One / Pow(Ten, decimals);
 
         // https://stackoverflow.com/a/7380529
-        return Atan2(Sqrt((One + radians) * (One - radians)), radians, decimals);
+        return Atan2(Sqrt((One + radians) * (One - radians), decimals), radians, decimals);
     }
     static BigReal ITrigonometricFunctions<BigReal>.Acos(BigReal radians) {
         return Acos(radians);
@@ -250,19 +250,70 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
             return Atan(y / x, decimals);
         }
         else if (x < Zero && y >= Zero) {
-            return Atan(y / x, decimals) + Pi;
+            return Atan(y / x, decimals) + CalculatePi(decimals);
         }
         else if (x < Zero && y < Zero) {
-            return Atan(y / x, decimals) - Pi;
+            return Atan(y / x, decimals) - CalculatePi(decimals);
         }
         else if (x == Zero && y > Zero) {
-            return Pi / 2;
+            return CalculatePi(decimals) / 2;
         }
         else if (x == Zero && y < Zero) {
-            return Zero - (Pi / 2);
+            return -CalculatePi(decimals) / 2;
         }
         else {
             return NaN;
         }
+    }
+    /// <summary>
+    /// Returns π, correct to <paramref name="decimals"/> decimal places.
+    /// </summary>
+    public static BigReal CalculatePi(int decimals = 100) {
+        // https://stackoverflow.com/a/11679007
+        decimals++;
+
+        Span<uint> x = new uint[decimals * 10 / 3 + 2];
+        Span<uint> r = new uint[decimals * 10 / 3 + 2];
+
+        Span<uint> pi = new uint[decimals];
+
+        for (int j = 0; j < x.Length; j++) {
+            x[j] = 20;
+        }
+
+        for (int i = 0; i < decimals; i++) {
+            uint carry = 0;
+            for (int j = 0; j < x.Length; j++) {
+                uint num = (uint)(x.Length - j - 1);
+                uint dem = num * 2 + 1;
+
+                x[j] += carry;
+
+                uint q = x[j] / dem;
+                r[j] = x[j] % dem;
+
+                carry = q * num;
+            }
+
+            pi[i] = x[^1] / 10;
+
+            r[x.Length - 1] = x[^1] % 10; ;
+
+            for (int j = 0; j < x.Length; j++) {
+                x[j] = r[j] * 10;
+            }
+        }
+
+        BigReal result = Zero;
+        uint c = 0;
+
+        for (int i = pi.Length - 1; i >= 0; i--) {
+            pi[i] += c;
+            c = pi[i] / 10;
+
+            BigInteger columnMagnitude = BigInteger.Pow(10, pi.Length - i - 1);
+            result = Multiply(pi[i] % 10, columnMagnitude) + result;
+        }
+        return result;
     }
 }

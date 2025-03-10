@@ -332,6 +332,9 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Returns <paramref name="value"/> to the power of <paramref name="exponent"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal Pow(BigReal value, BigReal exponent, int decimals = 10) {
+        if (IsInteger(exponent)) {
+            return Pow(value, (int)exponent);
+        }
         if (TryCalculateAsDouble(value, exponent, double.Pow, decimals, out double result)) {
             return result;
         }
