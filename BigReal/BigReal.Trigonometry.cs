@@ -31,7 +31,14 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Returns the sine of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Sin(BigReal radians, int decimals = 30) {
+    public static BigReal Sin(BigReal radians, int decimals = 15) {
+        if (!IsFinite(radians)) {
+            return NaN;
+        }
+        if (TryCalculateAsDouble(radians, double.Sin, decimals, out double result)) {
+            return result;
+        }
+
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
         BigReal epsilon = One / Pow(Ten, decimals);
 
@@ -59,7 +66,14 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Returns the cosine of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Cos(BigReal radians, int decimals = 30) {
+    public static BigReal Cos(BigReal radians, int decimals = 15) {
+        if (!IsFinite(radians)) {
+            return NaN;
+        }
+        if (TryCalculateAsDouble(radians, double.Cos, decimals, out double result)) {
+            return result;
+        }
+
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
         BigReal epsilon = One / Pow(Ten, decimals);
 
@@ -86,7 +100,13 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <remarks>
     /// The result is undefined when <paramref name="radians"/> is π/2 or 3π/2.
     /// </remarks>
-    public static BigReal Tan(BigReal radians, int decimals = 30) {
+    public static BigReal Tan(BigReal radians, int decimals = 15) {
+        if (!IsFinite(radians)) {
+            return NaN;
+        }
+        if (TryCalculateAsDouble(radians, double.Tan, decimals, out double result)) {
+            return result;
+        }
         return Sin(radians, decimals) / Cos(radians, decimals);
     }
     static BigReal ITrigonometricFunctions<BigReal>.Tan(BigReal radians) {
@@ -108,7 +128,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <remarks>
     /// The result is undefined when <paramref name="radians"/> is an odd multiple of π/2.
     /// </remarks>
-    public static BigReal Sec(BigReal radians, int decimals = 30) {
+    public static BigReal Sec(BigReal radians, int decimals = 15) {
         return One / Cos(radians, decimals);
     }
     /// <summary>
@@ -117,7 +137,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <remarks>
     /// The result is undefined when <paramref name="radians"/> is a multiple of π.
     /// </remarks>
-    public static BigReal Cosec(BigReal radians, int decimals = 30) {
+    public static BigReal Cosec(BigReal radians, int decimals = 15) {
         return One / Sin(radians, decimals);
     }
     /// <summary>
@@ -126,7 +146,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <remarks>
     /// The result is undefined when <paramref name="radians"/> is a multiple of π.
     /// </remarks>
-    public static BigReal Cot(BigReal radians, int decimals = 30) {
+    public static BigReal Cot(BigReal radians, int decimals = 15) {
         return Cos(radians, decimals) / Sin(radians, decimals);
     }
     /// <summary>
@@ -136,15 +156,22 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// The result throws when the magnitude of <paramref name="radians"/> is greater than one.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException"/>
-    public static BigReal Asin(BigReal radians, int decimals = 30) {
+    public static BigReal Asin(BigReal radians, int decimals = 15) {
         if (radians < NegativeOne || radians > One) {
             throw new ArgumentOutOfRangeException(nameof(radians));
         }
-        // https://github.com/AdamWhiteHat/BigDecimal/blob/0838f4b41d467a16212fbd00d8c7233856264199/BigDecimal/BigDecimal.Trigonometry.cs#L471
-        BigReal input = Abs(radians);
-        BigReal denominator = Sqrt(One - (input * input), decimals);
-        BigReal quotient = input / denominator;
-        return radians.Sign * Atan(quotient, decimals);
+        if (IsOne(radians)) {
+            return Pi / 2;
+        }
+        if (IsNegativeOne(radians)) {
+            return -Pi / 2;
+        }
+        if (TryCalculateAsDouble(radians, double.Asin, decimals, out double result)) {
+            return result;
+        }
+
+        // https://stackoverflow.com/a/7380529
+        return Atan2(radians, Sqrt((One + radians) * (One - radians)), decimals);
     }
     static BigReal ITrigonometricFunctions<BigReal>.Asin(BigReal radians) {
         return Asin(radians);
@@ -159,18 +186,19 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// The result throws when the magnitude of <paramref name="radians"/> is greater than one.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException"/>
-    public static BigReal Acos(BigReal radians, int decimals = 30) {
+    public static BigReal Acos(BigReal radians, int decimals = 15) {
         if (radians < NegativeOne || radians > One) {
             throw new ArgumentOutOfRangeException(nameof(radians));
         }
-        // https://github.com/AdamWhiteHat/BigDecimal/blob/0838f4b41d467a16212fbd00d8c7233856264199/BigDecimal/BigDecimal.Trigonometry.cs#L499
-        BigReal input = Abs(radians);
-        BigReal denominator = Sqrt(One - (input * input), decimals);
-        BigReal quotient = denominator / input;
-        if (radians.Sign == -1) {
-            return Pi - Atan(quotient, decimals);
+        if (TryCalculateAsDouble(radians, double.Acos, decimals, out double result)) {
+            return result;
         }
-        return Atan(quotient, decimals);
+
+        // Convert decimals to epsilon (e.g. 3 -> 0.001)
+        BigReal epsilon = One / Pow(Ten, decimals);
+
+        // https://stackoverflow.com/a/7380529
+        return Atan2(Sqrt((One + radians) * (One - radians)), radians, decimals);
     }
     static BigReal ITrigonometricFunctions<BigReal>.Acos(BigReal radians) {
         return Acos(radians);
@@ -181,10 +209,14 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Returns the arc-tangent of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    /// <remarks>
-    /// This can be extremely slow, so use only when necessary (consider using <see cref="Math.Atan(double)"/> instead).
-    /// </remarks>
-    public static BigReal Atan(BigReal radians, int decimals = 2) {
+    public static BigReal Atan(BigReal radians, int decimals = 15) {
+        if (!IsFinite(radians)) {
+            return NaN;
+        }
+        if (TryCalculateAsDouble(radians, double.Atan, decimals, out double result)) {
+            return result;
+        }
+
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
         BigReal epsilon = One / Pow(Ten, decimals);
 
@@ -208,25 +240,26 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Returns the arc-tangent of the quotient of <paramref name="y"/> and <paramref name="x"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    /// <remarks>
-    /// This can be extremely slow, so use only when necessary (consider using <see cref="Math.Atan2(double, double)"/> instead).
-    /// </remarks>
-    public static BigReal Atan2(BigReal y, BigReal x, int decimals = 2) {
+    public static BigReal Atan2(BigReal y, BigReal x, int decimals = 15) {
+        if (TryCalculateAsDouble(y, x, double.Atan2, decimals, out double result)) {
+            return result;
+        }
+
         // https://en.wikipedia.org/wiki/Atan2#Definition
-        if (x > 0) {
+        if (x > Zero) {
             return Atan(y / x, decimals);
         }
-        else if (x < 0 && y >= 0) {
+        else if (x < Zero && y >= Zero) {
             return Atan(y / x, decimals) + Pi;
         }
-        else if (x < 0 && y < 0) {
+        else if (x < Zero && y < Zero) {
             return Atan(y / x, decimals) - Pi;
         }
-        else if (x == 0 && y > 0) {
+        else if (x == Zero && y > Zero) {
             return Pi / 2;
         }
-        else if (x == 0 && y < 0) {
-            return 0 - (Pi / 2);
+        else if (x == Zero && y < Zero) {
+            return Zero - (Pi / 2);
         }
         else {
             return NaN;

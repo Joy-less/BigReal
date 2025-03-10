@@ -1,5 +1,10 @@
 ﻿using ExtendedNumerics;
 
+Console.WriteLine(new BigReal(-50, -50));
+Console.WriteLine(new BigReal(-50, -50) < (1000000000));
+Console.WriteLine((new BigReal(-50) / -50) < (1000000000));
+Console.WriteLine(new BigReal(1) < (1000000000));
+
 Console.WriteLine(new BigReal(100)); // 100
 Console.WriteLine((BigReal)3.14); // 3.14
 Console.WriteLine(new BigReal(4, 3).ToString(4)); // 1.3333

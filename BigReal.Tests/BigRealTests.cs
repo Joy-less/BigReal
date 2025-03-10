@@ -74,19 +74,21 @@ public class BigRealTests(ITestOutputHelper Output) {
     [InlineData(0.3)]
     [InlineData(-0.5)]
     public void Trigonometry(double value) {
-        Assert.True(ApproximateEqual(double.Sin(value), BigReal.Sin(value)));
-        Assert.True(ApproximateEqual(double.Cos(value), BigReal.Cos(value)));
-        Assert.True(ApproximateEqual(double.Tan(value), BigReal.Tan(value)));
-        Assert.True(ApproximateEqual(1 / double.Sin(value), BigReal.Cosec(value)));
-        Assert.True(ApproximateEqual(1 / double.Cos(value), BigReal.Sec(value)));
-        Assert.True(ApproximateEqual(1 / double.Tan(value), BigReal.Cot(value)));
-        Assert.True(ApproximateEqual(double.Asin(value), BigReal.Asin(value)));
-        Assert.True(ApproximateEqual(double.Acos(value), BigReal.Acos(value)));
-        Assert.True(ApproximateEqual(double.Atan(value), BigReal.Atan(value)));
-        Assert.True(ApproximateEqual(double.Atan2(value, value), BigReal.Atan2(value, value)));
+        AssertApproximateEqual(double.Sin(value), BigReal.Sin(value));
+        AssertApproximateEqual(double.Cos(value), BigReal.Cos(value));
+        AssertApproximateEqual(double.Tan(value), BigReal.Tan(value));
+        AssertApproximateEqual(1 / double.Sin(value), BigReal.Cosec(value));
+        AssertApproximateEqual(1 / double.Cos(value), BigReal.Sec(value));
+        AssertApproximateEqual(1 / double.Tan(value), BigReal.Cot(value));
+        AssertApproximateEqual(double.Asin(value), BigReal.Asin(value));
+        AssertApproximateEqual(double.Acos(value), BigReal.Acos(value));
+        AssertApproximateEqual(double.Atan(value), BigReal.Atan(value));
+        AssertApproximateEqual(double.Atan2(value, value), BigReal.Atan2(value, value));
     }
 
-    private bool ApproximateEqual(BigReal a, BigReal b, int decimals = 2) {
-        return BigReal.Abs(a - b) < (BigReal.One / BigReal.Pow(BigReal.Ten, decimals));
+    private static void AssertApproximateEqual(BigReal a, BigReal b, int decimals = 2) {
+        BigReal delta = BigReal.Abs(a - b);
+        BigReal epsilon = BigReal.One / BigReal.Pow(BigReal.Ten, decimals);
+        Assert.True(delta < epsilon, $"{delta} > {epsilon}");
     }
 }
