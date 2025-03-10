@@ -10,7 +10,7 @@ namespace ExtendedNumerics;
 /// An arbitrary size and precision floating-point number stored as the quotient of two BigIntegers.
 /// </summary>
 [Serializable]
-public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEquatable<BigReal>, IConvertible, INumber<BigReal> {
+public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEquatable<BigReal>, INumber<BigReal>, IConvertible {
     /// <summary>
     /// The dividend (top of the fraction).
     /// </summary>
@@ -52,19 +52,6 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// A value representing a value that is negative infinity.
     /// </summary>
     public static BigReal NegativeInfinity { get; } = new(-1, 0);
-
-    /// <summary>
-    /// Represents 100 digits of the natural logarithmic base, specified by the constant, e.
-    /// </summary>
-    public static BigReal E { get; } = Parse("2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274");
-    /// <summary>
-    /// Represents 100 digits of the ratio of the circumference of a circle to its diameter, specified by the constant, π.
-    /// </summary>
-    public static BigReal Pi { get; } = Parse("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679");
-    /// <summary>
-    /// Represents 100 digits of the number of radians in one turn, specified by the constant, τ.
-    /// </summary>
-    public static BigReal Tau { get; } = Parse("6.2831853071795864769252867665590057683943387987502116419498891846156328125724179972560696506842341359");
 
     /// <summary>
     /// The number that, when added to a number, returns the other number.
@@ -1332,77 +1319,11 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
 
     #endregion
 
-    #region IConvertible
-
-    TypeCode IConvertible.GetTypeCode() => TypeCode.Object;
-    bool IConvertible.ToBoolean(IFormatProvider? provider) => !IsZero(this);
-    sbyte IConvertible.ToSByte(IFormatProvider? provider) => (sbyte)this;
-    byte IConvertible.ToByte(IFormatProvider? provider) => (byte)this;
-    short IConvertible.ToInt16(IFormatProvider? provider) => (short)this;
-    ushort IConvertible.ToUInt16(IFormatProvider? provider) => (ushort)this;
-    int IConvertible.ToInt32(IFormatProvider? provider) => (int)this;
-    uint IConvertible.ToUInt32(IFormatProvider? provider) => (uint)this;
-    long IConvertible.ToInt64(IFormatProvider? provider) => (long)this;
-    ulong IConvertible.ToUInt64(IFormatProvider? provider) => (ulong)this;
-    char IConvertible.ToChar(IFormatProvider? provider) => (char)this;
-    float IConvertible.ToSingle(IFormatProvider? provider) => (float)this;
-    double IConvertible.ToDouble(IFormatProvider? provider) => (double)this;
-    decimal IConvertible.ToDecimal(IFormatProvider? provider) => (decimal)this;
-    DateTime IConvertible.ToDateTime(IFormatProvider? provider) => throw new InvalidCastException($"Cannot convert {nameof(BigReal)} to {nameof(DateTime)}");
-    object IConvertible.ToType(Type conversionType, IFormatProvider? provider) {
-        if (ReferenceEquals(conversionType, typeof(BigReal))) {
-            return this;
-        }
-        else if (ReferenceEquals(conversionType, typeof(bool))) {
-            return ((IConvertible)this).ToBoolean(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(sbyte))) {
-            return ((IConvertible)this).ToSByte(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(byte))) {
-            return ((IConvertible)this).ToByte(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(short))) {
-            return ((IConvertible)this).ToInt16(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(ushort))) {
-            return ((IConvertible)this).ToUInt16(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(int))) {
-            return ((IConvertible)this).ToInt32(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(uint))) {
-            return ((IConvertible)this).ToUInt32(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(long))) {
-            return ((IConvertible)this).ToInt64(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(ulong))) {
-            return ((IConvertible)this).ToUInt64(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(float))) {
-            return ((IConvertible)this).ToSingle(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(double))) {
-            return ((IConvertible)this).ToDouble(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(decimal))) {
-            return ((IConvertible)this).ToDecimal(provider);
-        }
-        else if (ReferenceEquals(conversionType, typeof(DateTime))) {
-            return ((IConvertible)this).ToDateTime(provider);
-        }
-        else {
-            throw new InvalidCastException($"Cannot convert {nameof(BigReal)} to {conversionType.Name}");
-        }
-    }
-
-    #endregion
-
     #region INumber
 
     /// <inheritdoc/>
     static int INumberBase<BigReal>.Radix => 2;
+
     /// <inheritdoc/>
     public static bool IsComplexNumber(BigReal value) {
         return false;
@@ -1496,6 +1417,73 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
             return true;
         }
         throw new NotImplementedException($"Format strings not implemented on {nameof(BigReal)}");
+    }
+
+    #endregion
+
+    #region IConvertible
+
+    TypeCode IConvertible.GetTypeCode() => TypeCode.Object;
+    bool IConvertible.ToBoolean(IFormatProvider? provider) => !IsZero(this);
+    sbyte IConvertible.ToSByte(IFormatProvider? provider) => (sbyte)this;
+    byte IConvertible.ToByte(IFormatProvider? provider) => (byte)this;
+    short IConvertible.ToInt16(IFormatProvider? provider) => (short)this;
+    ushort IConvertible.ToUInt16(IFormatProvider? provider) => (ushort)this;
+    int IConvertible.ToInt32(IFormatProvider? provider) => (int)this;
+    uint IConvertible.ToUInt32(IFormatProvider? provider) => (uint)this;
+    long IConvertible.ToInt64(IFormatProvider? provider) => (long)this;
+    ulong IConvertible.ToUInt64(IFormatProvider? provider) => (ulong)this;
+    char IConvertible.ToChar(IFormatProvider? provider) => (char)this;
+    float IConvertible.ToSingle(IFormatProvider? provider) => (float)this;
+    double IConvertible.ToDouble(IFormatProvider? provider) => (double)this;
+    decimal IConvertible.ToDecimal(IFormatProvider? provider) => (decimal)this;
+    DateTime IConvertible.ToDateTime(IFormatProvider? provider) => throw new InvalidCastException($"Cannot convert {nameof(BigReal)} to {nameof(DateTime)}");
+    object IConvertible.ToType(Type conversionType, IFormatProvider? provider) {
+        if (ReferenceEquals(conversionType, typeof(BigReal))) {
+            return this;
+        }
+        else if (ReferenceEquals(conversionType, typeof(bool))) {
+            return ((IConvertible)this).ToBoolean(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(sbyte))) {
+            return ((IConvertible)this).ToSByte(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(byte))) {
+            return ((IConvertible)this).ToByte(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(short))) {
+            return ((IConvertible)this).ToInt16(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(ushort))) {
+            return ((IConvertible)this).ToUInt16(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(int))) {
+            return ((IConvertible)this).ToInt32(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(uint))) {
+            return ((IConvertible)this).ToUInt32(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(long))) {
+            return ((IConvertible)this).ToInt64(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(ulong))) {
+            return ((IConvertible)this).ToUInt64(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(float))) {
+            return ((IConvertible)this).ToSingle(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(double))) {
+            return ((IConvertible)this).ToDouble(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(decimal))) {
+            return ((IConvertible)this).ToDecimal(provider);
+        }
+        else if (ReferenceEquals(conversionType, typeof(DateTime))) {
+            return ((IConvertible)this).ToDateTime(provider);
+        }
+        else {
+            throw new InvalidCastException($"Cannot convert {nameof(BigReal)} to {conversionType.Name}");
+        }
     }
 
     #endregion

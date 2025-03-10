@@ -69,4 +69,24 @@ public class BigRealTests(ITestOutputHelper Output) {
     public void RoundToDecimals(double input, int digits, double expected) {
         Assert.Equal(expected, BigReal.Round(input, digits));
     }
+    [Theory]
+    [InlineData(1)]
+    [InlineData(0.3)]
+    [InlineData(-0.5)]
+    public void Trigonometry(double value) {
+        Assert.True(ApproximateEqual(double.Sin(value), BigReal.Sin(value)));
+        Assert.True(ApproximateEqual(double.Cos(value), BigReal.Cos(value)));
+        Assert.True(ApproximateEqual(double.Tan(value), BigReal.Tan(value)));
+        Assert.True(ApproximateEqual(1 / double.Sin(value), BigReal.Cosec(value)));
+        Assert.True(ApproximateEqual(1 / double.Cos(value), BigReal.Sec(value)));
+        Assert.True(ApproximateEqual(1 / double.Tan(value), BigReal.Cot(value)));
+        Assert.True(ApproximateEqual(double.Asin(value), BigReal.Asin(value)));
+        Assert.True(ApproximateEqual(double.Acos(value), BigReal.Acos(value)));
+        Assert.True(ApproximateEqual(double.Atan(value), BigReal.Atan(value)));
+        Assert.True(ApproximateEqual(double.Atan2(value, value), BigReal.Atan2(value, value)));
+    }
+
+    private bool ApproximateEqual(BigReal a, BigReal b, int decimals = 2) {
+        return BigReal.Abs(a - b) < (BigReal.One / BigReal.Pow(BigReal.Ten, decimals));
+    }
 }
