@@ -1454,66 +1454,6 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// <inheritdoc/>
     public static bool TryConvertFromChecked<TOther>(TOther value, out BigReal result) where TOther : INumberBase<TOther> {
         return TryParse(value.ToString(null, null), out result);
-
-        /*switch (value) {
-            case bool boolValue:
-                result = boolValue ? 1 : 0;
-                return true;
-            case sbyte sbyteValue:
-                result = sbyteValue;
-                return true;
-            case byte byteValue:
-                result = byteValue;
-                return true;
-            case short shortValue:
-                result = shortValue;
-                return true;
-            case ushort ushortValue:
-                result = ushortValue;
-                return true;
-            case int intValue:
-                result = intValue;
-                return true;
-            case uint uintValue:
-                result = uintValue;
-                return true;
-            case long longValue:
-                result = longValue;
-                return true;
-            case ulong ulongValue:
-                result = ulongValue;
-                return true;
-            case Int128 int128Value:
-                result = int128Value;
-                return true;
-            case UInt128 uint128Value:
-                result = uint128Value;
-                return true;
-            case char charValue:
-                result = charValue;
-                return true;
-            case nint nintValue:
-                result = nintValue;
-                return true;
-            case nuint nuintValue:
-                result = nuintValue;
-                return true;
-            case BigInteger bigIntegerValue:
-                result = bigIntegerValue;
-                return true;
-            case Half halfValue:
-                result = halfValue;
-                return true;
-            case float floatValue:
-                result = floatValue;
-                return true;
-            case double doubleValue:
-                result = doubleValue;
-                return true;
-            case decimal decimalValue:
-                result = decimalValue;
-                return true;
-        }*/
     }
     /// <inheritdoc/>
     public static bool TryConvertFromSaturating<TOther>(TOther value, out BigReal result) where TOther : INumberBase<TOther> {
