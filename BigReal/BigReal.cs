@@ -1010,7 +1010,13 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Returns whether <paramref name="input"/> is within the supported range of <typeparamref name="T"/>.
     /// </summary>
     private static bool IsInRangeOf<T>(BigReal input) where T : INumberBase<T>, IMinMaxValue<T> {
-        return input > Create(T.MaxValue) || input < Create(T.MinValue);
+        if (input > Create(T.MaxValue)) {
+            return false;
+        }
+        if (input < Create(T.MinValue)) {
+            return false;
+        }
+        return true;
     }
 
     #endregion
