@@ -10,8 +10,8 @@ namespace ExtendedNumerics;
 /// An arbitrary size and precision floating-point number stored as the quotient of two BigIntegers.
 /// </summary>
 [Serializable]
-public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEquatable<BigReal>, INumber<BigReal>, IFloatingPointConstants<BigReal>,
-    IPowerFunctions<BigReal>, IRootFunctions<BigReal>, ILogarithmicFunctions<BigReal>, IConvertible
+public readonly partial struct BigReal : IConvertible, IComparable, IComparable<BigReal>, IEquatable<BigReal>, INumber<BigReal>, IFloatingPointConstants<BigReal>,
+    IPowerFunctions<BigReal>, IRootFunctions<BigReal>, ILogarithmicFunctions<BigReal>
 {
     /// <summary>
     /// The dividend (top of the fraction).
