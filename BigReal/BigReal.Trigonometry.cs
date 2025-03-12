@@ -301,52 +301,23 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns π, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculatePi(int decimals) {
-        // https://stackoverflow.com/a/11679007
-        decimals++;
+        // Convert decimals to epsilon (e.g. 3 -> 0.001)
+        BigReal epsilon = One / Pow(Ten, decimals);
 
-        Span<uint> x = new uint[decimals * 10 / 3 + 2];
-        Span<uint> r = new uint[decimals * 10 / 3 + 2];
-
-        Span<uint> pi = new uint[decimals];
-
-        for (int j = 0; j < x.Length; j++) {
-            x[j] = 20;
-        }
-
-        for (int i = 0; i < decimals; i++) {
-            uint carry = 0;
-            for (int j = 0; j < x.Length; j++) {
-                uint num = (uint)(x.Length - j - 1);
-                uint dem = num * 2 + 1;
-
-                x[j] += carry;
-
-                uint q = x[j] / dem;
-                r[j] = x[j] % dem;
-
-                carry = q * num;
-            }
-
-            pi[i] = x[^1] / 10;
-
-            r[x.Length - 1] = x[^1] % 10; ;
-
-            for (int j = 0; j < x.Length; j++) {
-                x[j] = r[j] * 10;
+        // https://stackoverflow.com/a/49317760
+        BigReal sum = 0;
+        BigReal a = 2, b = 3, c = 4;
+        int n = 0;
+        while (true) {
+            BigReal term = 4 / (a * b * c);
+            sum += (n % 2 == 0) ? term : -term;
+            a += 2; b += 2; c += 2;
+            n++;
+            if (term <= epsilon) {
+                break;
             }
         }
-
-        BigReal result = Zero;
-        uint c = 0;
-
-        for (int i = pi.Length - 1; i >= 0; i--) {
-            pi[i] += c;
-            c = pi[i] / 10;
-
-            BigInteger columnMagnitude = BigInteger.Pow(10, pi.Length - i - 1);
-            result = Multiply(pi[i] % 10, columnMagnitude) + result;
-        }
-        return result / BigInteger.Pow(10, decimals - 1);
+        return 3 + sum;
     }
     /// <summary>
     /// Returns τ, correct to <paramref name="decimals"/> decimal places.
