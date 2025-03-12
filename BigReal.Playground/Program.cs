@@ -4,7 +4,6 @@ Console.WriteLine(double.Log(10) + " -> " + BigReal.Log(10));
 Console.WriteLine(double.Log(10, 3) + " -> " + BigReal.Log(10, (BigReal)3));
 Console.WriteLine(double.Log10(5) + " -> " + BigReal.Log10(5));
 Console.WriteLine(double.Log2(10) + " -> " + BigReal.Log2(10));
-Console.ReadLine();
 
 Console.WriteLine(BigReal.CalculatePi(4));
 Console.WriteLine(BigReal.CalculatePi(10));
