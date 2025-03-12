@@ -301,13 +301,16 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns π, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculatePi(int decimals) {
+        const int MaxStackallocLength = 256 / sizeof(uint);
+
         // https://stackoverflow.com/a/11679007
         decimals += 2;
 
-        Span<uint> x = new uint[(decimals * 10 / 3) + 2];
-        Span<uint> r = new uint[(decimals * 10 / 3) + 2];
+        int xrLength = (decimals * 10 / 3) + 2;
+        Span<uint> x = xrLength <= MaxStackallocLength ? stackalloc uint[xrLength] : new uint[xrLength];
+        Span<uint> r = xrLength <= MaxStackallocLength ? stackalloc uint[xrLength] : new uint[xrLength];
 
-        Span<uint> pi = new uint[decimals];
+        Span<uint> pi = decimals <= MaxStackallocLength ? stackalloc uint[decimals] : new uint[decimals];
 
         for (int j = 0; j < x.Length; j++) {
             x[j] = 20;
@@ -336,7 +339,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
             }
         }
 
-        BigReal result = 0;
+        BigInteger result = 0;
         uint c = 0;
 
         for (int i = pi.Length - 1; i >= 0; i--) {
@@ -344,9 +347,10 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
             c = pi[i] / 10;
 
             BigInteger columnMagnitude = BigInteger.Pow(10, pi.Length - i - 1);
-            result = Multiply(pi[i] % 10, columnMagnitude) + result;
+            result += BigInteger.Multiply(pi[i] % 10, columnMagnitude);
         }
-        return Round(result / BigInteger.Pow(10, decimals - 1), decimals - 2);
+
+        return Round((BigReal)result / BigInteger.Pow(10, decimals - 1), decimals - 2);
     }
     /// <summary>
     /// Returns τ, correct to <paramref name="decimals"/> decimal places.
