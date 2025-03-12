@@ -301,16 +301,16 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns π, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculatePi(int decimals) {
-        const int MaxStackallocLength = 256 / sizeof(uint);
+        const int MaxStackallocBytes = 256;
 
         // https://stackoverflow.com/a/11679007
         decimals += 2;
 
         int bufferLength = (decimals * 10 / 3) + 2;
-        Span<uint> dividend = bufferLength <= MaxStackallocLength ? stackalloc uint[bufferLength] : new uint[bufferLength];
-        Span<uint> remainder = bufferLength <= MaxStackallocLength ? stackalloc uint[bufferLength] : new uint[bufferLength];
+        Span<uint> dividend = (bufferLength <= (MaxStackallocBytes / sizeof(uint))) ? stackalloc uint[bufferLength] : new uint[bufferLength];
+        Span<uint> remainder = (bufferLength <= (MaxStackallocBytes / sizeof(uint))) ? stackalloc uint[bufferLength] : new uint[bufferLength];
 
-        Span<uint> digits = decimals <= MaxStackallocLength ? stackalloc uint[decimals] : new uint[decimals];
+        Span<uint> digits = (decimals <= (MaxStackallocBytes / sizeof(uint))) ? stackalloc uint[decimals] : new uint[decimals];
 
         for (int j = 0; j < dividend.Length; j++) {
             dividend[j] = 20;
