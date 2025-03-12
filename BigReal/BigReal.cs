@@ -11,7 +11,7 @@ namespace ExtendedNumerics;
 /// </summary>
 [Serializable]
 public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEquatable<BigReal>, INumber<BigReal>, IFloatingPointConstants<BigReal>,
-    IPowerFunctions<BigReal>, IRootFunctions<BigReal>, IConvertible
+    IPowerFunctions<BigReal>, IRootFunctions<BigReal>, ILogarithmicFunctions<BigReal>, IConvertible
 {
     /// <summary>
     /// The dividend (top of the fraction).
@@ -343,6 +343,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         if (TryCalculateAsDouble(value, exponent, double.Pow, decimals, out double result)) {
             return result;
         }
+
         // See https://stackoverflow.com/a/30225002 for why exponent's numerator and denominator are cast to int
         value = Simplify(value);
         exponent = Simplify(exponent);
@@ -354,28 +355,78 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return Pow(value, exponent);
     }
     /// <summary>
-    /// Returns the base e (natural) logarithm of <paramref name="value"/>.
+    /// Returns the base e (natural) logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static double Log(BigReal value) {
-        return BigInteger.Log(value.Numerator) - BigInteger.Log(value.Denominator);
+    public static BigReal Log(BigReal value, int decimals = 15) {
+        if (TryCalculateAsDouble(value, double.Log, decimals, out double result)) {
+            return result;
+        }
+
+        // Convert decimals to epsilon (e.g. 3 -> 0.001)
+        BigReal epsilon = One / Pow(Ten, decimals);
+
+        // https://stackoverflow.com/a/35971996
+        BigReal old_sum = Zero;
+        BigReal xmlxpl = (value - One) / (value + One);
+        BigReal xmlxpl_2 = xmlxpl * xmlxpl;
+        BigReal denom = One;
+        BigReal frac = xmlxpl;
+        BigReal term = frac;
+        BigReal sum = term;
+
+        while (true) {
+            old_sum = sum;
+            denom += 2;
+            frac *= xmlxpl_2;
+            sum += frac / denom;
+            if (Abs(sum - old_sum) <= epsilon) {
+                break;
+            }
+        }
+        return 2 * sum;
+    }
+    static BigReal ILogarithmicFunctions<BigReal>.Log(BigReal value) {
+        return Log(value);
     }
     /// <summary>
-    /// Returns the base <paramref name="baseValue"/> logarithm of <paramref name="value"/>.
+    /// Returns the base <paramref name="baseValue"/> logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static double Log(BigReal value, double baseValue) {
-        return BigInteger.Log(value.Numerator, baseValue) - BigInteger.Log(value.Denominator, baseValue);
+    public static BigReal Log(BigReal value, BigReal baseValue, int decimals = 15) {
+        if (TryCalculateAsDouble(value, baseValue, double.Log, decimals, out double result)) {
+            return result;
+        }
+
+        // https://math.stackexchange.com/a/107576
+        return Log(value, decimals) / Log(baseValue, decimals);
+    }
+    static BigReal ILogarithmicFunctions<BigReal>.Log(BigReal value, BigReal baseValue) {
+        return Log(value, baseValue);
     }
     /// <summary>
-    /// Returns the base 10 logarithm of <paramref name="value"/>.
+    /// Returns the base 10 logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static double Log10(BigReal value) {
-        return BigInteger.Log10(value.Numerator) - BigInteger.Log10(value.Denominator);
+    public static BigReal Log10(BigReal value, int decimals = 15) {
+        if (TryCalculateAsDouble(value, double.Log10, decimals, out double result)) {
+            return result;
+        }
+
+        return Log(value, Ten, decimals);
+    }
+    static BigReal ILogarithmicFunctions<BigReal>.Log10(BigReal value) {
+        return Log10(value);
     }
     /// <summary>
-    /// Returns the whole part of the base 2 logarithm of <paramref name="value"/>.
+    /// Returns the base 2 logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigInteger Log2(BigReal value) {
-        return BigInteger.Log2(value.Numerator) - BigInteger.Log2(value.Denominator);
+    public static BigReal Log2(BigReal value, int decimals = 15) {
+        if (TryCalculateAsDouble(value, double.Log2, decimals, out double result)) {
+            return result;
+        }
+
+        return Log(value, 2, decimals);
+    }
+    static BigReal ILogarithmicFunctions<BigReal>.Log2(BigReal value) {
+        return Log2(value);
     }
     /// <summary>
     /// Returns <paramref name="value"/> as a positive number.
