@@ -314,6 +314,6 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
             BigInteger columnMagnitude = BigInteger.Pow(10, pi.Length - i - 1);
             result = Multiply(pi[i] % 10, columnMagnitude) + result;
         }
-        return result;
+        return result / BigInteger.Pow(10, decimals - 1);
     }
 }
