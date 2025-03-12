@@ -84,9 +84,12 @@ public class BigRealTests(ITestOutputHelper Output) {
         AssertApproximateEqual(double.Acos(value), BigReal.Acos(value));
         AssertApproximateEqual(double.Atan(value), BigReal.Atan(value));
         AssertApproximateEqual(double.Atan2(value, value), BigReal.Atan2(value, value));
+        AssertApproximateEqual(double.E, BigReal.CalculateE(15));
+        AssertApproximateEqual(double.Pi, BigReal.CalculatePi(15));
+        AssertApproximateEqual(double.Tau, BigReal.CalculateTau(15));
     }
 
-    private static void AssertApproximateEqual(BigReal a, BigReal b, int decimals = 2) {
+    private static void AssertApproximateEqual(BigReal a, BigReal b, int decimals = 15) {
         BigReal delta = BigReal.Abs(a - b);
         BigReal epsilon = BigReal.One / BigReal.Pow(BigReal.Ten, decimals);
         Assert.True(delta < epsilon, $"{delta} > {epsilon}");

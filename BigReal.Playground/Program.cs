@@ -3,6 +3,7 @@
 Console.WriteLine(BigReal.CalculatePi(2));
 Console.WriteLine(BigReal.CalculatePi(10));
 Console.WriteLine(BigReal.CalculatePi(1000).ToString(1000));
+Console.WriteLine(BigReal.CalculateTau(1000).ToString(1000));
 
 Console.WriteLine(new BigReal(-50, -50));
 Console.WriteLine(new BigReal(-50, -50) < (1000000000));

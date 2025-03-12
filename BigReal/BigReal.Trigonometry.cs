@@ -266,6 +266,26 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         }
     }
     /// <summary>
+    /// Returns e, correct to <paramref name="decimals"/> decimal places.
+    /// </summary>
+    public static BigReal CalculateE(int decimals) {
+        // Convert decimals to epsilon (e.g. 3 -> 0.001)
+        BigReal epsilon = One / Pow(Ten, decimals);
+
+        // https://stackoverflow.com/a/43564002
+        BigReal result = One;
+        BigReal factorial = One;
+        BigReal term = One;
+        int n = 1;
+        while (Abs(term) > epsilon) {
+            factorial *= n;
+            term = 1m / factorial;
+            result += term;
+            n++;
+        }
+        return result;
+    }
+    /// <summary>
     /// Returns π, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculatePi(int decimals) {
@@ -315,5 +335,11 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
             result = Multiply(pi[i] % 10, columnMagnitude) + result;
         }
         return result / BigInteger.Pow(10, decimals - 1);
+    }
+    /// <summary>
+    /// Returns τ, correct to <paramref name="decimals"/> decimal places.
+    /// </summary>
+    public static BigReal CalculateTau(int decimals) {
+        return CalculatePi(decimals) * 2;
     }
 }
