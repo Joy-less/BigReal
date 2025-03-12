@@ -1135,7 +1135,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     ///   <item>1 if this value &gt; <paramref name="other"/></item>
     ///   <item>0 if this value == <paramref name="other"/></item>
     ///   <item>-1 if this value &lt; <paramref name="other"/></item>
-    ///   <item>1 if other is <see langword="null"/> (<see langword="null"/> is less than any value)</item>
+    ///   <item>1 if <paramref name="other"/> is <see langword="null"/> (<see langword="null"/> is less than any value)</item>
     ///   <item>throws an exception if <paramref name="other"/> is not <see cref="BigReal"/></item>
     /// </list>
     /// </summary>
