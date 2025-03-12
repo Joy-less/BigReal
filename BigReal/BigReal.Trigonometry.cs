@@ -6,15 +6,15 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Represents 15 digits of the natural logarithmic base, specified by the constant, e.
     /// </summary>
-    public static BigReal E { get; } = CalculateE(15);
+    public static BigReal E { get; } = double.E;
     /// <summary>
     /// Represents 15 digits of the ratio of the circumference of a circle to its diameter, specified by the constant, π.
     /// </summary>
-    public static BigReal Pi { get; } = CalculatePi(15);
+    public static BigReal Pi { get; } = double.Pi;
     /// <summary>
     /// Represents 15 digits of the number of radians in one turn, specified by the constant, τ.
     /// </summary>
-    public static BigReal Tau { get; } = CalculateTau(15);
+    public static BigReal Tau { get; } = double.Tau;
 
     /// <summary>
     /// Converts the given <paramref name="radians"/> to degrees.
@@ -58,7 +58,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
                 break;
             }
         }
-        return Round(cur, decimals);
+        return cur;
     }
     static BigReal ITrigonometricFunctions<BigReal>.Sin(BigReal radians) {
         return Sin(radians);
@@ -92,7 +92,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
                 break;
             }
         }
-        return Round(s, decimals);
+        return s;
     }
     static BigReal ITrigonometricFunctions<BigReal>.Cos(BigReal radians) {
         return Cos(radians);
@@ -113,7 +113,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         if (TryCalculateAsDouble(radians, double.Tan, decimals, out double result)) {
             return result;
         }
-        return Round(Sin(radians, decimals) / Cos(radians, decimals), decimals);
+        return Sin(radians, decimals) / Cos(radians, decimals);
     }
     static BigReal ITrigonometricFunctions<BigReal>.Tan(BigReal radians) {
         return Tan(radians);
@@ -238,7 +238,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
                 break;
             }
         }
-        return Round(sum, decimals);
+        return sum;
     }
     static BigReal ITrigonometricFunctions<BigReal>.Atan(BigReal radians) {
         return Atan(radians);
@@ -295,7 +295,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
                 break;
             }
         }
-        return Round(result, decimals);
+        return result;
     }
     /// <summary>
     /// Returns π, correct to <paramref name="decimals"/> decimal places.
@@ -306,51 +306,52 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         // https://stackoverflow.com/a/11679007
         decimals += 2;
 
-        int xrLength = (decimals * 10 / 3) + 2;
-        Span<uint> x = xrLength <= MaxStackallocLength ? stackalloc uint[xrLength] : new uint[xrLength];
-        Span<uint> r = xrLength <= MaxStackallocLength ? stackalloc uint[xrLength] : new uint[xrLength];
+        int bufferLength = (decimals * 10 / 3) + 2;
+        Span<uint> dividend = bufferLength <= MaxStackallocLength ? stackalloc uint[bufferLength] : new uint[bufferLength];
+        Span<uint> remainder = bufferLength <= MaxStackallocLength ? stackalloc uint[bufferLength] : new uint[bufferLength];
 
-        Span<uint> pi = decimals <= MaxStackallocLength ? stackalloc uint[decimals] : new uint[decimals];
+        Span<uint> digits = decimals <= MaxStackallocLength ? stackalloc uint[decimals] : new uint[decimals];
 
-        for (int j = 0; j < x.Length; j++) {
-            x[j] = 20;
+        for (int j = 0; j < dividend.Length; j++) {
+            dividend[j] = 20;
         }
 
         for (int i = 0; i < decimals; i++) {
             uint carry = 0;
-            for (int j = 0; j < x.Length; j++) {
-                uint num = (uint)(x.Length - j - 1);
-                uint dem = num * 2 + 1;
+            for (int j = 0; j < dividend.Length; j++) {
+                uint numerator = (uint)(dividend.Length - j - 1);
+                uint denominator = (numerator * 2) + 1;
 
-                x[j] += carry;
+                dividend[j] += carry;
 
-                uint q = x[j] / dem;
-                r[j] = x[j] % dem;
+                uint quotient = dividend[j] / denominator;
+                remainder[j] = dividend[j] % denominator;
 
-                carry = q * num;
+                carry = quotient * numerator;
             }
 
-            pi[i] = x[^1] / 10;
+            digits[i] = dividend[^1] / 10;
 
-            r[x.Length - 1] = x[^1] % 10;
+            remainder[dividend.Length - 1] = dividend[^1] % 10;
 
-            for (int j = 0; j < x.Length; j++) {
-                x[j] = r[j] * 10;
+            for (int j = 0; j < dividend.Length; j++) {
+                dividend[j] = remainder[j] * 10;
             }
         }
 
-        BigInteger result = 0;
-        uint c = 0;
+        BigInteger resultDigits = 0;
+        uint carryOver = 0;
 
-        for (int i = pi.Length - 1; i >= 0; i--) {
-            pi[i] += c;
-            c = pi[i] / 10;
+        for (int i = digits.Length - 1; i >= 0; i--) {
+            digits[i] += carryOver;
+            carryOver = digits[i] / 10;
 
-            BigInteger columnMagnitude = BigInteger.Pow(10, pi.Length - i - 1);
-            result += BigInteger.Multiply(pi[i] % 10, columnMagnitude);
+            BigInteger columnMagnitude = BigInteger.Pow(10, digits.Length - i - 1);
+            resultDigits += BigInteger.Multiply(digits[i] % 10, columnMagnitude);
         }
 
-        return Round((BigReal)result / BigInteger.Pow(10, decimals - 1), decimals - 2);
+        BigReal result = (BigReal)resultDigits / BigInteger.Pow(10, decimals - 1);
+        return result;
     }
     /// <summary>
     /// Returns τ, correct to <paramref name="decimals"/> decimal places.

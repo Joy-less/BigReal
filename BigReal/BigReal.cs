@@ -632,7 +632,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
             }
             guess = nextGuess;
         }
-        return Round(guess, decimals);
+        return guess;
     }
     static BigReal IRootFunctions<BigReal>.RootN(BigReal value, int root) {
         return RootN(value, root);
