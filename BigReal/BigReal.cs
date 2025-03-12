@@ -477,44 +477,44 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         }
         switch (mode) {
             case MidpointRounding.ToEven: {
-                    if (Abs(GetFractionalPart(value)) == OneHalf) {
-                        // Round away from zero
-                        value += OneHalf * value.Sign;
-                        // Move closer to zero if not even
-                        if (IsOddInteger(value)) {
-                            value -= One * value.Sign;
-                        }
-                        return value;
+                if (Abs(GetFractionalPart(value)) == OneHalf) {
+                    // Round away from zero
+                    value += OneHalf * value.Sign;
+                    // Move closer to zero if not even
+                    if (IsOddInteger(value)) {
+                        value -= One * value.Sign;
                     }
-                    else {
-                        goto case MidpointRounding.AwayFromZero;
-                    }
+                    return value;
                 }
+                else {
+                    goto case MidpointRounding.AwayFromZero;
+                }
+            }
             case MidpointRounding.AwayFromZero: {
-                    if (GetFractionalPart(value) >= OneHalf) {
-                        return Ceiling(value);
-                    }
-                    else {
-                        return Floor(value);
-                    }
-                }
-            case MidpointRounding.ToZero: {
-                    if (IsNegative(value)) {
-                        return Ceiling(value);
-                    }
-                    else {
-                        return Floor(value);
-                    }
-                }
-            case MidpointRounding.ToNegativeInfinity: {
-                    return Floor(value);
-                }
-            case MidpointRounding.ToPositiveInfinity: {
+                if (GetFractionalPart(value) >= OneHalf) {
                     return Ceiling(value);
                 }
-            default: {
-                    throw new NotImplementedException(mode.ToString());
+                else {
+                    return Floor(value);
                 }
+            }
+            case MidpointRounding.ToZero: {
+                if (IsNegative(value)) {
+                    return Ceiling(value);
+                }
+                else {
+                    return Floor(value);
+                }
+            }
+            case MidpointRounding.ToNegativeInfinity: {
+                return Floor(value);
+            }
+            case MidpointRounding.ToPositiveInfinity: {
+                return Ceiling(value);
+            }
+            default: {
+                throw new NotImplementedException(mode.ToString());
+            }
         }
     }
     /// <summary>
