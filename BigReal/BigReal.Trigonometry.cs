@@ -301,8 +301,52 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns π, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculatePi(int decimals) {
-        // https://stackoverflow.com/a/40657
-        return 4 * Atan(One, decimals);
+        // https://stackoverflow.com/a/11679007
+        decimals += 2;
+
+        Span<uint> x = new uint[(decimals * 10 / 3) + 2];
+        Span<uint> r = new uint[(decimals * 10 / 3) + 2];
+
+        Span<uint> pi = new uint[decimals];
+
+        for (int j = 0; j < x.Length; j++) {
+            x[j] = 20;
+        }
+
+        for (int i = 0; i < decimals; i++) {
+            uint carry = 0;
+            for (int j = 0; j < x.Length; j++) {
+                uint num = (uint)(x.Length - j - 1);
+                uint dem = num * 2 + 1;
+
+                x[j] += carry;
+
+                uint q = x[j] / dem;
+                r[j] = x[j] % dem;
+
+                carry = q * num;
+            }
+
+            pi[i] = x[^1] / 10;
+
+            r[x.Length - 1] = x[^1] % 10;
+
+            for (int j = 0; j < x.Length; j++) {
+                x[j] = r[j] * 10;
+            }
+        }
+
+        BigReal result = 0;
+        uint c = 0;
+
+        for (int i = pi.Length - 1; i >= 0; i--) {
+            pi[i] += c;
+            c = pi[i] / 10;
+
+            BigInteger columnMagnitude = BigInteger.Pow(10, pi.Length - i - 1);
+            result = Multiply(pi[i] % 10, columnMagnitude) + result;
+        }
+        return Round(result / BigInteger.Pow(10, decimals - 1), decimals - 2);
     }
     /// <summary>
     /// Returns τ, correct to <paramref name="decimals"/> decimal places.
