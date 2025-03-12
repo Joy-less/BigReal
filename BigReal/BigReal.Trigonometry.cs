@@ -304,8 +304,8 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         // https://stackoverflow.com/a/11679007
         decimals++;
 
-        Span<uint> x = new uint[decimals * 10 / 3 + 2];
-        Span<uint> r = new uint[decimals * 10 / 3 + 2];
+        Span<uint> x = new uint[(decimals * 10 / 3) + 2];
+        Span<uint> r = new uint[(decimals * 10 / 3) + 2];
 
         Span<uint> pi = new uint[decimals];
 
@@ -336,7 +336,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
             }
         }
 
-        BigReal result = Zero;
+        BigReal result = 0;
         uint c = 0;
 
         for (int i = pi.Length - 1; i >= 0; i--) {
