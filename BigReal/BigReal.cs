@@ -25,23 +25,23 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// <summary>
     /// A value representing the number 1.
     /// </summary>
-    public static BigReal One { get; } = new(BigInteger.One);
+    public static BigReal One { get; } = new(1);
     /// <summary>
     /// A value representing the number 10.
     /// </summary>
-    public static BigReal Ten { get; } = new(new BigInteger(10));
+    public static BigReal Ten { get; } = new(10);
     /// <summary>
     /// A value representing the number 0.
     /// </summary>
-    public static BigReal Zero { get; } = new(BigInteger.Zero);
+    public static BigReal Zero { get; } = new(0);
     /// <summary>
     /// A value representing the number -1.
     /// </summary>
-    public static BigReal NegativeOne { get; } = new(BigInteger.MinusOne);
+    public static BigReal NegativeOne { get; } = new(-1);
     /// <summary>
     /// A value representing the number 0.5.
     /// </summary>
-    public static BigReal OneHalf { get; } = new(BigInteger.One, 2);
+    public static BigReal OneHalf { get; } = new(1, 2);
     /// <summary>
     /// A value representing a value that is not a number.
     /// </summary>
@@ -83,8 +83,8 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// <summary>
     /// Constructs <see cref="BigReal"/> from 0.
     /// </summary>
-    public BigReal() {
-        (Numerator, Denominator) = (BigInteger.Zero, BigInteger.One);
+    public BigReal()
+        : this(BigInteger.Zero, BigInteger.One) {
     }
     /// <summary>
     /// Constructs <see cref="BigReal"/> from a numerator and denominator.
@@ -95,8 +95,8 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// <summary>
     /// Constructs <see cref="BigReal"/> from <see cref="BigInteger"/>.
     /// </summary>
-    public BigReal(BigInteger value) {
-        (Numerator, Denominator) = (value, BigInteger.One);
+    public BigReal(BigInteger value)
+        : this(value, BigInteger.One) {
     }
     /// <summary>
     /// Constructs <see cref="BigReal"/> from <see cref="sbyte"/>.
