@@ -268,7 +268,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Returns π, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal CalculatePi(int decimals = 100) {
+    public static BigReal CalculatePi(int decimals) {
         // https://stackoverflow.com/a/11679007
         decimals++;
 

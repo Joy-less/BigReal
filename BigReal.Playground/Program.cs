@@ -47,7 +47,7 @@ Console.WriteLine(Math.Pow(10, -2));
 Console.WriteLine(BigReal.Pow(4, -2));
 Console.WriteLine(BigReal.Pow(-4, 2));
 Console.WriteLine(BigReal.Sqrt(4));
-Console.WriteLine(BigReal.Root(4, -1));
+Console.WriteLine(BigReal.RootN(4, -1));
 
 Console.WriteLine(BigReal.Log(5));
 Console.WriteLine(BigReal.Log10(5));

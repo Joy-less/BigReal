@@ -10,7 +10,9 @@ namespace ExtendedNumerics;
 /// An arbitrary size and precision floating-point number stored as the quotient of two BigIntegers.
 /// </summary>
 [Serializable]
-public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEquatable<BigReal>, INumber<BigReal>, IConvertible {
+public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEquatable<BigReal>, INumber<BigReal>, IFloatingPointConstants<BigReal>,
+    IPowerFunctions<BigReal>, IRootFunctions<BigReal>, IConvertible
+{
     /// <summary>
     /// The dividend (top of the fraction).
     /// </summary>
@@ -331,7 +333,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// <summary>
     /// Returns <paramref name="value"/> to the power of <paramref name="exponent"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Pow(BigReal value, BigReal exponent, int decimals = 10) {
+    public static BigReal Pow(BigReal value, BigReal exponent, int decimals = 15) {
         if (IsInteger(exponent)) {
             return Pow(value, (int)exponent);
         }
@@ -343,7 +345,10 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         exponent = Simplify(exponent);
         int power = (int)exponent.Numerator;
         int root = (int)exponent.Denominator;
-        return Root(Pow(value, power), root, decimals);
+        return RootN(Pow(value, power), root, decimals);
+    }
+    static BigReal IPowerFunctions<BigReal>.Pow(BigReal value, BigReal exponent) {
+        return Pow(value, exponent);
     }
     /// <summary>
     /// Returns the base e (natural) logarithm of <paramref name="value"/>.
@@ -572,24 +577,33 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// <summary>
     /// Returns the square root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Sqrt(BigReal value, int decimals = 100) {
-        return Root(value, 2, decimals);
+    public static BigReal Sqrt(BigReal value, int decimals = 15) {
+        return RootN(value, 2, decimals);
+    }
+    static BigReal IRootFunctions<BigReal>.Sqrt(BigReal value) {
+        return Sqrt(value);
     }
     /// <summary>
     /// Returns the cube root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Cbrt(BigReal value, int decimals = 100) {
-        return Root(value, 3, decimals);
+    public static BigReal Cbrt(BigReal value, int decimals = 15) {
+        return RootN(value, 3, decimals);
+    }
+    static BigReal IRootFunctions<BigReal>.Cbrt(BigReal value) {
+        return Cbrt(value);
     }
     /// <summary>
-    /// Returns the nth root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
+    /// Returns the n-th root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Root(BigReal value, int root, int decimals = 100) {
+    public static BigReal RootN(BigReal value, int root, int decimals = 15) {
         if (IsZero(value) || IsOne(value)) {
             return value;
         }
         if (!IsFinite(value)) {
             return value;
+        }
+        if (TryCalculateAsDouble(value, root, double.RootN, decimals, out double result)) {
+            return result;
         }
 
         // Can't root a negative number
@@ -615,6 +629,19 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
             guess = nextGuess;
         }
         return guess;
+    }
+    static BigReal IRootFunctions<BigReal>.RootN(BigReal value, int root) {
+        return RootN(value, root);
+    }
+    /// <summary>
+    /// Returns the hypotenuse of <paramref name="x"/> and <paramref name="y"/>, correct to <paramref name="decimals"/> decimal places.<br/>
+    /// This is the same as <c>sqrt(pow(<paramref name="x"/>, 2) + pow(<paramref name="y"/>, 2))</c>.
+    /// </summary>
+    public static BigReal Hypot(BigReal x, BigReal y, int decimals = 15) {
+        return Sqrt(Pow(x, 2) + Pow(y, 2), decimals);
+    }
+    static BigReal IRootFunctions<BigReal>.Hypot(BigReal x, BigReal y) {
+        return Hypot(x, y);
     }
     /// <summary>
     /// Factorizes the numerator and denominator to their canonical form.
@@ -799,6 +826,50 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return TryParse(input.ToString(), style, provider, out result);
     }
     /// <summary>
+    /// Creates a <see cref="BigReal"/> from the given <typeparamref name="T"/>.
+    /// </summary>
+    public static BigReal Create<T>(T value) where T : INumberBase<T> {
+        return value switch {
+            bool boolValue => boolValue ? 1 : 0,
+            sbyte sbyteValue => sbyteValue,
+            byte byteValue => byteValue,
+            short shortValue => shortValue,
+            ushort ushortValue => ushortValue,
+            int intValue => intValue,
+            uint uintValue => uintValue,
+            long longValue => longValue,
+            ulong ulongValue => ulongValue,
+            Int128 int128Value => int128Value,
+            UInt128 uint128Value => uint128Value,
+            char charValue => charValue,
+            nint nintValue => nintValue,
+            nuint nuintValue => nuintValue,
+            BigInteger bigIntegerValue => bigIntegerValue,
+            Half halfValue => halfValue,
+            float floatValue => floatValue,
+            double doubleValue => doubleValue,
+            decimal decimalValue => decimalValue,
+            _ => Parse(value.ToString(null, null)),
+        };
+    }
+    /// <summary>
+    /// Tries to create a <see cref="BigReal"/> from the given <typeparamref name="T"/>.
+    /// </summary>
+    public static bool TryCreate<T>(T? value, out BigReal result) where T : INumberBase<T> {
+        if (value is null) {
+            result = default;
+            return false;
+        }
+        try {
+            result = Create(value);
+            return true;
+        }
+        catch (Exception) {
+            result = default;
+            return false;
+        }
+    }
+    /// <summary>
     /// Returns:
     /// <list type="bullet">
     ///   <item>1 if <paramref name="left"/> &gt; <paramref name="right"/></item>
@@ -935,42 +1006,11 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         }
         return (weight - from) / (to - from);
     }
-
     /// <summary>
-    /// Performs a calculation by converting <paramref name="input"/> to <see langword="double"/> if within range and precision.
+    /// Returns whether <paramref name="input"/> is within the supported range of <typeparamref name="T"/>.
     /// </summary>
-    private static bool TryCalculateAsDouble(BigReal input, Func<double, double> calculate, int decimals, out double result) {
-        // Ensure not too precise
-        if (decimals > 15) {
-            result = default;
-            return false;
-        }
-        // Ensure not too large
-        if (input > double.MaxValue || input < double.MinValue) {
-            result = default;
-            return false;
-        }
-        // Accept double calculation
-        result = calculate((double)input);
-        return true;
-    }
-    /// <summary>
-    /// Performs a calculation by converting <paramref name="input1"/> and <paramref name="input2"/> to <see langword="double"/> if within range and precision.
-    /// </summary>
-    private static bool TryCalculateAsDouble(BigReal input1, BigReal input2, Func<double, double, double> calculate, int decimals, out double result) {
-        // Ensure not too precise
-        if (decimals > 15) {
-            result = default;
-            return false;
-        }
-        // Ensure not too large
-        if (input1 > double.MaxValue || input1 < double.MinValue || input2 > double.MaxValue || input2 < double.MinValue) {
-            result = default;
-            return false;
-        }
-        // Accept double calculation
-        result = calculate((double)input1, (double)input2);
-        return true;
+    private static bool IsInRangeOf<T>(BigReal input) where T : INumberBase<T>, IMinMaxValue<T> {
+        return input > Create(T.MaxValue) || input < Create(T.MinValue);
     }
 
     #endregion
@@ -1459,27 +1499,27 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         return MinMagnitude(x, y);
     }
     /// <inheritdoc/>
-    public static bool TryConvertFromChecked<TOther>(TOther value, out BigReal result) where TOther : INumberBase<TOther> {
-        return TryParse(value.ToString(null, null), out result);
+    static bool INumberBase<BigReal>.TryConvertFromChecked<TOther>(TOther value, out BigReal result) {
+        return TryCreate(value, out result);
     }
     /// <inheritdoc/>
-    public static bool TryConvertFromSaturating<TOther>(TOther value, out BigReal result) where TOther : INumberBase<TOther> {
-        return TryConvertFromChecked(value, out result);
+    static bool INumberBase<BigReal>.TryConvertFromSaturating<TOther>(TOther value, out BigReal result) {
+        return TryCreate(value, out result);
     }
     /// <inheritdoc/>
-    public static bool TryConvertFromTruncating<TOther>(TOther value, out BigReal result) where TOther : INumberBase<TOther> {
-        return TryConvertFromChecked(value, out result);
+    static bool INumberBase<BigReal>.TryConvertFromTruncating<TOther>(TOther value, out BigReal result) {
+        return TryCreate(value, out result);
     }
     /// <inheritdoc/>
-    public static bool TryConvertToChecked<TOther>(BigReal value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
+    static bool INumberBase<BigReal>.TryConvertToChecked<TOther>(BigReal value, [MaybeNullWhen(false)] out TOther result) {
         return TOther.TryConvertFromChecked(value, out result);
     }
     /// <inheritdoc/>
-    public static bool TryConvertToSaturating<TOther>(BigReal value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
+    static bool INumberBase<BigReal>.TryConvertToSaturating<TOther>(BigReal value, [MaybeNullWhen(false)] out TOther result) {
         return TOther.TryConvertFromSaturating(value, out result);
     }
     /// <inheritdoc/>
-    public static bool TryConvertToTruncating<TOther>(BigReal value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther> {
+    static bool INumberBase<BigReal>.TryConvertToTruncating<TOther>(BigReal value, [MaybeNullWhen(false)] out TOther result) {
         return TOther.TryConvertFromTruncating(value, out result);
     }
     /// <inheritdoc/>
