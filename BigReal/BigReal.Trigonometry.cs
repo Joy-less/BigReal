@@ -347,10 +347,10 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
             carryOver = digits[i] / 10;
 
             BigInteger columnMagnitude = BigInteger.Pow(10, digits.Length - i - 1);
-            resultDigits += BigInteger.Multiply(digits[i] % 10, columnMagnitude);
+            resultDigits += (digits[i] % 10) * columnMagnitude;
         }
 
-        BigReal result = (BigReal)resultDigits / BigInteger.Pow(10, decimals - 1);
+        BigReal result = new BigReal(resultDigits) / BigInteger.Pow(10, decimals - 1);
         return result;
     }
     /// <summary>
