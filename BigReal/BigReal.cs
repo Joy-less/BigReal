@@ -623,7 +623,8 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         BigReal guess = value / root;
         while (true) {
             BigReal nextGuess = (((root - 1) * guess) + (value / Pow(guess, root - 1))) / root;
-            if (Abs(nextGuess - guess) < epsilon) {
+            if (Abs(nextGuess - guess) <= epsilon) {
+                guess = nextGuess;
                 break;
             }
             guess = nextGuess;
