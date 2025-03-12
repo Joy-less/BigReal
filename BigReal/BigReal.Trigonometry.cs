@@ -4,17 +4,17 @@ namespace ExtendedNumerics;
 
 partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
-    /// Represents 100 digits of the natural logarithmic base, specified by the constant, e.
+    /// Represents 15 digits of the natural logarithmic base, specified by the constant, e.
     /// </summary>
-    public static BigReal E { get; } = Parse("2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274");
+    public static BigReal E { get; } = CalculateE(15);
     /// <summary>
-    /// Represents 100 digits of the ratio of the circumference of a circle to its diameter, specified by the constant, π.
+    /// Represents 15 digits of the ratio of the circumference of a circle to its diameter, specified by the constant, π.
     /// </summary>
-    public static BigReal Pi { get; } = Parse("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679");
+    public static BigReal Pi { get; } = CalculatePi(15);
     /// <summary>
-    /// Represents 100 digits of the number of radians in one turn, specified by the constant, τ.
+    /// Represents 15 digits of the number of radians in one turn, specified by the constant, τ.
     /// </summary>
-    public static BigReal Tau { get; } = Parse("6.2831853071795864769252867665590057683943387987502116419498891846156328125724179972560696506842341359");
+    public static BigReal Tau { get; } = CalculateTau(15);
 
     /// <summary>
     /// Converts the given <paramref name="radians"/> to degrees.
@@ -58,7 +58,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
                 break;
             }
         }
-        return cur;
+        return Round(cur, decimals);
     }
     static BigReal ITrigonometricFunctions<BigReal>.Sin(BigReal radians) {
         return Sin(radians);
@@ -92,7 +92,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
                 break;
             }
         }
-        return s;
+        return Round(s, decimals);
     }
     static BigReal ITrigonometricFunctions<BigReal>.Cos(BigReal radians) {
         return Cos(radians);
@@ -113,7 +113,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         if (TryCalculateAsDouble(radians, double.Tan, decimals, out double result)) {
             return result;
         }
-        return Sin(radians, decimals) / Cos(radians, decimals);
+        return Round(Sin(radians, decimals) / Cos(radians, decimals), decimals);
     }
     static BigReal ITrigonometricFunctions<BigReal>.Tan(BigReal radians) {
         return Tan(radians);
@@ -238,7 +238,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
                 break;
             }
         }
-        return sum;
+        return Round(sum, decimals);
     }
     static BigReal ITrigonometricFunctions<BigReal>.Atan(BigReal radians) {
         return Atan(radians);
@@ -295,14 +295,14 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
                 break;
             }
         }
-        return result;
+        return Round(result, decimals);
     }
     /// <summary>
     /// Returns π, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculatePi(int decimals) {
         // https://stackoverflow.com/a/11679007
-        decimals++;
+        decimals += 2;
 
         Span<uint> x = new uint[(decimals * 10 / 3) + 2];
         Span<uint> r = new uint[(decimals * 10 / 3) + 2];
@@ -329,7 +329,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
 
             pi[i] = x[^1] / 10;
 
-            r[x.Length - 1] = x[^1] % 10; ;
+            r[x.Length - 1] = x[^1] % 10;
 
             for (int j = 0; j < x.Length; j++) {
                 x[j] = r[j] * 10;
@@ -346,7 +346,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
             BigInteger columnMagnitude = BigInteger.Pow(10, pi.Length - i - 1);
             result = Multiply(pi[i] % 10, columnMagnitude) + result;
         }
-        return result / BigInteger.Pow(10, decimals - 1);
+        return Round(result / BigInteger.Pow(10, decimals - 1), decimals - 2);
     }
     /// <summary>
     /// Returns τ, correct to <paramref name="decimals"/> decimal places.

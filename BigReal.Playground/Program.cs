@@ -1,6 +1,6 @@
 ﻿using ExtendedNumerics;
 
-Console.WriteLine(BigReal.CalculatePi(2));
+Console.WriteLine(BigReal.CalculatePi(4));
 Console.WriteLine(BigReal.CalculatePi(10));
 Console.WriteLine(BigReal.CalculatePi(1000).ToString(1000));
 Console.WriteLine(BigReal.CalculateTau(1000).ToString(1000));

@@ -316,7 +316,10 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         if (!IsFinite(value)) {
             return value;
         }
-        if (value.Numerator.IsZero) {
+        if (IsZero(value)) {
+            return value;
+        }
+        if (exponent is 1) {
             return value;
         }
         if (exponent < 0) {
@@ -629,7 +632,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
             }
             guess = nextGuess;
         }
-        return guess;
+        return Round(guess, decimals);
     }
     static BigReal IRootFunctions<BigReal>.RootN(BigReal value, int root) {
         return RootN(value, root);
@@ -1025,16 +1028,16 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     #region Instance Methods
 
     /// <summary>
-    /// Stringifies this value as a decimal, truncating at 100 decimal places.
+    /// Stringifies this value as a decimal, truncating at 15 decimal places.
     /// </summary>
     public override string ToString() {
-        return ToString(decimals: 100);
+        return ToString(null);
     }
     /// <summary>
-    /// Stringifies this value as a decimal, truncating at 100 decimal places.
+    /// Stringifies this value as a decimal, truncating at 15 decimal places.
     /// </summary>
     public string ToString(IFormatProvider? provider) {
-        return ToString(decimals: 100, provider);
+        return ToString(decimals: 15, provider);
     }
     /// <summary>
     /// Stringifies this value as a decimal, truncating at <paramref name="decimals"/> decimal places.<br/>

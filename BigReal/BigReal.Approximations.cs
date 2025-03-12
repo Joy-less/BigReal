@@ -20,6 +20,7 @@ partial struct BigReal {
     private static bool TryCalculateAsDouble(BigReal input, Func<double, double> calculate, int decimals, out double result) {
         if (decimals <= DoubleReliableDecimals && IsInRangeOf<double>(input)) {
             result = calculate((double)input);
+            result = double.Round(result, decimals, MidpointRounding.AwayFromZero);
             return true;
         }
         result = default;
@@ -29,6 +30,7 @@ partial struct BigReal {
     private static bool TryCalculateAsDouble(BigReal input1, BigReal input2, Func<double, double, double> calculate, int decimals, out double result) {
         if (decimals <= DoubleReliableDecimals && IsInRangeOf<double>(input1) && IsInRangeOf<double>(input2)) {
             result = calculate((double)input1, (double)input2);
+            result = double.Round(result, decimals, MidpointRounding.AwayFromZero);
             return true;
         }
         result = default;
@@ -38,6 +40,7 @@ partial struct BigReal {
     private static bool TryCalculateAsDouble(BigReal input1, int input2, Func<double, int, double> calculate, int decimals, out double result) {
         if (decimals <= DoubleReliableDecimals && IsInRangeOf<double>(input1)) {
             result = calculate((double)input1, input2);
+            result = double.Round(result, decimals, MidpointRounding.AwayFromZero);
             return true;
         }
         result = default;
