@@ -1143,8 +1143,8 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
         if (other is null) {
             return 1;
         }
-        else if (other is BigReal otherBigFloat) {
-            return CompareTo(otherBigFloat);
+        else if (other is BigReal otherBigReal) {
+            return CompareTo(otherBigReal);
         }
         else {
             throw new ArgumentException($"{nameof(other)} is not {nameof(BigReal)}");
@@ -1160,7 +1160,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Returns whether <paramref name="other"/> is a value and this value is exactly equal to <paramref name="other"/>.
     /// </summary>
     public override bool Equals(object? other) {
-        return other is BigReal otherBigFloat && Equals(otherBigFloat);
+        return other is BigReal otherBigReal && Equals(otherBigReal);
     }
     /// <summary>
     /// Returns a dictionary hash code for the numerator and denominator of this value.
