@@ -43,17 +43,20 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         BigReal epsilon = One / Pow(Ten, decimals);
 
         // https://stackoverflow.com/a/2284929
-        int i = 1;
         BigReal cur = radians;
         BigReal acc = 1;
         BigInteger fact = 1;
         BigReal pow = radians;
-        while (Abs(acc) > epsilon) {
-            fact *= (2 * i) * ((2 * i) + 1);
+        int n = 1;
+        while (true) {
+            fact *= (2 * n) * ((2 * n) + 1);
             pow *= -1 * radians * radians;
             acc = pow / fact;
             cur += acc;
-            i++;
+            n++;
+            if (Abs(acc) <= epsilon) {
+                break;
+            }
         }
         return cur;
     }
@@ -78,13 +81,16 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         BigReal epsilon = One / Pow(Ten, decimals);
 
         // https://stackoverflow.com/a/2284969
-        int p = 0;
-        BigReal s = 1;
-        BigReal t = 1;
-        while (Abs(t / s) > epsilon) {
-            p++;
-            t = (-t * radians * radians) / ((2 * p - 1) * (2 * p));
+        BigReal s = One;
+        BigReal t = One;
+        int n = 0;
+        while (true) {
+            n++;
+            t = (-t * radians * radians) / ((2 * n - 1) * (2 * n));
             s += t;
+            if (Abs(t / s) <= epsilon) {
+                break;
+            }
         }
         return s;
     }
@@ -221,13 +227,16 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         BigReal epsilon = One / Pow(Ten, decimals);
 
         // https://stackoverflow.com/a/40077756
-        BigReal sum = Zero;
+        BigReal sum = 0;
         BigReal term = radians;
         int n = 0;
-        while (Abs(term) > epsilon) {
+        while (true) {
             term = (Pow(radians, (2 * n) + 1) * Pow(-1, n)) / ((2 * n) + 1);
             sum += term;
             n++;
+            if (Abs(term) <= epsilon) {
+                break;
+            }
         }
         return sum;
     }
@@ -273,15 +282,18 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         BigReal epsilon = One / Pow(Ten, decimals);
 
         // https://stackoverflow.com/a/43564002
-        BigReal result = One;
-        BigReal factorial = One;
-        BigReal term = One;
+        BigReal result = 1;
+        BigReal factorial = 1;
+        BigReal term;
         int n = 1;
-        while (Abs(term) > epsilon) {
+        while (true) {
             factorial *= n;
             term = 1m / factorial;
             result += term;
             n++;
+            if (Abs(term) <= epsilon) {
+                break;
+            }
         }
         return result;
     }
