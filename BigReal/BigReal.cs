@@ -180,7 +180,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Constructs <see cref="BigReal"/> from <see cref="Half"/>.
     /// </summary>
     public BigReal(Half value) {
-        if (value % Half.One == Half.Zero) {
+        if (Half.IsInteger(value)) {
             (Numerator, Denominator) = ((BigInteger)value, 1);
         }
         else {
@@ -191,7 +191,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Constructs <see cref="BigReal"/> from <see cref="float"/>.
     /// </summary>
     public BigReal(float value) {
-        if (value % 1 == 0) {
+        if (float.IsInteger(value)) {
             (Numerator, Denominator) = ((BigInteger)value, 1);
         }
         else {
@@ -202,7 +202,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Constructs <see cref="BigReal"/> from <see cref="double"/>.
     /// </summary>
     public BigReal(double value) {
-        if (value % 1 == 0) {
+        if (double.IsInteger(value)) {
             (Numerator, Denominator) = ((BigInteger)value, 1);
         }
         else {
@@ -213,7 +213,7 @@ public readonly partial struct BigReal : IComparable, IComparable<BigReal>, IEqu
     /// Constructs <see cref="BigReal"/> from <see cref="decimal"/>.
     /// </summary>
     public BigReal(decimal value) {
-        if (value % 1 == 0) {
+        if (decimal.IsInteger(value)) {
             (Numerator, Denominator) = ((BigInteger)value, 1);
         }
         else {
