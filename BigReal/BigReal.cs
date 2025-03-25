@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
+using System.Text;
 using LinkDotNet.StringBuilder;
 
 namespace ExtendedNumerics;
@@ -163,6 +164,12 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// </summary>
     public BigReal(char value)
         : this((BigInteger)value) {
+    }
+    /// <summary>
+    /// Constructs <see cref="BigReal"/> from <see cref="Rune"/>.
+    /// </summary>
+    public BigReal(Rune value)
+        : this((BigInteger)value.Value) {
     }
     /// <summary>
     /// Constructs <see cref="BigReal"/> from <see cref="nint"/>.
@@ -1474,6 +1481,10 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// Converts from <see cref="char"/> to <see cref="BigReal"/>.
     /// </summary>
     public static implicit operator BigReal(char value) => new(value);
+    /// <summary>
+    /// Converts from <see cref="Rune"/> to <see cref="BigReal"/>.
+    /// </summary>
+    public static implicit operator BigReal(Rune value) => new(value);
     /// <summary>
     /// Converts from <see cref="nint"/> to <see cref="BigReal"/>.
     /// </summary>
