@@ -308,10 +308,10 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         decimals += 2;
 
         int bufferLength = (decimals * 10 / 3) + 2;
-        Span<uint> dividend = (bufferLength <= (MaxStackallocBytes / sizeof(uint))) ? stackalloc uint[bufferLength] : new uint[bufferLength];
-        Span<uint> remainder = (bufferLength <= (MaxStackallocBytes / sizeof(uint))) ? stackalloc uint[bufferLength] : new uint[bufferLength];
+        Span<uint> dividend = (bufferLength <= MaxStackallocBytes / sizeof(uint)) ? stackalloc uint[bufferLength] : new uint[bufferLength];
+        Span<uint> remainder = (bufferLength <= MaxStackallocBytes / sizeof(uint)) ? stackalloc uint[bufferLength] : new uint[bufferLength];
 
-        Span<uint> digits = (decimals <= (MaxStackallocBytes / sizeof(uint))) ? stackalloc uint[decimals] : new uint[decimals];
+        Span<uint> digits = (decimals <= MaxStackallocBytes / sizeof(uint)) ? stackalloc uint[decimals] : new uint[decimals];
 
         for (int j = 0; j < dividend.Length; j++) {
             dividend[j] = 20;
