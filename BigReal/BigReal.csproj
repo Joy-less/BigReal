@@ -1,19 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <VersionPrefix>4.0</VersionPrefix>
+    <VersionPrefix>4.1</VersionPrefix>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
     <!-- IDE0130: Namespace does not match folder structure -->
     <NoWarn>IDE0130</NoWarn>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <IsAotCompatible>true</IsAotCompatible>
     <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <PackageId>BigReal</PackageId>
     <Description>An arbitrary size and precision rational number stored using two BigIntegers.</Description>
@@ -28,12 +29,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="/" />
     <None Include="../LICENSE" Pack="true" PackagePath="/" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="LinkDotNet.StringBuilder" Version="2.4.1" />
   </ItemGroup>
