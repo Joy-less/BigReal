@@ -1,10 +1,8 @@
 using System;
 using System.Numerics;
-using Xunit;
 using Xunit.Abstractions;
-using ExtendedNumerics;
 
-namespace UnitTests;
+namespace ExtendedNumerics.Tests;
 
 public class BigRealTests(ITestOutputHelper Output) {
     private readonly ITestOutputHelper Output = Output;
@@ -14,7 +12,7 @@ public class BigRealTests(ITestOutputHelper Output) {
     [InlineData(true)]
     public void TestToStringDigits(bool padDecimal) {
         for (int exp = 4; exp >= -4; exp--) {
-            decimal testDigits = (decimal)(Math.PI * Math.Pow(10.0, exp));
+            decimal testDigits = (decimal)(double.Pi * double.Pow(10.0, exp));
             Output.WriteLine(testDigits.ToString());
 
             BigReal bigFloat = new(testDigits);
@@ -22,37 +20,31 @@ public class BigRealTests(ITestOutputHelper Output) {
             Output.WriteLine(str);
 
             decimal compare = decimal.Parse(str);
-            Assert.Equal(testDigits, compare);
+            compare.ShouldBe(testDigits);
         }
     }
 
     [Fact]
     public void Signing() {
-        BigReal a = new(new BigInteger(1), new BigInteger(1));
-        BigReal b = new(new BigInteger(-1), new BigInteger(-1));
+        new BigReal(new BigInteger(1), new BigInteger(1)).ShouldBe(1);
+        new BigReal(new BigInteger(-1), new BigInteger(-1)).ShouldBe(1);
 
-        Assert.Equal(1, a);
-        Assert.Equal(1, b);
-
-        BigReal c = new(new BigInteger(-1), new BigInteger(1));
-        BigReal d = new(new BigInteger(1), new BigInteger(-1));
-
-        Assert.Equal(-1, c);
-        Assert.Equal(-1, d);
+        new BigReal(new BigInteger(-1), new BigInteger(1)).ShouldBe(-1);
+        new BigReal(new BigInteger(1), new BigInteger(-1)).ShouldBe(-1);
     }
 
     [Fact]
     public void Equality() {
         BigReal a = new(new BigInteger(1), new BigInteger(1));
         BigReal b = new(new BigInteger(2), new BigInteger(2));
-        Assert.Equal(b, a);
+        b.ShouldBe(a);
 
         BigReal c = new(new BigInteger(-1), new BigInteger(-1));
-        Assert.Equal(c, a);
+        c.ShouldBe(a);
 
         BigReal e = new(new BigInteger(-1), new BigInteger(1));
         BigReal f = new(new BigInteger(2), new BigInteger(-2));
-        Assert.Equal(e, f);
+        f.ShouldBe(e);
     }
 
     [Theory]
@@ -61,37 +53,37 @@ public class BigRealTests(ITestOutputHelper Output) {
     [InlineData(-1.5, -2)]
     [InlineData(-2.5, -2)]
     public void RoundToEven(double input, double expected) {
-        Assert.Equal(expected, BigReal.Round(input, MidpointRounding.ToEven));
+        BigReal.Round(input, MidpointRounding.ToEven).ShouldBe(expected);
     }
     [Theory]
     [InlineData(12.34, 1, 12.3)]
     [InlineData(12.34, -1, 10)]
     public void RoundToDecimals(double input, int digits, double expected) {
-        Assert.Equal(expected, BigReal.Round(input, digits));
+        BigReal.Round(input, digits).ShouldBe(expected);
     }
     [Theory]
     [InlineData(1)]
     [InlineData(0.3)]
     [InlineData(-0.5)]
     public void Trigonometry(double value) {
-        AssertApproximateEqual(double.Sin(value), BigReal.Sin(value));
-        AssertApproximateEqual(double.Cos(value), BigReal.Cos(value));
-        AssertApproximateEqual(double.Tan(value), BigReal.Tan(value));
-        AssertApproximateEqual(1 / double.Sin(value), BigReal.Cosec(value));
-        AssertApproximateEqual(1 / double.Cos(value), BigReal.Sec(value));
-        AssertApproximateEqual(1 / double.Tan(value), BigReal.Cot(value));
-        AssertApproximateEqual(double.Asin(value), BigReal.Asin(value));
-        AssertApproximateEqual(double.Acos(value), BigReal.Acos(value));
-        AssertApproximateEqual(double.Atan(value), BigReal.Atan(value));
-        AssertApproximateEqual(double.Atan2(value, value), BigReal.Atan2(value, value));
-        AssertApproximateEqual(double.E, BigReal.CalculateE(15));
-        AssertApproximateEqual(double.Pi, BigReal.CalculatePi(15));
-        AssertApproximateEqual(double.Tau, BigReal.CalculateTau(15));
+        ShouldBeApproximatelyEqual(double.Sin(value), BigReal.Sin(value));
+        ShouldBeApproximatelyEqual(double.Cos(value), BigReal.Cos(value));
+        ShouldBeApproximatelyEqual(double.Tan(value), BigReal.Tan(value));
+        ShouldBeApproximatelyEqual(1 / double.Sin(value), BigReal.Cosec(value));
+        ShouldBeApproximatelyEqual(1 / double.Cos(value), BigReal.Sec(value));
+        ShouldBeApproximatelyEqual(1 / double.Tan(value), BigReal.Cot(value));
+        ShouldBeApproximatelyEqual(double.Asin(value), BigReal.Asin(value));
+        ShouldBeApproximatelyEqual(double.Acos(value), BigReal.Acos(value));
+        ShouldBeApproximatelyEqual(double.Atan(value), BigReal.Atan(value));
+        ShouldBeApproximatelyEqual(double.Atan2(value, value), BigReal.Atan2(value, value));
+        ShouldBeApproximatelyEqual(double.E, BigReal.CalculateE(15));
+        ShouldBeApproximatelyEqual(double.Pi, BigReal.CalculatePi(15));
+        ShouldBeApproximatelyEqual(double.Tau, BigReal.CalculateTau(15));
     }
 
-    private static void AssertApproximateEqual(BigReal a, BigReal b, int decimals = 15) {
+    private static void ShouldBeApproximatelyEqual(BigReal a, BigReal b, int decimals = 15) {
         BigReal delta = BigReal.Abs(a - b);
         BigReal epsilon = BigReal.One / BigReal.Pow(BigReal.Ten, decimals);
-        Assert.True(delta < epsilon, $"{delta} > {epsilon}");
+        (delta < epsilon).ShouldBeTrue($"{delta} > {epsilon}");
     }
 }
