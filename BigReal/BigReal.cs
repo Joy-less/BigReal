@@ -188,7 +188,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// </summary>
     public BigReal(Half value) {
         if (Half.IsInteger(value)) {
-            (Numerator, Denominator) = ((BigInteger)value, 1);
+            (Numerator, Denominator) = ((BigInteger)value, BigInteger.One);
         }
         else {
             (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
@@ -199,7 +199,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// </summary>
     public BigReal(float value) {
         if (float.IsInteger(value)) {
-            (Numerator, Denominator) = ((BigInteger)value, 1);
+            (Numerator, Denominator) = ((BigInteger)value, BigInteger.One);
         }
         else {
             (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
@@ -210,7 +210,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// </summary>
     public BigReal(double value) {
         if (double.IsInteger(value)) {
-            (Numerator, Denominator) = ((BigInteger)value, 1);
+            (Numerator, Denominator) = ((BigInteger)value, BigInteger.One);
         }
         else {
             (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
@@ -221,7 +221,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// </summary>
     public BigReal(decimal value) {
         if (decimal.IsInteger(value)) {
-            (Numerator, Denominator) = ((BigInteger)value, 1);
+            (Numerator, Denominator) = ((BigInteger)value, BigInteger.One);
         }
         else {
             (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
