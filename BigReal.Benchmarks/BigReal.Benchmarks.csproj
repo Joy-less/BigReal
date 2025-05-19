@@ -10,10 +10,10 @@
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageReference Include="BigFloat" Version="2.0.0" />
-    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.3.40" />
+    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.4.132" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BigReal\BigReal.csproj" />
+    <ProjectReference Include="../BigReal/BigReal.csproj" />
   </ItemGroup>
 </Project>

@@ -8,6 +8,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\BigReal\BigReal.csproj" />
+    <ProjectReference Include="../BigReal/BigReal.csproj" />
   </ItemGroup>
 </Project>
