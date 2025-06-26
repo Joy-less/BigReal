@@ -892,7 +892,6 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// </summary>
     public static BigReal Create<T>(T value) where T : INumberBase<T> {
         return value switch {
-            bool boolValue => boolValue ? 1 : 0,
             sbyte sbyteValue => sbyteValue,
             byte byteValue => byteValue,
             short shortValue => shortValue,
