@@ -911,6 +911,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             float floatValue => floatValue,
             double doubleValue => doubleValue,
             decimal decimalValue => decimalValue,
+            BigReal bigRealValue => bigRealValue,
             _ => Parse(value.ToString(null, null)),
         };
     }
