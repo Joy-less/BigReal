@@ -1391,6 +1391,10 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// </summary>
     public static explicit operator char(BigReal value) => NarrowConvert(value, char.MinValue, char.MaxValue, value => (char)((char)value.Numerator / (char)value.Denominator));
     /// <summary>
+    /// Converts from <see cref="BigReal"/> to <see cref="Rune"/> using a narrowing conversion.
+    /// </summary>
+    public static explicit operator Rune(BigReal value) => new((uint)value);
+    /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="nint"/> using a narrowing conversion.
     /// </summary>
     public static explicit operator nint(BigReal value) => NarrowConvert(value, nint.MinValue, nint.MaxValue, value => (nint)value.Numerator / (nint)value.Denominator);
