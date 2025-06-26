@@ -4,13 +4,13 @@ using Xunit.Abstractions;
 
 namespace ExtendedNumerics.Tests;
 
-public class BigRealTests(ITestOutputHelper Output) {
-    private readonly ITestOutputHelper Output = Output;
+public class BigRealTests(ITestOutputHelper output) {
+    private readonly ITestOutputHelper Output = output;
 
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void TestToStringDigits(bool padDecimal) {
+    public void ToStringDigitsTest(bool padDecimal) {
         for (int exp = 4; exp >= -4; exp--) {
             decimal testDigits = (decimal)(double.Pi * double.Pow(10.0, exp));
             Output.WriteLine(testDigits.ToString());
@@ -25,7 +25,7 @@ public class BigRealTests(ITestOutputHelper Output) {
     }
 
     [Fact]
-    public void Signing() {
+    public void SigningTest() {
         new BigReal(new BigInteger(1), new BigInteger(1)).ShouldBe(1);
         new BigReal(new BigInteger(-1), new BigInteger(-1)).ShouldBe(1);
 
@@ -34,7 +34,7 @@ public class BigRealTests(ITestOutputHelper Output) {
     }
 
     [Fact]
-    public void Equality() {
+    public void EqualityTest() {
         BigReal a = new(new BigInteger(1), new BigInteger(1));
         BigReal b = new(new BigInteger(2), new BigInteger(2));
         b.ShouldBe(a);
@@ -52,20 +52,20 @@ public class BigRealTests(ITestOutputHelper Output) {
     [InlineData(2.5, 2)]
     [InlineData(-1.5, -2)]
     [InlineData(-2.5, -2)]
-    public void RoundToEven(double input, double expected) {
+    public void RoundToEvenTest(double input, double expected) {
         BigReal.Round(input, MidpointRounding.ToEven).ShouldBe(expected);
     }
     [Theory]
     [InlineData(12.34, 1, 12.3)]
     [InlineData(12.34, -1, 10)]
-    public void RoundToDecimals(double input, int digits, double expected) {
+    public void RoundToDecimalsTest(double input, int digits, double expected) {
         BigReal.Round(input, digits).ShouldBe(expected);
     }
     [Theory]
     [InlineData(1)]
     [InlineData(0.3)]
     [InlineData(-0.5)]
-    public void Trigonometry(double value) {
+    public void TrigonometryTest(double value) {
         ShouldBeApproximatelyEqual(double.Sin(value), BigReal.Sin(value));
         ShouldBeApproximatelyEqual(double.Cos(value), BigReal.Cos(value));
         ShouldBeApproximatelyEqual(double.Tan(value), BigReal.Tan(value));

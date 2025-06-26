@@ -5,7 +5,9 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+  </PropertyGroup>
 
+  <PropertyGroup>
     <!-- IDE0130: Namespace does not match folder structure -->
     <NoWarn>IDE0130</NoWarn>
   </PropertyGroup>
