@@ -1,4 +1,4 @@
-﻿namespace ExtendedNumerics;
+namespace ExtendedNumerics;
 
 partial struct BigReal {
     /// <summary>

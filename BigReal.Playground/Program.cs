@@ -1,4 +1,4 @@
-﻿using ExtendedNumerics;
+using ExtendedNumerics;
 
 Console.WriteLine(double.Log(10) + " -> " + BigReal.Log(10));
 Console.WriteLine(double.Log(10, 3) + " -> " + BigReal.Log(10, (BigReal)3));
@@ -32,7 +32,6 @@ Console.WriteLine(BigReal.Truncate(BigReal.Tan(100), 20)); // -0.587213915156929
 Console.WriteLine(BigReal.Truncate(BigReal.Sec(100), 20)); // 1.15966382290469383255
 Console.WriteLine(BigReal.Truncate(BigReal.Cosec(100), 20)); // -1.97485753142409996121
 Console.WriteLine(BigReal.Truncate(BigReal.Cot(100), 20)); // -1.7029569194264692161
-return;
 
 Console.WriteLine("===========================");
 
