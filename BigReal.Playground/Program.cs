@@ -63,3 +63,5 @@ Console.WriteLine(BigReal.Pow(4.5, 4.5));
 
 Console.WriteLine(BigReal.LeftShift(new BigReal(10)));
 Console.WriteLine(BigReal.RightShift(new BigReal(10)));
+
+Console.WriteLine(BigReal.GetSignificandAndExponent(123.45, numberBase: 10)); // (1.2345, 2)
