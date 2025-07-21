@@ -11,7 +11,7 @@ namespace ExtendedNumerics;
 /// An arbitrary size and precision floating-point number stored as the quotient of two BigIntegers.
 /// </summary>
 [Serializable]
-public readonly partial struct BigReal : IConvertible, IComparable, IComparable<BigReal>, IEquatable<BigReal>, INumber<BigReal>, IFloatingPointConstants<BigReal>,
+public readonly partial struct BigReal : IConvertible, IComparable, IComparable<BigReal>, IEquatable<BigReal>, INumber<BigReal>, IFloatingPoint<BigReal>, IFloatingPointConstants<BigReal>,
     IPowerFunctions<BigReal>, IRootFunctions<BigReal>, ILogarithmicFunctions<BigReal>
 {
     /// <summary>
@@ -1606,7 +1606,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         throw new NotImplementedException($"Format strings not implemented on {nameof(BigReal)}");
     }
     /// <inheritdoc/>
-    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) {
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null) {
         if (format.IsEmpty) {
             string result = ToString(provider);
 
@@ -1619,6 +1619,65 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             return true;
         }
         throw new NotImplementedException($"Format strings not implemented on {nameof(BigReal)}");
+    }
+    /// <inheritdoc/>
+    public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null) {
+        return ((IUtf8SpanFormattable)this).TryFormat(utf8Destination, out bytesWritten, format, provider);
+    }
+
+    #endregion
+
+    #region IFloatingPoint
+
+    /// <summary>
+    /// Returns the significand (mantissa) and exponent equal to <paramref name="value"/> according to the given <paramref name="numberBase"/>.<br/>
+    /// The <paramref name="value"/> can be displayed in scientific notation with <c>"{significand} × {numberBase}^{exponent}"</c>.
+    /// </summary>
+    public static (BigReal significand, int exponent) GetSignificandAndExponent(BigReal value, int numberBase) {
+        ArgumentOutOfRangeException.ThrowIfLessThan(numberBase, 2);
+
+        if (IsZero(value)) {
+            return (Zero, 0);
+        }
+
+        BigInteger bigNumberBase = numberBase;
+        int exponent = 0;
+
+        while (value >= bigNumberBase) {
+            value /= bigNumberBase;
+            exponent++;
+        }
+
+        while (value < One) {
+            value *= bigNumberBase;
+            exponent--;
+        }
+
+        return (value, exponent);
+    }
+    int IFloatingPoint<BigReal>.GetExponentByteCount() {
+        throw new NotImplementedException();
+    }
+    int IFloatingPoint<BigReal>.GetExponentShortestBitLength() {
+        throw new NotImplementedException();
+    }
+    int IFloatingPoint<BigReal>.GetSignificandBitLength() {
+        throw new NotImplementedException();
+    }
+    int IFloatingPoint<BigReal>.GetSignificandByteCount() {
+        throw new NotImplementedException();
+    }
+    bool IFloatingPoint<BigReal>.TryWriteExponentBigEndian(Span<byte> destination, out int bytesWritten) {
+        throw new NotImplementedException();
+    }
+    bool IFloatingPoint<BigReal>.TryWriteExponentLittleEndian(Span<byte> destination, out int bytesWritten) {
+        throw new NotImplementedException();
+    }
+    bool IFloatingPoint<BigReal>.TryWriteSignificandBigEndian(Span<byte> destination, out int bytesWritten) {
+        throw new NotImplementedException();
+    }
+    bool IFloatingPoint<BigReal>.TryWriteSignificandLittleEndian(Span<byte> destination, out int bytesWritten) {
+        throw new NotImplementedException();
     }
 
     #endregion
