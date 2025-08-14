@@ -191,7 +191,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             (Numerator, Denominator) = ((BigInteger)value, BigInteger.One);
         }
         else {
-            (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+            this = new HalfHelper(value).ToBigReal();
         }
     }
     /// <summary>
@@ -202,7 +202,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             (Numerator, Denominator) = ((BigInteger)value, BigInteger.One);
         }
         else {
-            (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+            this = new SingleHelper(value).ToBigReal();
         }
     }
     /// <summary>
@@ -213,7 +213,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             (Numerator, Denominator) = ((BigInteger)value, BigInteger.One);
         }
         else {
-            (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+            this = new DoubleHelper(value).ToBigReal();
         }
     }
     /// <summary>
@@ -224,7 +224,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             (Numerator, Denominator) = ((BigInteger)value, BigInteger.One);
         }
         else {
-            (Numerator, Denominator) = Parse(value.ToString(CultureInfo.InvariantCulture));
+            this = new DecimalHelper(value).ToBigReal();
         }
     }
 
@@ -1518,6 +1518,261 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// Converts from <see cref="decimal"/> to <see cref="BigReal"/>.
     /// </summary>
     public static implicit operator BigReal(decimal value) => new(value);
+
+    #endregion
+
+    #region Float Helpers
+
+    // Original double-to-fraction helper from:
+    // https://ericlippert.com/2015/11/30/the-dedoublifier-part-one
+    // https://ericlippert.com/2015/12/03/the-dedoublifier-part-two
+
+    private readonly struct HalfHelper(Half value) {
+        public Half Value { get; } = value;
+        public ushort RawBits { get; } = BitConverter.HalfToUInt16Bits(value);
+        public int RawSign => (RawBits >> 15) & 0x1;
+        public long RawMantissa => RawBits & 0x03FF;
+        public int RawExponent => (RawBits >> 10) & 0x1F;
+        public bool IsNaN => RawExponent == 0x1F && RawMantissa != 0;
+        public bool IsInfinity => RawExponent == 0x1F && RawMantissa == 0;
+        public bool IsZero => RawExponent == 0 && RawMantissa == 0;
+        public bool IsDenormal => RawExponent == 0 && RawMantissa != 0;
+
+        public bool IsNegative => RawSign != 0;
+        public int Sign => IsZero ? 0 : (IsNegative ? -1 : 1);
+        public bool IsPositiveInfinity => !IsNegative && IsInfinity;
+        public bool IsNegativeInfinity => IsNegative && IsInfinity;
+
+        public long Mantissa {
+            get {
+                if (IsZero || IsDenormal || IsNaN || IsInfinity) {
+                    return RawMantissa;
+                }
+                else {
+                    return RawMantissa | 0x0400;
+                }
+            }
+        }
+        public int Exponent {
+            get {
+                if (IsZero) {
+                    return 0;
+                }
+                else if (IsDenormal) {
+                    return -24;
+                }
+                else if (IsNaN || IsInfinity) {
+                    return RawExponent;
+                }
+                else {
+                    return RawExponent - 25;
+                }
+            }
+        }
+
+        public BigReal ToBigReal() {
+            if (IsPositiveInfinity) {
+                return PositiveInfinity;
+            }
+            if (IsNegativeInfinity) {
+                return NegativeInfinity;
+            }
+            if (IsNaN) {
+                return NaN;
+            }
+            if (IsZero) {
+                return Zero;
+            }
+
+            BigInteger numerator;
+            BigInteger denominator;
+            if (Exponent >= 0) {
+                numerator = Sign * Mantissa * BigInteger.Pow(2, Exponent);
+                denominator = BigInteger.One;
+            }
+            else {
+                numerator = Sign * Mantissa;
+                denominator = BigInteger.Pow(2, -Exponent);
+            }
+            return new BigReal(numerator, denominator);
+        }
+    }
+    private readonly struct SingleHelper(float value) {
+        public float Value { get; } = value;
+        public uint RawBits { get; } = BitConverter.SingleToUInt32Bits(value);
+        public int RawSign => (int)(RawBits >> 31);
+        public long RawMantissa => RawBits & 0x007FFFFF;
+        public int RawExponent => (int)(RawBits >> 23) & 0xFF;
+        public bool IsNaN => RawExponent == 0xFF && RawMantissa != 0;
+        public bool IsInfinity => RawExponent == 0xFF && RawMantissa == 0;
+        public bool IsZero => RawExponent == 0 && RawMantissa == 0;
+        public bool IsDenormal => RawExponent == 0 && RawMantissa != 0;
+
+        public bool IsNegative => RawSign != 0;
+        public int Sign => IsZero ? 0 : (IsNegative ? -1 : 1);
+        public bool IsPositiveInfinity => !IsNegative && IsInfinity;
+        public bool IsNegativeInfinity => IsNegative && IsInfinity;
+
+        public long Mantissa {
+            get {
+                if (IsZero || IsDenormal || IsNaN || IsInfinity) {
+                    return RawMantissa;
+                }
+                else {
+                    return RawMantissa | 0x00800000;
+                }
+            }
+        }
+        public int Exponent {
+            get {
+                if (IsZero) {
+                    return 0;
+                }
+                else if (IsDenormal) {
+                    return -149;
+                }
+                else if (IsNaN || IsInfinity) {
+                    return RawExponent;
+                }
+                else {
+                    return RawExponent - 150;
+                }
+            }
+        }
+
+        public BigReal ToBigReal() {
+            if (IsPositiveInfinity) {
+                return PositiveInfinity;
+            }
+            if (IsNegativeInfinity) {
+                return NegativeInfinity;
+            }
+            if (IsNaN) {
+                return NaN;
+            }
+            if (IsZero) {
+                return Zero;
+            }
+
+            BigInteger numerator;
+            BigInteger denominator;
+            if (Exponent >= 0) {
+                numerator = Sign * Mantissa * BigInteger.Pow(2, Exponent);
+                denominator = BigInteger.One;
+            }
+            else {
+                numerator = Sign * Mantissa;
+                denominator = BigInteger.Pow(2, -Exponent);
+            }
+            return new BigReal(numerator, denominator);
+        }
+    }
+    private readonly struct DoubleHelper(double value) {
+        public double Value { get; } = value;
+        public ulong RawBits { get; } = BitConverter.DoubleToUInt64Bits(value);
+        public int RawSign => (int)(RawBits >> 63);
+        public long RawMantissa => (long)(RawBits & 0x000FFFFFFFFFFFFF);
+        public int RawExponent => (int)(RawBits >> 52) & 0x7FF;
+        public bool IsNaN => RawExponent == 0x7FF && RawMantissa != 0;
+        public bool IsInfinity => RawExponent == 0x7FF && RawMantissa == 0;
+        public bool IsZero => RawExponent == 0 && RawMantissa == 0;
+        public bool IsDenormal => RawExponent == 0 && RawMantissa != 0;
+
+        public bool IsNegative => RawSign != 0;
+        public int Sign => IsZero ? 0 : (IsNegative ? -1 : 1);
+        public bool IsPositiveInfinity => !IsNegative && IsInfinity;
+        public bool IsNegativeInfinity => IsNegative && IsInfinity;
+
+        public long Mantissa {
+            get {
+                if (IsZero || IsDenormal || IsNaN || IsInfinity) {
+                    return RawMantissa;
+                }
+                else {
+                    return RawMantissa | 0x0010000000000000;
+                }
+            }
+        }
+        public int Exponent {
+            get {
+                if (IsZero) {
+                    return 0;
+                }
+                else if (IsDenormal) {
+                    return -1074;
+                }
+                else if (IsNaN || IsInfinity) {
+                    return RawExponent;
+                }
+                else {
+                    return RawExponent - 1075;
+                }
+            }
+        }
+
+        public BigReal ToBigReal() {
+            if (IsPositiveInfinity) {
+                return PositiveInfinity;
+            }
+            if (IsNegativeInfinity) {
+                return NegativeInfinity;
+            }
+            if (IsNaN) {
+                return NaN;
+            }
+            if (IsZero) {
+                return Zero;
+            }
+
+            BigInteger numerator;
+            BigInteger denominator;
+            if (Exponent >= 0) {
+                numerator = Sign * Mantissa * BigInteger.Pow(2, Exponent);
+                denominator = BigInteger.One;
+            }
+            else {
+                numerator = Sign * Mantissa;
+                denominator = BigInteger.Pow(2, -Exponent);
+            }
+            return new BigReal(numerator, denominator);
+        }
+    }
+    private readonly struct DecimalHelper(decimal value) {
+        public decimal Value { get; } = value;
+        public (int Low, int Mid, int High, int Flags) RawBits { get; } = GetRawBits(value);
+
+        public bool IsNegative => (RawBits.Flags & unchecked((int)0x80000000)) != 0;
+        public int RawSign => IsZero ? 0 : (IsNegative ? -1 : 1);
+        public bool IsZero => RawBits.Low == 0 && RawBits.Mid == 0 && RawBits.High == 0;
+
+        public int Sign => IsZero ? 0 : (IsNegative ? -1 : 1);
+
+        public Int128 Mantissa {
+            get {
+                return (Int128)(uint)RawBits.Low
+                    | ((Int128)(uint)RawBits.Mid << 32)
+                    | ((Int128)(uint)RawBits.High << 64);
+            }
+        }
+        public int Exponent => (RawBits.Flags >> 16) & 0xFF;
+
+        public BigReal ToBigReal() {
+            if (IsZero) {
+                return Zero;
+            }
+
+            BigInteger numerator = Sign * Mantissa;
+            BigInteger denominator = BigInteger.Pow(10, Exponent);
+
+            return new BigReal(numerator, denominator);
+        }
+
+        private static (int Low, int Mid, int High, int Flags) GetRawBits(decimal value) {
+            Span<int> bits = stackalloc int[4];
+            decimal.GetBits(value, bits);
+            return (bits[0], bits[1], bits[2], bits[3]);
+        }
+    }
 
     #endregion
 

@@ -1,5 +1,6 @@
-﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using System.Globalization;
 using System.Numerics;
 
 namespace ExtendedNumerics.Benchmarks;
@@ -11,7 +12,7 @@ public class Program {
 }
 
 [MemoryDiagnoser]
-public class Benchmarks {
+public class LibraryBenchmarks {
     [Benchmark]
     public void Add_BigReal() {
         BigReal result = (BigReal)10 + (BigReal)3;
@@ -78,5 +79,41 @@ public class Benchmarks {
     [Benchmark]
     public void FromFloat_BigFloat() {
         BigFloat result = (BigFloat)123.45f;
+    }
+}
+
+[MemoryDiagnoser]
+public class FromFloatBenchmarks {
+    [Benchmark]
+    public BigReal ParseFromHalf() {
+        return BigReal.Parse(((Half)23.4f).ToString(CultureInfo.InvariantCulture));
+    }
+    [Benchmark]
+    public BigReal InterpretBitsFromHalf() {
+        return (BigReal)(Half)23.4f;
+    }
+    [Benchmark]
+    public BigReal ParseFromFloat() {
+        return BigReal.Parse(23.4f.ToString(CultureInfo.InvariantCulture));
+    }
+    [Benchmark]
+    public BigReal InterpretBitsFromFloat() {
+        return (BigReal)23.4f;
+    }
+    [Benchmark]
+    public BigReal ParseFromDouble() {
+        return BigReal.Parse(23.4.ToString(CultureInfo.InvariantCulture));
+    }
+    [Benchmark]
+    public BigReal InterpretBitsFromDouble() {
+        return (BigReal)23.4;
+    }
+    [Benchmark]
+    public BigReal ParseFromDecimal() {
+        return BigReal.Parse(23.4m.ToString(CultureInfo.InvariantCulture));
+    }
+    [Benchmark]
+    public BigReal InterpretBitsFromDecimal() {
+        return (BigReal)23.4m;
     }
 }

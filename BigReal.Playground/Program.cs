@@ -42,7 +42,11 @@ Console.WriteLine(BigReal.LeftShift(new BigReal(1234500.678), numberBase: 10).To
 Console.WriteLine(default(BigReal) * 3);
 
 Console.WriteLine(BigReal.Parse("nan"));
+Console.WriteLine(new BigReal((Half)23.4));
 Console.WriteLine(new BigReal(23.4f));
+Console.WriteLine(new BigReal(23.4));
+Console.WriteLine(new BigReal(23.4m));
+
 Console.WriteLine(double.NegativeInfinity);
 Console.WriteLine(double.Abs(double.NegativeInfinity));
 
