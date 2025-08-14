@@ -15,8 +15,8 @@ public class BigRealTests(ITestOutputHelper output) {
             decimal testDigits = (decimal)(double.Pi * double.Pow(10.0, exp));
             Output.WriteLine(testDigits.ToString());
 
-            BigReal bigFloat = new(testDigits);
-            string str = bigFloat.ToString(100, padDecimal: padDecimal);
+            BigReal bigReal = new(testDigits);
+            string str = bigReal.ToString(100, padDecimal: padDecimal);
             Output.WriteLine(str);
 
             decimal compare = decimal.Parse(str);
@@ -53,13 +53,13 @@ public class BigRealTests(ITestOutputHelper output) {
     [InlineData(-1.5, -2)]
     [InlineData(-2.5, -2)]
     public void RoundToEvenTest(double input, double expected) {
-        BigReal.Round(input, MidpointRounding.ToEven).ShouldBe(expected);
+        ShouldBeApproximatelyEqual(BigReal.Round(input, MidpointRounding.ToEven), expected);
     }
     [Theory]
     [InlineData(12.34, 1, 12.3)]
     [InlineData(12.34, -1, 10)]
     public void RoundToDecimalsTest(double input, int digits, double expected) {
-        BigReal.Round(input, digits).ShouldBe(expected);
+        ShouldBeApproximatelyEqual(BigReal.Round(input, digits), expected);
     }
     [Theory]
     [InlineData(1)]
