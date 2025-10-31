@@ -42,17 +42,17 @@ public class LibraryBenchmarks {
     [Benchmark]
     public string DivideToString_BigReal() {
         BigReal result = (BigReal)10 / (BigReal)3;
-        return result.ToString();
+        return result.ToString(decimals: 15);
     }
     [Benchmark]
     public string DivideToString_BigDecimal() {
-        BigDecimal result = (BigDecimal)10 / (BigDecimal)3;
+        BigDecimal result = BigDecimal.Divide((BigDecimal)10, (BigDecimal)3, precision: 15);
         return result.ToString();
     }
     [Benchmark]
     public string DivideToString_BigFloat() {
         BigFloat result = (BigFloat)10 / (BigFloat)3;
-        return result.ToString();
+        return result.ToString(precision: 15);
     }
 
     [Benchmark]
