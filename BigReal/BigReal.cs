@@ -1099,7 +1099,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     }
     /// <summary>
     /// Stringifies this value as a decimal, truncating at <paramref name="decimals"/> decimal places.<br/>
-    /// The number is optionally padded with <c>.0</c> if it is an integer.
+    /// The number is optionally padded with a decimal (<c>.0</c>).
     /// </summary>
     public string ToString(int decimals, IFormatProvider? provider = null, bool padDecimal = false) {
         NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
