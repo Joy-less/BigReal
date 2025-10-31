@@ -14,71 +14,71 @@ public class Program {
 [MemoryDiagnoser]
 public class LibraryBenchmarks {
     [Benchmark]
-    public void Add_BigReal() {
-        BigReal result = (BigReal)10 + (BigReal)3;
+    public BigReal Add_BigReal() {
+        return (BigReal)10 + (BigReal)3;
     }
     [Benchmark]
-    public void Add_BigDecimal() {
-        BigDecimal result = (BigDecimal)10 + (BigDecimal)3;
+    public BigDecimal Add_BigDecimal() {
+        return (BigDecimal)10 + (BigDecimal)3;
     }
     [Benchmark]
-    public void Add_BigFloat() {
-        BigFloat result = (BigFloat)10 + (BigFloat)3;
+    public BigFloat Add_BigFloat() {
+        return (BigFloat)10 + (BigFloat)3;
     }
 
     [Benchmark]
-    public void Divide_BigReal() {
+    public BigReal Divide_BigReal() {
+        return (BigReal)10 / (BigReal)3;
+    }
+    [Benchmark]
+    public BigDecimal Divide_BigDecimal() {
+        return (BigDecimal)10 / (BigDecimal)3;
+    }
+    [Benchmark]
+    public BigFloat Divide_BigFloat() {
+        return (BigFloat)10 / (BigFloat)3;
+    }
+
+    [Benchmark]
+    public string DivideToString_BigReal() {
         BigReal result = (BigReal)10 / (BigReal)3;
+        return result.ToString();
     }
     [Benchmark]
-    public void Divide_BigDecimal() {
+    public string DivideToString_BigDecimal() {
         BigDecimal result = (BigDecimal)10 / (BigDecimal)3;
+        return result.ToString();
     }
     [Benchmark]
-    public void Divide_BigFloat() {
+    public string DivideToString_BigFloat() {
         BigFloat result = (BigFloat)10 / (BigFloat)3;
+        return result.ToString();
     }
 
     [Benchmark]
-    public void DivideToString_BigReal() {
-        BigReal result = (BigReal)10 / (BigReal)3;
-        result.ToString();
+    public BigReal Parse_BigReal() {
+        return BigReal.Parse("12345.6789");
     }
     [Benchmark]
-    public void DivideToString_BigDecimal() {
-        BigDecimal result = (BigDecimal)10 / (BigDecimal)3;
-        result.ToString();
+    public BigDecimal Parse_BigDecimal() {
+        return BigDecimal.Parse("12345.6789");
     }
     [Benchmark]
-    public void DivideToString_BigFloat() {
-        BigFloat result = (BigFloat)10 / (BigFloat)3;
-        result.ToString();
+    public BigFloat Parse_BigFloat() {
+        return BigFloat.Parse("12345.6789");
     }
 
     [Benchmark]
-    public void Parse_BigReal() {
-        BigReal result = BigReal.Parse("12345.6789");
+    public BigReal FromFloat_BigReal() {
+        return (BigReal)123.45f;
     }
     [Benchmark]
-    public void Parse_BigDecimal() {
-        BigDecimal result = BigDecimal.Parse("12345.6789");
+    public BigDecimal FromFloat_BigDecimal() {
+        return (BigDecimal)123.45f;
     }
     [Benchmark]
-    public void Parse_BigFloat() {
-        BigFloat result = BigFloat.Parse("12345.6789");
-    }
-
-    [Benchmark]
-    public void FromFloat_BigReal() {
-        BigReal result = (BigReal)123.45f;
-    }
-    [Benchmark]
-    public void FromFloat_BigDecimal() {
-        BigDecimal result = (BigDecimal)123.45f;
-    }
-    [Benchmark]
-    public void FromFloat_BigFloat() {
-        BigFloat result = (BigFloat)123.45f;
+    public BigFloat FromFloat_BigFloat() {
+        return (BigFloat)123.45f;
     }
 }
 
