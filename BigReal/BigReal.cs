@@ -1099,7 +1099,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     }
     /// <summary>
     /// Stringifies this value as a decimal, truncating at <paramref name="decimals"/> decimal places.<br/>
-    /// The number is optionally padded with <c>.0</c>.
+    /// The number is optionally padded with <c>.0</c> if it is an integer.
     /// </summary>
     public string ToString(int decimals, IFormatProvider? provider = null, bool padDecimal = false) {
         NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
@@ -1142,22 +1142,23 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         BigInteger fractional = BigInteger.Abs(Numerator * BigInteger.Pow(10, decimals) / Denominator);
 
         // Get fraction part (e.g. 123.45 -> 4500000)
-        using ValueStringBuilder fractionBuilder = new(stackalloc char[64]);
+        using ValueStringBuilder fractionBuilder = new(stackalloc char[int.Min(decimals, 128)]);
         for (int columnNumber = 0; columnNumber < decimals; columnNumber++) {
-            fractionBuilder.Append(fractional % 10);
+            // Append each digit of fraction
+            fractionBuilder.Append(fractional % 10, bufferSize: 1);
             fractional /= 10;
         }
         fractionBuilder.Reverse();
         fractionBuilder.TrimEnd('0');
-        string fractionString = fractionBuilder.ToString();
+        ReadOnlySpan<char> fractionSpan = fractionBuilder.AsSpan();
 
         // Number at given precision is whole
-        if (fractionString.Length == 0) {
+        if (fractionSpan.IsEmpty) {
             return StringifyInteger(wholeString);
         }
 
         // Combine parts
-        return wholeString + numberFormat.NumberDecimalSeparator + fractionString;
+        return string.Concat(wholeString, numberFormat.NumberDecimalSeparator, fractionSpan);
     }
     /// <summary>
     /// Stringifies this value as a simplified rational (numerator / denominator).
