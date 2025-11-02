@@ -544,14 +544,14 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// Note: Pass <see cref="MidpointRounding.ToEven"/> to use banker's rounding (the default for <see cref="Math.Round(double)"/>).
     /// </remarks>
     public static BigReal Round(BigReal value, int decimals) {
-        BigInteger exponent = BigInteger.Pow(10, decimals);
+        BigReal exponent = Pow(10, decimals);
         return Round(value * exponent, MidpointRounding.AwayFromZero) / exponent;
     }
     /// <summary>
     /// Returns the closest value with <paramref name="decimals"/> decimal places to <paramref name="value"/> according to the rounding <paramref name="mode"/>.
     /// </summary>
     public static BigReal Round(BigReal value, int decimals, MidpointRounding mode) {
-        BigInteger exponent = BigInteger.Pow(10, decimals);
+        BigReal exponent = Pow(10, decimals);
         return Round(value * exponent, mode) / exponent;
     }
     /// <summary>
