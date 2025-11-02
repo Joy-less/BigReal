@@ -763,8 +763,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
 
         BigReal term = One; // first term = 1
         BigReal sum = One; // start sum = 1
-        long n = 1;
-
+        int n = 1;
         while (true) {
             term *= power / n; // term = power^n / n!
             if (Abs(term) <= epsilon) {
