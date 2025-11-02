@@ -326,24 +326,42 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         if (IsZero(value)) {
             return value;
         }
-        if (exponent is 0) {
-            return One;
-        }
-        if (exponent is 1) {
-            return value;
-        }
-        if (exponent is -1) {
-            return new BigReal(value.Denominator, value.Numerator);
-        }
-        if (exponent < 0) {
-            BigInteger numerator = BigInteger.Pow(value.Denominator, -exponent);
-            BigInteger denominator = BigInteger.Pow(value.Numerator, -exponent);
-            return new BigReal(numerator, denominator);
-        }
-        else {
-            BigInteger numerator = BigInteger.Pow(value.Numerator, exponent);
-            BigInteger denominator = BigInteger.Pow(value.Denominator, exponent);
-            return new BigReal(numerator, denominator);
+        switch (exponent) {
+            case 0: {
+                return One;
+            }
+            case 1: {
+                return value;
+            }
+            case 2: {
+                return value * value;
+            }
+            case 3: {
+                return value * value * value;
+            }
+            case -1: {
+                return new BigReal(value.Denominator, value.Numerator);
+            }
+            case -2: {
+                BigReal flipped = new(value.Denominator, value.Numerator);
+                return flipped * flipped;
+            }
+            case -3: {
+                BigReal flipped = new(value.Denominator, value.Numerator);
+                return flipped * flipped * flipped;
+            }
+            case > 0: {
+                return new BigReal(
+                    BigInteger.Pow(value.Numerator, exponent),
+                    BigInteger.Pow(value.Denominator, exponent)
+                );
+            }
+            case < 0: {
+                return new BigReal(
+                    BigInteger.Pow(value.Denominator, -exponent),
+                    BigInteger.Pow(value.Numerator, -exponent)
+                );
+            }
         }
     }
     /// <summary>
