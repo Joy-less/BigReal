@@ -45,6 +45,26 @@ public class BigRealTests(ITestOutputHelper output) {
         BigReal e = new(new BigInteger(-1), new BigInteger(1));
         BigReal f = new(new BigInteger(2), new BigInteger(-2));
         f.ShouldBe(e);
+
+        BigReal g = BigReal.PositiveInfinity;
+        BigReal h = BigReal.NaN;
+        g.Equals(h).ShouldBeFalse();
+        (g == h).ShouldBeFalse();
+
+        BigReal i = BigReal.NaN;
+        BigReal j = BigReal.NaN;
+        i.Equals(j).ShouldBeTrue();
+        (i == j).ShouldBeFalse();
+
+        BigReal k = BigReal.PositiveInfinity;
+        BigReal l = BigReal.PositiveInfinity;
+        k.Equals(l).ShouldBeTrue();
+        (k == l).ShouldBeTrue();
+
+        BigReal m = BigReal.PositiveInfinity;
+        BigReal n = BigReal.NegativeInfinity;
+        m.Equals(n).ShouldBeFalse();
+        (m == n).ShouldBeFalse();
     }
 
     [Theory]

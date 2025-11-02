@@ -969,6 +969,9 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns whether <paramref name="left"/> is exactly equal to <paramref name="right"/>.
     /// </summary>
+    /// <remarks>
+    /// This method returns <see langword="true"/> for <c>Equals(NaN, NaN)</c>.
+    /// </remarks>
     public static bool Equals(BigReal left, BigReal right) {
         return left.Equals(right);
     }
@@ -1239,7 +1242,32 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns whether this value is exactly equal to <paramref name="other"/>.
     /// </summary>
+    /// <remarks>
+    /// This method returns <see langword="true"/> for <c>Equals(NaN, NaN)</c>.
+    /// </remarks>
     public bool Equals(BigReal other) {
+        if (!IsFinite(this)) {
+            if (IsNaN(this)) {
+                return IsNaN(other);
+            }
+            if (IsPositiveInfinity(this)) {
+                return IsPositiveInfinity(other);
+            }
+            if (IsNegativeInfinity(this)) {
+                return IsNegativeInfinity(other);
+            }
+        }
+        if (!IsFinite(other)) {
+            if (IsNaN(other)) {
+                return IsNaN(this);
+            }
+            if (IsPositiveInfinity(other)) {
+                return IsPositiveInfinity(this);
+            }
+            if (IsNegativeInfinity(other)) {
+                return IsNegativeInfinity(this);
+            }
+        }
         return other.Numerator * Denominator == Numerator * other.Denominator;
     }
     /// <summary>
