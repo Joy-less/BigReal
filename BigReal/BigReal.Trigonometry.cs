@@ -104,8 +104,8 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
 
         // https://stackoverflow.com/a/2284929
         BigReal cur = radians;
-        BigReal acc = 1;
-        BigInteger fact = 1;
+        BigReal acc = One;
+        BigInteger fact = BigInteger.One;
         BigReal pow = radians;
         int n = 1;
         while (true) {
