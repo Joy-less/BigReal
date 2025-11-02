@@ -63,10 +63,14 @@ public class BigRealTests {
     [Fact]
     public void SignTest() {
         new BigReal(1, 1).ShouldBe(1);
+        new BigReal(1, 1).Sign.ShouldBe(1);
         new BigReal(-1, -1).ShouldBe(1);
+        new BigReal(-1, -1).Sign.ShouldBe(1);
 
         new BigReal(-1, 1).ShouldBe(-1);
+        new BigReal(-1, 1).Sign.ShouldBe(-1);
         new BigReal(1, -1).ShouldBe(-1);
+        new BigReal(1, -1).Sign.ShouldBe(-1);
     }
     [Fact]
     public void FiniteEqualityTest() {

@@ -69,14 +69,14 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// Returns:
     /// <list type="bullet">
     ///   <item>1 if the value is greater than zero</item>
-    ///   <item>0 if the value is zero</item>
+    ///   <item>0 if the value is zero or NaN</item>
     ///   <item>-1 if the value is less than zero</item>
     /// </list>
     /// </summary>
-    public int Sign => (Numerator.Sign + Denominator.Sign) switch {
-        >= 2 or <= -2 => 1,
-        0 => -1,
-        _ => 0,
+    public int Sign => (Numerator.Sign, Denominator.Sign) switch {
+        (0, 0) => 0, // NaN
+        (_, 0) => Numerator.Sign, // Infinity
+        (_, _) => Numerator.Sign * Denominator.Sign // Finite number
     };
 
     #region Constructors
