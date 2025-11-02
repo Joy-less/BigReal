@@ -326,8 +326,14 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         if (IsZero(value)) {
             return value;
         }
+        if (exponent is 0) {
+            return One;
+        }
         if (exponent is 1) {
             return value;
+        }
+        if (exponent is -1) {
+            return new BigReal(value.Denominator, value.Numerator);
         }
         if (exponent < 0) {
             BigInteger numerator = BigInteger.Pow(value.Denominator, -exponent);
