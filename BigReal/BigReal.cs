@@ -740,7 +740,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             return One;
         }
         if (IsOne(power)) {
-            return E;
+            return CalculateE(decimals);
         }
         if (IsNegative(power)) {
             return One / Exp(Abs(power));
