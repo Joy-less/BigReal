@@ -1243,7 +1243,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// Returns whether this value is exactly equal to <paramref name="other"/>.
     /// </summary>
     /// <remarks>
-    /// This method returns <see langword="true"/> for <c>Equals(NaN, NaN)</c>.
+    /// This method returns <see langword="true"/> for <c>NaN.Equals(NaN)</c>.
     /// </remarks>
     public bool Equals(BigReal other) {
         if (!IsFinite(this)) {
