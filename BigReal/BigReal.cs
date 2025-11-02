@@ -321,10 +321,10 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// See <see href="https://stackoverflow.com/a/30225002"/> for why <paramref name="exponent"/> is <see cref="int"/> rather than <see cref="BigInteger"/>.
     /// </remarks>
     public static BigReal Pow(BigReal value, int exponent) {
-        if (!IsFinite(value)) {
+        if (IsZero(value)) {
             return value;
         }
-        if (IsZero(value)) {
+        if (!IsFinite(value)) {
             return value;
         }
         switch (exponent) {
@@ -695,6 +695,9 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         if (!IsFinite(value)) {
             return value;
         }
+        if (root < 0) {
+            return One / Pow(value, -root);
+        }
         if (TryCalculateAsDouble(value, root, double.RootN, decimals, out double result)) {
             return result;
         }
@@ -702,11 +705,6 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         // Can't root a negative number
         if (IsNegative(value)) {
             return NaN;
-        }
-
-        // Root is negative
-        if (root < 0) {
-            return One / Pow(value, -root);
         }
 
         /*
@@ -738,6 +736,15 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// Returns e raised to the specified <paramref name="power"/>.
     /// </summary>
     public static BigReal Exp(BigReal power, int decimals = DoubleReliableDecimals) {
+        if (IsZero(power)) {
+            return One;
+        }
+        if (IsOne(power)) {
+            return E;
+        }
+        if (IsNegative(power)) {
+            return One / Exp(Abs(power));
+        }
         if (IsNaN(power)) {
             return NaN;
         }
@@ -746,15 +753,6 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         }
         if (IsNegativeInfinity(power)) {
             return Zero;
-        }
-        if (IsZero(power)) {
-            return One;
-        }
-        if (IsNegative(power)) {
-            return One / Exp(Abs(power));
-        }
-        if (IsOne(power)) {
-            return E;
         }
         if (TryCalculateAsDouble(power, double.Exp, decimals, out double result)) {
             return result;
