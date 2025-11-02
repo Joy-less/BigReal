@@ -543,7 +543,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// Note: Pass <see cref="MidpointRounding.ToEven"/> to use banker's rounding (the default for <see cref="Math.Round(double)"/>).
     /// </remarks>
     public static BigReal Round(BigReal value, int decimals) {
-        BigReal exponent = Pow(10, decimals);
+        BigInteger exponent = BigInteger.Pow(10, decimals);
         return Round(value * exponent, MidpointRounding.AwayFromZero) / exponent;
     }
     /// <summary>
