@@ -283,7 +283,8 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         return new BigReal(value.Numerator * other.Denominator, value.Denominator * other.Numerator);
     }
     /// <summary>
-    /// Returns the remainder of integer-dividing <paramref name="value"/> and <paramref name="other"/>.
+    /// Returns the remainder of integer-dividing <paramref name="value"/> and <paramref name="other"/>.<br/>
+    /// This is also called modulo.
     /// </summary>
     public static BigReal Remainder(BigReal value, BigReal other) {
         if (!IsFinite(value)) {
@@ -302,9 +303,9 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// Returns the result of dividing <paramref name="value"/> and <paramref name="other"/> and the remainder of integer-dividing them.
     /// </summary>
     public static BigReal DivRem(BigReal value, BigReal other, out BigReal remainder) {
-        value = Divide(value, other);
+        BigReal quotient = Divide(value, other);
         remainder = Remainder(value, other);
-        return value;
+        return quotient;
     }
     /// <summary>
     /// Returns the result of dividing <paramref name="value"/> and <paramref name="other"/> and the remainder of integer-dividing them.
