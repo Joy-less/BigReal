@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.15.4" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.5" />
     <PackageReference Include="BigFloat" Version="2.0.0" />
     <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3001.1.0.233" />
   </ItemGroup>
