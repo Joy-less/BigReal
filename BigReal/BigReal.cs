@@ -376,12 +376,19 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             return result;
         }
 
-        // See https://stackoverflow.com/a/30225002 for why exponent's numerator and denominator are cast to int
-        value = Simplify(value);
-        exponent = Simplify(exponent);
-        int power = (int)exponent.Numerator;
-        int root = (int)exponent.Denominator;
-        return RootN(Pow(value, power), root, decimals);
+        /*
+         * // Slow alternative:
+         * // pow(value, numerator/denominator) = root(pow(value, numerator), denominator)
+         * 
+         * value = Simplify(value);
+         * exponent = Simplify(exponent);
+         * int power = (int)exponent.Numerator;
+         * int root = (int)exponent.Denominator;
+         * return RootN(Pow(value, power), root, decimals);
+         */
+
+        // Use the identity x^y = e^(y * ln(x))
+        return Exp(exponent * Log(value, decimals: decimals), decimals: decimals);
     }
     static BigReal IPowerFunctions<BigReal>.Pow(BigReal value, BigReal exponent) {
         return Pow(value, exponent);
@@ -702,23 +709,74 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             return One / Pow(value, -root);
         }
 
-        // Convert decimals to epsilon (e.g. 3 -> 0.001)
-        BigReal epsilon = One / Pow(Ten, decimals);
+        /*
+         * // Slow alternative:
+         * // Use Newton's method to repeatedly get closer to the answer
+         * 
+         * // Convert decimals to epsilon (e.g. 3 -> 0.001)
+         * BigReal epsilon = One / Pow(Ten, decimals);
+         * 
+         * BigReal guess = value / root;
+         * while (true) {
+         *     BigReal nextGuess = (((root - 1) * guess) + (value / Pow(guess, root - 1))) / root;
+         *     if (Abs(nextGuess - guess) <= epsilon) {
+         *         guess = nextGuess;
+         *         break;
+         *     }
+         *     guess = nextGuess;
+         * }
+         * return guess;
+         */
 
-        // Use Newton's method to repeatedly get closer to the answer
-        BigReal guess = value / root;
-        while (true) {
-            BigReal nextGuess = (((root - 1) * guess) + (value / Pow(guess, root - 1))) / root;
-            if (Abs(nextGuess - guess) <= epsilon) {
-                guess = nextGuess;
-                break;
-            }
-            guess = nextGuess;
-        }
-        return guess;
+        // Use the identity root_n(x) = e^(ln(x)/n)
+        return Exp(Log(value, decimals: decimals) / root, decimals: decimals);
     }
     static BigReal IRootFunctions<BigReal>.RootN(BigReal value, int root) {
         return RootN(value, root);
+    }
+    /// <summary>
+    /// Returns e raised to the specified <paramref name="power"/>.
+    /// </summary>
+    public static BigReal Exp(BigReal power, int decimals = DoubleReliableDecimals) {
+        if (IsNaN(power)) {
+            return NaN;
+        }
+        if (IsPositiveInfinity(power)) {
+            return PositiveInfinity;
+        }
+        if (IsNegativeInfinity(power)) {
+            return Zero;
+        }
+        if (IsZero(power)) {
+            return One;
+        }
+        if (IsNegative(power)) {
+            return One / Exp(Abs(power));
+        }
+        if (IsOne(power)) {
+            return E;
+        }
+        if (TryCalculateAsDouble(power, double.Exp, decimals, out double result)) {
+            return result;
+        }
+
+        // Convert decimals to epsilon
+        BigReal epsilon = One / Pow(Ten, decimals);
+
+        BigReal term = One; // first term = 1
+        BigReal sum = One; // start sum = 1
+        long n = 1;
+
+        while (true) {
+            term *= power / n; // term = power^n / n!
+            if (Abs(term) <= epsilon) {
+                break;
+            }
+            sum += term;
+            n++;
+        }
+
+        return Round(sum, decimals);
     }
     /// <summary>
     /// Returns the hypotenuse of <paramref name="x"/> and <paramref name="y"/>, correct to <paramref name="decimals"/> decimal places.<br/>
