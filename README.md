@@ -41,21 +41,21 @@ Basic operations comparing `BigReal`, [`BigDecimal`](https://github.com/AdamWhit
 
 | Method                    | Mean          | Error       | StdDev      | Gen0   | Allocated |
 |-------------------------- |--------------:|------------:|------------:|-------:|----------:|
-| Add_BigReal               |     20.663 ns |   0.2319 ns |   0.2056 ns |      - |         - |
-| Add_BigDecimal            |    196.293 ns |   0.7841 ns |   0.6951 ns | 0.0076 |      48 B |
-| Add_BigFloat              |     21.373 ns |   0.1374 ns |   0.1148 ns |      - |         - |
-| Divide_BigReal            |      7.021 ns |   0.0463 ns |   0.0433 ns |      - |         - |
-| Divide_BigDecimal         | 23,632.775 ns |  76.0503 ns |  63.5055 ns | 3.5095 |   22016 B |
-| Divide_BigFloat           |     14.317 ns |   0.0283 ns |   0.0251 ns |      - |         - |
-| DivideToString_BigReal    |  1,190.507 ns |   4.9752 ns |   4.4103 ns | 0.0629 |     400 B |
-| DivideToString_BigDecimal | 24,023.287 ns | 181.1982 ns | 169.4929 ns | 3.5706 |   22520 B |
-| DivideToString_BigFloat   | 16,281.624 ns |  72.3191 ns |  67.6473 ns | 1.4954 |    9544 B |
-| Parse_BigReal             |    283.959 ns |   1.5225 ns |   1.3497 ns | 0.0062 |      40 B |
-| Parse_BigDecimal          |    185.566 ns |   0.5260 ns |   0.4392 ns | 0.0126 |      80 B |
-| Parse_BigFloat            |    304.154 ns |   0.9946 ns |   0.7765 ns | 0.0062 |      40 B |
-| FromFloat_BigReal         |    106.022 ns |   0.5105 ns |   0.4775 ns |      - |         - |
-| FromFloat_BigDecimal      |    275.546 ns |   0.7714 ns |   0.6441 ns | 0.0162 |     104 B |
-| FromFloat_BigFloat        |  1,663.926 ns |   8.3387 ns |   7.8000 ns | 0.1068 |     672 B |
+| Add_BigReal               |     20.342 ns |   0.0616 ns |   0.0514 ns |      - |         - |
+| Add_BigDecimal            |    373.701 ns |   2.4290 ns |   2.0284 ns | 0.0739 |     464 B |
+| Add_BigFloat              |     21.680 ns |   0.0568 ns |   0.0504 ns |      - |         - |
+| Divide_BigReal            |      9.109 ns |   0.0228 ns |   0.0190 ns |      - |         - |
+| Divide_BigDecimal         | 28,783.122 ns | 134.7718 ns | 112.5406 ns | 5.2185 |   32832 B |
+| Divide_BigFloat           |     14.687 ns |   0.3137 ns |   0.3356 ns |      - |         - |
+| DivideToString_BigReal    |  1,165.798 ns |   3.4006 ns |   3.1809 ns | 0.0534 |     344 B |
+| DivideToString_BigDecimal |  2,822.685 ns |  24.7819 ns |  19.3481 ns | 0.5226 |    3296 B |
+| DivideToString_BigFloat   |  1,385.152 ns |  19.1418 ns |  16.9687 ns | 0.1869 |    1176 B |
+| Parse_BigReal             |    272.192 ns |   1.9640 ns |   1.6400 ns | 0.0062 |      40 B |
+| Parse_BigDecimal          |    243.745 ns |   1.3348 ns |   1.0421 ns | 0.0291 |     184 B |
+| Parse_BigFloat            |    311.843 ns |   5.5915 ns |   4.9568 ns | 0.0062 |      40 B |
+| FromFloat_BigReal         |    110.971 ns |   0.3906 ns |   0.3262 ns |      - |         - |
+| FromFloat_BigDecimal      |    322.433 ns |   0.9244 ns |   0.7719 ns | 0.0329 |     208 B |
+| FromFloat_BigFloat        |  1,609.420 ns |   5.7215 ns |   4.7777 ns | 0.1068 |     672 B |
 
 Notes:
 - Whereas `BigDecimal` divides by calculating the decimal digits at a certain precision, `BigReal` stores a fraction so the digits are only calculated at `ToString`.
