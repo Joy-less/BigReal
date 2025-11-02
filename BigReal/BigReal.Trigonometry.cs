@@ -17,16 +17,76 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     public static BigReal Tau { get; } = double.Tau;
 
     /// <summary>
-    /// Converts the given <paramref name="radians"/> to degrees.
+    /// Converts the given <paramref name="radians"/> (full turn = 2π) to degrees (full turn = 360).
     /// </summary>
     public static BigReal RadiansToDegrees(BigReal radians, int decimals = DoubleReliableDecimals) {
         return radians * (180 / CalculatePi(decimals));
     }
     /// <summary>
-    /// Converts the given <paramref name="degrees"/> to radians.
+    /// Converts the given <paramref name="radians"/> (full turn = 2π) to turns (full turn = 1).
+    /// </summary>
+    public static BigReal RadiansToTurns(BigReal radians, int decimals = DoubleReliableDecimals) {
+        return radians / CalculateTau(decimals);
+    }
+    /// <summary>
+    /// Converts the given <paramref name="radians"/> (full turn = 2π) to gradians (full turn = 400).
+    /// </summary>
+    public static BigReal RadiansToGradians(BigReal radians, int decimals = DoubleReliableDecimals) {
+        return radians * (200 / CalculatePi(decimals));
+    }
+    /// <summary>
+    /// Converts the given <paramref name="degrees"/> (full turn = 360) to radians (full turn = 2π).
     /// </summary>
     public static BigReal DegreesToRadians(BigReal degrees, int decimals = DoubleReliableDecimals) {
         return degrees * (CalculatePi(decimals) / 180);
+    }
+    /// <summary>
+    /// Converts the given <paramref name="degrees"/> (full turn = 360) to turns (full turn = 1).
+    /// </summary>
+    public static BigReal DegreesToTurns(BigReal degrees, int decimals = DoubleReliableDecimals) {
+        return degrees / 360;
+    }
+    /// <summary>
+    /// Converts the given <paramref name="degrees"/> (full turn = 360) to gradians (full turn = 400).
+    /// </summary>
+    public static BigReal DegreesToGradians(BigReal degrees, int decimals = DoubleReliableDecimals) {
+        return degrees * new BigReal(10, 9);
+    }
+    /// <summary>
+    /// Converts the given <paramref name="turns"/> (full turn = 1) to degrees (full turn = 360).
+    /// </summary>
+    public static BigReal TurnsToDegrees(BigReal turns, int decimals = DoubleReliableDecimals) {
+        return turns * 360;
+    }
+    /// <summary>
+    /// Converts the given <paramref name="turns"/> (full turn = 1) to radians (full turn = 2π).
+    /// </summary>
+    public static BigReal TurnsToRadians(BigReal turns, int decimals = DoubleReliableDecimals) {
+        return turns * CalculateTau(decimals);
+    }
+    /// <summary>
+    /// Converts the given <paramref name="turns"/> (full turn = 1) to gradians (full turn = 400).
+    /// </summary>
+    public static BigReal TurnsToGradians(BigReal turns, int decimals = DoubleReliableDecimals) {
+        return turns * 400;
+    }
+    /// <summary>
+    /// Converts the given <paramref name="gradians"/> (full turn = 400) to degrees (full turn = 360).
+    /// </summary>
+    public static BigReal GradiansToDegrees(BigReal gradians, int decimals = DoubleReliableDecimals) {
+        return gradians * new BigReal(9, 10);
+    }
+    /// <summary>
+    /// Converts the given <paramref name="gradians"/> (full turn = 400) to radians (full turn = 2π).
+    /// </summary>
+    public static BigReal GradiansToRadians(BigReal gradians, int decimals = DoubleReliableDecimals) {
+        return gradians * (CalculatePi(decimals) / 200);
+    }
+    /// <summary>
+    /// Converts the given <paramref name="gradians"/> (full turn = 400) to turns (full turn = 1).
+    /// </summary>
+    public static BigReal GradiansToTurns(BigReal gradians, int decimals = DoubleReliableDecimals) {
+        return gradians / 400;
     }
     /// <summary>
     /// Returns the sine of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
