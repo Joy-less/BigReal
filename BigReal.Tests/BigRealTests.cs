@@ -44,6 +44,11 @@ public class BigRealTests {
         ShouldBeApproximatelyEqual(BigReal.Pow(three, 1 / seven), 1.16993, 5);
         ShouldBeApproximatelyEqual(BigReal.Pow(three, 1 / seven, decimals: 40), 1.16993, 5); // Slow
     }
+    [Fact]
+    public void ExpTest() {
+        ShouldBeApproximatelyEqual(BigReal.Exp(5.3), 200.33681, 5);
+        ShouldBeApproximatelyEqual(BigReal.Exp(5.3, decimals: 40), 200.33681, 3); // Slow (slightly)
+    }
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
