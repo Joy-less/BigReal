@@ -1,32 +1,32 @@
-﻿using System.Numerics;
+using System.Numerics;
 
 namespace ExtendedNumerics;
 
 partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
-    /// Represents 15 digits of the natural logarithmic base, specified by the constant, e.
+    /// Represents at least 15 decimal places of the natural logarithmic base, specified by the constant, e.
     /// </summary>
     public static BigReal E { get; } = double.E;
     /// <summary>
-    /// Represents 15 digits of the ratio of the circumference of a circle to its diameter, specified by the constant, π.
+    /// Represents at least 15 decimal places of the ratio of the circumference of a circle to its diameter, specified by the constant, π.
     /// </summary>
     public static BigReal Pi { get; } = double.Pi;
     /// <summary>
-    /// Represents 15 digits of the number of radians in one turn, specified by the constant, τ.
+    /// Represents at least 15 decimal places of the number of radians in one turn, specified by the constant, τ.
     /// </summary>
     public static BigReal Tau { get; } = double.Tau;
 
     /// <summary>
     /// Converts the given <paramref name="radians"/> to degrees.
     /// </summary>
-    public static BigReal RadiansToDegrees(BigReal radians) {
-        return radians * (180 / Pi);
+    public static BigReal RadiansToDegrees(BigReal radians, int decimals = DoubleReliableDecimals) {
+        return radians * (180 / CalculatePi(decimals));
     }
     /// <summary>
     /// Converts the given <paramref name="degrees"/> to radians.
     /// </summary>
-    public static BigReal DegreesToRadians(BigReal degrees) {
-        return degrees * (Pi / 180);
+    public static BigReal DegreesToRadians(BigReal degrees, int decimals = DoubleReliableDecimals) {
+        return degrees * (CalculatePi(decimals) / 180);
     }
     /// <summary>
     /// Returns the sine of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
@@ -168,10 +168,10 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
             throw new ArgumentOutOfRangeException(nameof(radians));
         }
         if (IsOne(radians)) {
-            return Pi / 2;
+            return CalculatePi(decimals) / 2;
         }
         if (IsNegativeOne(radians)) {
-            return -Pi / 2;
+            return -CalculatePi(decimals) / 2;
         }
         if (TryCalculateAsDouble(radians, double.Asin, decimals, out double result)) {
             return result;
@@ -279,17 +279,21 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns e, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculateE(int decimals) {
+        if (decimals <= DoubleReliableDecimals) {
+            return E;
+        }
+
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
         BigReal epsilon = One / Pow(Ten, decimals);
 
         // https://stackoverflow.com/a/43564002
-        BigReal result = 1;
-        BigReal factorial = 1;
+        BigReal result = One;
+        BigReal factorial = One;
         BigReal term;
         int n = 1;
         while (true) {
             factorial *= n;
-            term = 1m / factorial;
+            term = One / factorial;
             result += term;
             n++;
             if (Abs(term) <= epsilon) {
@@ -302,6 +306,10 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns π, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculatePi(int decimals) {
+        if (decimals <= DoubleReliableDecimals) {
+            return Pi;
+        }
+
         const int MaxStackallocBytes = 256;
 
         // https://stackoverflow.com/a/11679007
@@ -358,6 +366,10 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns τ, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculateTau(int decimals) {
+        if (decimals <= DoubleReliableDecimals) {
+            return Tau;
+        }
+
         return CalculatePi(decimals) * 2;
     }
 }
