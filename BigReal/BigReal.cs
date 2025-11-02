@@ -379,20 +379,20 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         BigReal epsilon = One / Pow(Ten, decimals);
 
         // https://stackoverflow.com/a/35971996
-        BigReal old_sum = Zero;
+        BigReal oldSum = Zero;
         BigReal xmlxpl = (value - One) / (value + One);
-        BigReal xmlxpl_2 = xmlxpl * xmlxpl;
+        BigReal xmlxpl2 = xmlxpl * xmlxpl;
         BigReal denom = One;
         BigReal frac = xmlxpl;
         BigReal term = frac;
         BigReal sum = term;
 
         while (true) {
-            old_sum = sum;
+            oldSum = sum;
             denom += 2;
-            frac *= xmlxpl_2;
+            frac *= xmlxpl2;
             sum += frac / denom;
-            if (Abs(sum - old_sum) <= epsilon) {
+            if (Abs(sum - oldSum) <= epsilon) {
                 break;
             }
         }
