@@ -12,7 +12,7 @@ namespace ExtendedNumerics;
 /// </summary>
 [Serializable]
 public readonly partial struct BigReal : IConvertible, IComparable, IComparable<BigReal>, IEquatable<BigReal>, INumber<BigReal>, IFloatingPoint<BigReal>, IFloatingPointConstants<BigReal>,
-    IPowerFunctions<BigReal>, IRootFunctions<BigReal>, ILogarithmicFunctions<BigReal>
+    IPowerFunctions<BigReal>, IRootFunctions<BigReal>, ILogarithmicFunctions<BigReal>, IMinMaxValue<BigReal>
 {
     /// <summary>
     /// The dividend (top of the fraction).
@@ -64,6 +64,15 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// The number that, when multiplied by a number, returns the other number. This number is 1.
     /// </summary>
     public static BigReal MultiplicativeIdentity => One;
+
+    /// <summary>
+    /// The maximum value of a <see cref="BigReal"/>. This value is positive infinity.
+    /// </summary>
+    public static BigReal MaxValue => PositiveInfinity;
+    /// <summary>
+    /// The minimum value of a <see cref="BigReal"/>. This value is negative infinity.
+    /// </summary>
+    public static BigReal MinValue => NegativeInfinity;
 
     /// <summary>
     /// Returns:
