@@ -24,44 +24,44 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     public readonly BigInteger Denominator;
 
     /// <summary>
-    /// A value representing the number 1.
+    /// A value representing the number 1 (as 1/1).
     /// </summary>
     public static BigReal One { get; } = new(1);
     /// <summary>
-    /// A value representing the number 10.
+    /// A value representing the number 10 (as 10/1).
     /// </summary>
     public static BigReal Ten { get; } = new(10);
     /// <summary>
-    /// A value representing the number 0.
+    /// A value representing the number 0 (as 0/1).
     /// </summary>
     public static BigReal Zero { get; } = new(0);
     /// <summary>
-    /// A value representing the number -1.
+    /// A value representing the number -1 (as -1/1).
     /// </summary>
     public static BigReal NegativeOne { get; } = new(-1);
     /// <summary>
-    /// A value representing the number 0.5.
+    /// A value representing the number 0.5 (as 1/2).
     /// </summary>
     public static BigReal OneHalf { get; } = new(1, 2);
     /// <summary>
-    /// A value representing a value that is not a number.
+    /// A value representing a value that is not a number (as 0/0).
     /// </summary>
     public static BigReal NaN { get; } = new(0, 0);
     /// <summary>
-    /// A value representing a value that is positive infinity.
+    /// A value representing a value that is positive infinity (as 1/0).
     /// </summary>
     public static BigReal PositiveInfinity { get; } = new(1, 0);
     /// <summary>
-    /// A value representing a value that is negative infinity.
+    /// A value representing a value that is negative infinity (as -1/0).
     /// </summary>
     public static BigReal NegativeInfinity { get; } = new(-1, 0);
 
     /// <summary>
-    /// The number that, when added to a number, returns the other number.
+    /// The number that, when added to a number, returns the other number. This number is 0.
     /// </summary>
     public static BigReal AdditiveIdentity => Zero;
     /// <summary>
-    /// The number that, when multiplied by a number, returns the other number.
+    /// The number that, when multiplied by a number, returns the other number. This number is 1.
     /// </summary>
     public static BigReal MultiplicativeIdentity => One;
 
