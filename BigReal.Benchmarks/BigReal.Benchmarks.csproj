@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.15.6" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageReference Include="BigFloat" Version="2.0.0" />
-    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3001.1.0.233" />
+    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3003.0.0.346" />
   </ItemGroup>
 
   <ItemGroup>
