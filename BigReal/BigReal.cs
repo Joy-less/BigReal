@@ -882,7 +882,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         BigReal exponent = Zero;
         if (exponentPos > 0) {
             // Get exponent
-            exponent = Parse(input[(exponentPos + 1)..], style, provider);
+            exponent = Parse(input.AsSpan((exponentPos + 1)..), style, provider);
             // Remove exponent
             input = input[..exponentPos];
         }
