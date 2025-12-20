@@ -898,9 +898,11 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         }
         else {
             // Remove decimal point
-            input = input.Replace(numberFormat.NumberDecimalSeparator, "", StringComparison.OrdinalIgnoreCase);
+            input = string.Concat(input.AsSpan(..decimalPointPos), input.AsSpan((decimalPointPos + numberFormat.NumberDecimalSeparator.Length)..));
+            // Disallow another decimal point
+            NumberStyles numeratorStyle = style & ~NumberStyles.AllowDecimalPoint;
             // Get numerator and denominator
-            BigInteger numerator = BigInteger.Parse(input, style, provider);
+            BigInteger numerator = BigInteger.Parse(input, numeratorStyle, provider);
             BigInteger denominator = BigInteger.Pow(10, input.Length - decimalPointPos);
             result = new BigReal(numerator, denominator);
         }
