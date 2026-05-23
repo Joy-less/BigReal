@@ -1,9 +1,9 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Text;
-using LinkDotNet.StringBuilder;
 
 namespace ExtendedNumerics;
 
@@ -1236,15 +1236,30 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         BigInteger fractional = BigInteger.Abs(Numerator * BigInteger.Pow(10, decimals) / Denominator);
 
         // Get fraction part (e.g. 123.45 -> 4500000)
-        using ValueStringBuilder fractionBuilder = new(stackalloc char[int.Min(decimals, 128)]);
+        Span<char> fractionBuilder = decimals <= 128
+            ? stackalloc char[decimals]
+            : new char[decimals];
         for (int columnNumber = 0; columnNumber < decimals; columnNumber++) {
             // Append each digit of fraction
-            fractionBuilder.Append(fractional % 10, bufferSize: 1);
+            BigInteger digit = fractional % 10;
+            char digitChar = (int)digit switch {
+                0 => '0',
+                1 => '1',
+                2 => '2',
+                3 => '3',
+                4 => '4',
+                5 => '5',
+                6 => '6',
+                7 => '7',
+                8 => '8',
+                9 => '9',
+                _ => throw new UnreachableException()
+            };
+            fractionBuilder[columnNumber] = digitChar;
             fractional /= 10;
         }
         fractionBuilder.Reverse();
-        fractionBuilder.TrimEnd('0');
-        ReadOnlySpan<char> fractionSpan = fractionBuilder.AsSpan();
+        ReadOnlySpan<char> fractionSpan = fractionBuilder.TrimEnd('0');
 
         // Number at given precision is whole
         if (fractionSpan.IsEmpty) {
