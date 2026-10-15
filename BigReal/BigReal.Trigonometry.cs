@@ -52,19 +52,19 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Converts the given <paramref name="degrees"/> (full turn = 360) to turns (full turn = 1).
     /// </summary>
-    public static BigReal DegreesToTurns(BigReal degrees, int decimals = 15) {
+    public static BigReal DegreesToTurns(BigReal degrees) {
         return degrees / 360;
     }
     /// <summary>
     /// Converts the given <paramref name="degrees"/> (full turn = 360) to gradians (full turn = 400).
     /// </summary>
-    public static BigReal DegreesToGradians(BigReal degrees, int decimals = 15) {
+    public static BigReal DegreesToGradians(BigReal degrees) {
         return degrees * new BigReal(10, 9);
     }
     /// <summary>
     /// Converts the given <paramref name="turns"/> (full turn = 1) to degrees (full turn = 360).
     /// </summary>
-    public static BigReal TurnsToDegrees(BigReal turns, int decimals = 15) {
+    public static BigReal TurnsToDegrees(BigReal turns) {
         return turns * 360;
     }
     /// <summary>
@@ -76,13 +76,13 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Converts the given <paramref name="turns"/> (full turn = 1) to gradians (full turn = 400).
     /// </summary>
-    public static BigReal TurnsToGradians(BigReal turns, int decimals = 15) {
+    public static BigReal TurnsToGradians(BigReal turns) {
         return turns * 400;
     }
     /// <summary>
     /// Converts the given <paramref name="gradians"/> (full turn = 400) to degrees (full turn = 360).
     /// </summary>
-    public static BigReal GradiansToDegrees(BigReal gradians, int decimals = 15) {
+    public static BigReal GradiansToDegrees(BigReal gradians) {
         return gradians * new BigReal(9, 10);
     }
     /// <summary>
@@ -94,7 +94,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Converts the given <paramref name="gradians"/> (full turn = 400) to turns (full turn = 1).
     /// </summary>
-    public static BigReal GradiansToTurns(BigReal gradians, int decimals = 15) {
+    public static BigReal GradiansToTurns(BigReal gradians) {
         return gradians / 400;
     }
     /// <summary>
