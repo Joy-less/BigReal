@@ -2,7 +2,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/BigReal.svg)](https://www.nuget.org/packages/BigReal)
 
-An arbitrary size and precision rational number stored using two BigIntegers.
+An arbitrary size and precision rational number stored using two BigIntegers, with no dependencies.
 
 ## Usage
 
@@ -27,7 +27,7 @@ Console.WriteLine(BigReal.Parse("2e2.5").ToString(2)); // 632.45
 
 Trigonometry:
 ```cs
-Console.WriteLine(BigReal.Sin(100).ToString(20)); // -0.5063656411097587906
+Console.WriteLine(BigReal.SinApprox(100).ToString(20)); // -0.5063656411097587906
 ```
 
 ## Performance
