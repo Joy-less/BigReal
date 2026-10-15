@@ -377,12 +377,12 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns <paramref name="value"/> to the power of <paramref name="exponent"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Pow(BigReal value, BigReal exponent, int decimals = DoubleReliableDecimals) {
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="Pow(BigReal, int)"/> or <see cref="double.Pow(double, double)"/> instead.
+    /// </remarks>
+    public static BigReal Pow(BigReal value, BigReal exponent, int decimals = 15) {
         if (IsInteger(exponent)) {
             return Pow(value, (int)exponent);
-        }
-        if (TryCalculateAsDouble(value, exponent, double.Pow, decimals, out double result)) {
-            return result;
         }
 
         /*
@@ -405,11 +405,10 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns the base e (natural) logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Log(BigReal value, int decimals = DoubleReliableDecimals) {
-        if (TryCalculateAsDouble(value, double.Log, decimals, out double result)) {
-            return result;
-        }
-
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Log(double)"/> instead.
+    /// </remarks>
+    public static BigReal Log(BigReal value, int decimals = 15) {
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
         BigReal epsilon = One / Pow(Ten, decimals);
 
@@ -439,11 +438,10 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns the base <paramref name="baseValue"/> logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Log(BigReal value, BigReal baseValue, int decimals = DoubleReliableDecimals) {
-        if (TryCalculateAsDouble(value, baseValue, double.Log, decimals, out double result)) {
-            return result;
-        }
-
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Log(double, double)"/> instead.
+    /// </remarks>
+    public static BigReal Log(BigReal value, BigReal baseValue, int decimals = 15) {
         // https://math.stackexchange.com/a/107576
         return Log(value, decimals) / Log(baseValue, decimals);
     }
@@ -453,11 +451,10 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns the base 10 logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Log10(BigReal value, int decimals = DoubleReliableDecimals) {
-        if (TryCalculateAsDouble(value, double.Log10, decimals, out double result)) {
-            return result;
-        }
-
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Log10(double)"/> instead.
+    /// </remarks>
+    public static BigReal Log10(BigReal value, int decimals = 15) {
         return Log(value, Ten, decimals);
     }
     static BigReal ILogarithmicFunctions<BigReal>.Log10(BigReal value) {
@@ -466,11 +463,10 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns the base 2 logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Log2(BigReal value, int decimals = DoubleReliableDecimals) {
-        if (TryCalculateAsDouble(value, double.Log2, decimals, out double result)) {
-            return result;
-        }
-
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Log2(double)"/> instead.
+    /// </remarks>
+    public static BigReal Log2(BigReal value, int decimals = 15) {
         return Log(value, 2, decimals);
     }
     static BigReal ILogarithmicFunctions<BigReal>.Log2(BigReal value) {
@@ -679,7 +675,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns the square root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Sqrt(BigReal value, int decimals = DoubleReliableDecimals) {
+    public static BigReal Sqrt(BigReal value, int decimals = 15) {
         return RootN(value, 2, decimals);
     }
     static BigReal IRootFunctions<BigReal>.Sqrt(BigReal value) {
@@ -688,7 +684,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns the cube root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Cbrt(BigReal value, int decimals = DoubleReliableDecimals) {
+    public static BigReal Cbrt(BigReal value, int decimals = 15) {
         return RootN(value, 3, decimals);
     }
     static BigReal IRootFunctions<BigReal>.Cbrt(BigReal value) {
@@ -697,7 +693,10 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns the n-th root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal RootN(BigReal value, int root, int decimals = DoubleReliableDecimals) {
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.RootN(double, int)"/> instead.
+    /// </remarks>
+    public static BigReal RootN(BigReal value, int root, int decimals = 15) {
         if (IsZero(value) || IsOne(value)) {
             return value;
         }
@@ -706,9 +705,6 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         }
         if (root < 0) {
             return One / Pow(value, -root);
-        }
-        if (TryCalculateAsDouble(value, root, double.RootN, decimals, out double result)) {
-            return result;
         }
 
         // Can't root a negative number
@@ -744,7 +740,10 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns e raised to the specified <paramref name="power"/>.
     /// </summary>
-    public static BigReal Exp(BigReal power, int decimals = DoubleReliableDecimals) {
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Exp(double)"/> instead.
+    /// </remarks>
+    public static BigReal Exp(BigReal power, int decimals = 15) {
         if (IsZero(power)) {
             return One;
         }
@@ -762,9 +761,6 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         }
         if (IsNegativeInfinity(power)) {
             return Zero;
-        }
-        if (TryCalculateAsDouble(power, double.Exp, decimals, out double result)) {
-            return result;
         }
 
         // Convert decimals to epsilon
@@ -788,7 +784,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// Returns the hypotenuse of <paramref name="x"/> and <paramref name="y"/>, correct to <paramref name="decimals"/> decimal places.<br/>
     /// This is the same as <c>sqrt(pow(<paramref name="x"/>, 2) + pow(<paramref name="y"/>, 2))</c>.
     /// </summary>
-    public static BigReal Hypot(BigReal x, BigReal y, int decimals = DoubleReliableDecimals) {
+    public static BigReal Hypot(BigReal x, BigReal y, int decimals = 15) {
         return Sqrt(Pow(x, 2) + Pow(y, 2), decimals);
     }
     static BigReal IRootFunctions<BigReal>.Hypot(BigReal x, BigReal y) {
@@ -1161,18 +1157,6 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             return NaN;
         }
         return (weight - from) / (to - from);
-    }
-    /// <summary>
-    /// Returns whether <paramref name="input"/> is within the supported range of <typeparamref name="T"/>.
-    /// </summary>
-    private static bool IsInRangeOf<T>(BigReal input) where T : INumberBase<T>, IMinMaxValue<T> {
-        if (input > Create(T.MaxValue)) {
-            return false;
-        }
-        if (input < Create(T.MinValue)) {
-            return false;
-        }
-        return true;
     }
 
     #endregion

@@ -28,84 +28,84 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Converts the given <paramref name="radians"/> (full turn = 2π) to degrees (full turn = 360).
     /// </summary>
-    public static BigReal RadiansToDegrees(BigReal radians, int decimals = DoubleReliableDecimals) {
+    public static BigReal RadiansToDegrees(BigReal radians, int decimals = 15) {
         return radians * (180 / CalculatePi(decimals));
     }
     /// <summary>
     /// Converts the given <paramref name="radians"/> (full turn = 2π) to turns (full turn = 1).
     /// </summary>
-    public static BigReal RadiansToTurns(BigReal radians, int decimals = DoubleReliableDecimals) {
+    public static BigReal RadiansToTurns(BigReal radians, int decimals = 15) {
         return radians / CalculateTau(decimals);
     }
     /// <summary>
     /// Converts the given <paramref name="radians"/> (full turn = 2π) to gradians (full turn = 400).
     /// </summary>
-    public static BigReal RadiansToGradians(BigReal radians, int decimals = DoubleReliableDecimals) {
+    public static BigReal RadiansToGradians(BigReal radians, int decimals = 15) {
         return radians * (200 / CalculatePi(decimals));
     }
     /// <summary>
     /// Converts the given <paramref name="degrees"/> (full turn = 360) to radians (full turn = 2π).
     /// </summary>
-    public static BigReal DegreesToRadians(BigReal degrees, int decimals = DoubleReliableDecimals) {
+    public static BigReal DegreesToRadians(BigReal degrees, int decimals = 15) {
         return degrees * (CalculatePi(decimals) / 180);
     }
     /// <summary>
     /// Converts the given <paramref name="degrees"/> (full turn = 360) to turns (full turn = 1).
     /// </summary>
-    public static BigReal DegreesToTurns(BigReal degrees, int decimals = DoubleReliableDecimals) {
+    public static BigReal DegreesToTurns(BigReal degrees, int decimals = 15) {
         return degrees / 360;
     }
     /// <summary>
     /// Converts the given <paramref name="degrees"/> (full turn = 360) to gradians (full turn = 400).
     /// </summary>
-    public static BigReal DegreesToGradians(BigReal degrees, int decimals = DoubleReliableDecimals) {
+    public static BigReal DegreesToGradians(BigReal degrees, int decimals = 15) {
         return degrees * new BigReal(10, 9);
     }
     /// <summary>
     /// Converts the given <paramref name="turns"/> (full turn = 1) to degrees (full turn = 360).
     /// </summary>
-    public static BigReal TurnsToDegrees(BigReal turns, int decimals = DoubleReliableDecimals) {
+    public static BigReal TurnsToDegrees(BigReal turns, int decimals = 15) {
         return turns * 360;
     }
     /// <summary>
     /// Converts the given <paramref name="turns"/> (full turn = 1) to radians (full turn = 2π).
     /// </summary>
-    public static BigReal TurnsToRadians(BigReal turns, int decimals = DoubleReliableDecimals) {
+    public static BigReal TurnsToRadians(BigReal turns, int decimals = 15) {
         return turns * CalculateTau(decimals);
     }
     /// <summary>
     /// Converts the given <paramref name="turns"/> (full turn = 1) to gradians (full turn = 400).
     /// </summary>
-    public static BigReal TurnsToGradians(BigReal turns, int decimals = DoubleReliableDecimals) {
+    public static BigReal TurnsToGradians(BigReal turns, int decimals = 15) {
         return turns * 400;
     }
     /// <summary>
     /// Converts the given <paramref name="gradians"/> (full turn = 400) to degrees (full turn = 360).
     /// </summary>
-    public static BigReal GradiansToDegrees(BigReal gradians, int decimals = DoubleReliableDecimals) {
+    public static BigReal GradiansToDegrees(BigReal gradians, int decimals = 15) {
         return gradians * new BigReal(9, 10);
     }
     /// <summary>
     /// Converts the given <paramref name="gradians"/> (full turn = 400) to radians (full turn = 2π).
     /// </summary>
-    public static BigReal GradiansToRadians(BigReal gradians, int decimals = DoubleReliableDecimals) {
+    public static BigReal GradiansToRadians(BigReal gradians, int decimals = 15) {
         return gradians * (CalculatePi(decimals) / 200);
     }
     /// <summary>
     /// Converts the given <paramref name="gradians"/> (full turn = 400) to turns (full turn = 1).
     /// </summary>
-    public static BigReal GradiansToTurns(BigReal gradians, int decimals = DoubleReliableDecimals) {
+    public static BigReal GradiansToTurns(BigReal gradians, int decimals = 15) {
         return gradians / 400;
     }
     /// <summary>
     /// Returns the sine of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Sin(BigReal radians, int decimals = DoubleReliableDecimals) {
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Sin(double)"/> instead.
+    /// </remarks>
+    public static BigReal Sin(BigReal radians, int decimals = 15) {
         if (!IsFinite(radians)) {
             return NaN;
-        }
-        if (TryCalculateAsDouble(radians, double.Sin, decimals, out double result)) {
-            return result;
         }
 
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
@@ -138,12 +138,12 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Returns the cosine of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Cos(BigReal radians, int decimals = DoubleReliableDecimals) {
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Cos(double)"/> instead.
+    /// </remarks>
+    public static BigReal Cos(BigReal radians, int decimals = 15) {
         if (!IsFinite(radians)) {
             return NaN;
-        }
-        if (TryCalculateAsDouble(radians, double.Cos, decimals, out double result)) {
-            return result;
         }
 
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
@@ -173,14 +173,13 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns the tangent of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// The result is undefined when <paramref name="radians"/> is π/2 or 3π/2.
+    /// <b>Note:</b> The result is undefined when <paramref name="radians"/> is π/2 or 3π/2, so this method returns <see cref="NaN"/>.
+    /// <br/><br/>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Tan(double)"/> instead.
     /// </remarks>
-    public static BigReal Tan(BigReal radians, int decimals = DoubleReliableDecimals) {
+    public static BigReal Tan(BigReal radians, int decimals = 15) {
         if (!IsFinite(radians)) {
             return NaN;
-        }
-        if (TryCalculateAsDouble(radians, double.Tan, decimals, out double result)) {
-            return result;
         }
 
         return Sin(radians, decimals) / Cos(radians, decimals);
@@ -202,37 +201,45 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns the secant of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// The result is undefined when <paramref name="radians"/> is an odd multiple of π/2.
+    /// <b>Note:</b> The result is undefined when <paramref name="radians"/> is an odd multiple of π/2, so this method returns <see cref="NaN"/>.
+    /// <br/><br/>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use 1/<see cref="double.Cos(double)"/> instead.
     /// </remarks>
-    public static BigReal Sec(BigReal radians, int decimals = DoubleReliableDecimals) {
+    public static BigReal Sec(BigReal radians, int decimals = 15) {
         return One / Cos(radians, decimals);
     }
     /// <summary>
     /// Returns the secant of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// The result is undefined when <paramref name="radians"/> is a multiple of π.
+    /// <b>Note:</b> The result is undefined when <paramref name="radians"/> is a multiple of π, so this method returns <see cref="NaN"/>.
+    /// <br/><br/>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use 1/<see cref="double.Sin(double)"/> instead.
     /// </remarks>
-    public static BigReal Cosec(BigReal radians, int decimals = DoubleReliableDecimals) {
+    public static BigReal Cosec(BigReal radians, int decimals = 15) {
         return One / Sin(radians, decimals);
     }
     /// <summary>
     /// Returns the cotangent of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// The result is undefined when <paramref name="radians"/> is a multiple of π.
+    /// <b>Note:</b> The result is undefined when <paramref name="radians"/> is a multiple of π, so this method returns <see cref="NaN"/>.
+    /// <br/><br/>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Cos(double)"/>/<see cref="double.Sin(double)"/> instead.
     /// </remarks>
-    public static BigReal Cot(BigReal radians, int decimals = DoubleReliableDecimals) {
+    public static BigReal Cot(BigReal radians, int decimals = 15) {
         return Cos(radians, decimals) / Sin(radians, decimals);
     }
     /// <summary>
     /// Returns the arc-sine of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// The result throws when the magnitude of <paramref name="radians"/> is greater than one.
+    /// <b>Note:</b> This method throws an <see cref="ArgumentOutOfRangeException"/> when the magnitude of <paramref name="radians"/> is greater than one.
+    /// <br/><br/>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Asin(double)"/> instead.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException"/>
-    public static BigReal Asin(BigReal radians, int decimals = DoubleReliableDecimals) {
+    public static BigReal Asin(BigReal radians, int decimals = 15) {
         if (radians < NegativeOne || radians > One) {
             throw new ArgumentOutOfRangeException(nameof(radians));
         }
@@ -241,9 +248,6 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
         }
         if (IsNegativeOne(radians)) {
             return -CalculatePi(decimals) / 2;
-        }
-        if (TryCalculateAsDouble(radians, double.Asin, decimals, out double result)) {
-            return result;
         }
 
         // https://stackoverflow.com/a/7380529
@@ -259,15 +263,14 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns the arc-cosine of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// The result throws when the magnitude of <paramref name="radians"/> is greater than one.
+    /// <b>Note:</b> This method throws an <see cref="ArgumentOutOfRangeException"/> when the magnitude of <paramref name="radians"/> is greater than one.
+    /// <br/><br/>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Acos(double)"/> instead.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException"/>
-    public static BigReal Acos(BigReal radians, int decimals = DoubleReliableDecimals) {
+    public static BigReal Acos(BigReal radians, int decimals = 15) {
         if (radians < NegativeOne || radians > One) {
             throw new ArgumentOutOfRangeException(nameof(radians));
-        }
-        if (TryCalculateAsDouble(radians, double.Acos, decimals, out double result)) {
-            return result;
         }
 
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
@@ -285,12 +288,12 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Returns the arc-tangent of <paramref name="radians"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Atan(BigReal radians, int decimals = DoubleReliableDecimals) {
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Atan(double)"/> instead.
+    /// </remarks>
+    public static BigReal Atan(BigReal radians, int decimals = 15) {
         if (!IsFinite(radians)) {
             return NaN;
-        }
-        if (TryCalculateAsDouble(radians, double.Atan, decimals, out double result)) {
-            return result;
         }
 
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
@@ -319,11 +322,10 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
     /// Returns the arc-tangent of the quotient of <paramref name="y"/> and <paramref name="x"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Atan2(BigReal y, BigReal x, int decimals = DoubleReliableDecimals) {
-        if (TryCalculateAsDouble(y, x, double.Atan2, decimals, out double result)) {
-            return result;
-        }
-
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Atan2(double, double)"/> instead.
+    /// </remarks>
+    public static BigReal Atan2(BigReal y, BigReal x, int decimals = 15) {
         // https://en.wikipedia.org/wiki/Atan2#Definition
         if (x > Zero) {
             return Atan(y / x, decimals);
@@ -348,7 +350,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns e, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculateE(int decimals) {
-        if (decimals <= DoubleReliableDecimals) {
+        if (decimals <= 15) {
             return E;
         }
 
@@ -375,7 +377,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns π, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculatePi(int decimals) {
-        if (decimals <= DoubleReliableDecimals) {
+        if (decimals <= 15) {
             return Pi;
         }
 
@@ -435,7 +437,7 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// Returns τ, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     public static BigReal CalculateTau(int decimals) {
-        if (decimals <= DoubleReliableDecimals) {
+        if (decimals <= 15) {
             return Tau;
         }
 
