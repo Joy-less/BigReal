@@ -4,17 +4,26 @@ namespace ExtendedNumerics;
 
 partial struct BigReal : ITrigonometricFunctions<BigReal> {
     /// <summary>
-    /// Represents at least 15 decimal places of the natural logarithmic base, specified by the constant, e.
+    /// Represents 15 decimal places of the natural logarithmic base, specified by the constant, e.
     /// </summary>
-    public static BigReal E { get; } = double.E;
+    /// <remarks>
+    /// The exact value of this field is <c>2.718281828459045</c>.
+    /// </remarks>
+    public static BigReal E { get; } = new(543656365691809, 200000000000000);
     /// <summary>
-    /// Represents at least 15 decimal places of the ratio of the circumference of a circle to its diameter, specified by the constant, π.
+    /// Represents 15 decimal places of the ratio of the circumference of a circle to its diameter, specified by the constant, π.
     /// </summary>
-    public static BigReal Pi { get; } = double.Pi;
+    /// <remarks>
+    /// The exact value of this field is <c>3.141592653589793</c>.
+    /// </remarks>
+    public static BigReal Pi { get; } = new(3141592653589793, 1000000000000000);
     /// <summary>
-    /// Represents at least 15 decimal places of the number of radians in one turn, specified by the constant, τ.
+    /// Represents 15 decimal places of the number of radians in one turn, specified by the constant, τ.
     /// </summary>
-    public static BigReal Tau { get; } = double.Tau;
+    /// <remarks>
+    /// The exact value of this field is <c>6.283185307179586</c>.
+    /// </remarks>
+    public static BigReal Tau { get; } = new(3141592653589793, 500000000000000);
 
     /// <summary>
     /// Converts the given <paramref name="radians"/> (full turn = 2π) to degrees (full turn = 360).
