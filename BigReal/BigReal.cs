@@ -378,9 +378,9 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// Returns <paramref name="value"/> to the power of <paramref name="exponent"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="Pow(BigReal, int)"/> or <see cref="double.Pow(double, double)"/> instead.
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="PowApprox(BigReal, BigReal)"/> instead.
     /// </remarks>
-    public static BigReal Pow(BigReal value, BigReal exponent, int decimals = 15) {
+    public static BigReal Pow(BigReal value, BigReal exponent, int decimals) {
         if (IsInteger(exponent)) {
             return Pow(value, (int)exponent);
         }
@@ -399,16 +399,30 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         // Use the identity x^y = e^(y * ln(x))
         return Exp(exponent * Log(value, decimals: decimals), decimals: decimals);
     }
+    /// <summary>
+    /// Returns <paramref name="value"/> to the power of <paramref name="exponent"/>, correct to approximately 15 decimal places.
+    /// </summary>
+    /// <remarks>
+    /// <b>Note:</b> For this method to be performant, it converts from <see cref="BigReal"/> to <see cref="double"/>,
+    /// which reduces range and precision. To avoid this, use <see cref="Pow(BigReal, BigReal, int)"/>.
+    /// </remarks>
+    public static BigReal PowApprox(BigReal value, BigReal exponent) {
+        if (IsInteger(exponent)) {
+            return Pow(value, (int)exponent);
+        }
+
+        return double.Pow((double)value, (double)exponent);
+    }
     static BigReal IPowerFunctions<BigReal>.Pow(BigReal value, BigReal exponent) {
-        return Pow(value, exponent);
+        return PowApprox(value, exponent);
     }
     /// <summary>
     /// Returns the base e (natural) logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Log(double)"/> instead.
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="LogApprox(BigReal)"/> instead.
     /// </remarks>
-    public static BigReal Log(BigReal value, int decimals = 15) {
+    public static BigReal Log(BigReal value, int decimals) {
         // Convert decimals to epsilon (e.g. 3 -> 0.001)
         BigReal epsilon = One / Pow(Ten, decimals);
 
@@ -431,45 +445,85 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         }
         return 2 * sum;
     }
+    /// <summary>
+    /// Returns the base e (natural) logarithm of <paramref name="value"/>, correct to approximately 15 decimal places.
+    /// </summary>
+    /// <remarks>
+    /// <b>Note:</b> For this method to be performant, it converts from <see cref="BigReal"/> to <see cref="double"/>,
+    /// which reduces range and precision. To avoid this, use <see cref="Log(BigReal, int)"/>.
+    /// </remarks>
+    public static BigReal LogApprox(BigReal value) {
+        return double.Log((double)value);
+    }
     static BigReal ILogarithmicFunctions<BigReal>.Log(BigReal value) {
-        return Log(value);
+        return LogApprox(value);
     }
     /// <summary>
     /// Returns the base <paramref name="baseValue"/> logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Log(double, double)"/> instead.
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="LogApprox(BigReal, BigReal)"/> instead.
     /// </remarks>
-    public static BigReal Log(BigReal value, BigReal baseValue, int decimals = 15) {
+    public static BigReal Log(BigReal value, BigReal baseValue, int decimals) {
         // https://math.stackexchange.com/a/107576
         return Log(value, decimals) / Log(baseValue, decimals);
     }
+    /// <summary>
+    /// Returns the base <paramref name="baseValue"/> logarithm of <paramref name="value"/>, correct to approximately 15 decimal places.
+    /// </summary>
+    /// <remarks>
+    /// <b>Note:</b> For this method to be performant, it converts from <see cref="BigReal"/> to <see cref="double"/>,
+    /// which reduces range and precision. To avoid this, use <see cref="Log(BigReal, BigReal, int)"/>.
+    /// </remarks>
+    public static BigReal LogApprox(BigReal value, BigReal baseValue) {
+        return double.Log((double)value, (double)baseValue);
+    }
     static BigReal ILogarithmicFunctions<BigReal>.Log(BigReal value, BigReal baseValue) {
-        return Log(value, baseValue);
+        return LogApprox(value, baseValue);
     }
     /// <summary>
     /// Returns the base 10 logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Log10(double)"/> instead.
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="Log10Approx(BigReal)"/> instead.
     /// </remarks>
-    public static BigReal Log10(BigReal value, int decimals = 15) {
+    public static BigReal Log10(BigReal value, int decimals) {
         return Log(value, Ten, decimals);
     }
+    /// <summary>
+    /// Returns the base 10 logarithm of <paramref name="value"/>, correct to approximately 15 decimal places.
+    /// </summary>
+    /// <remarks>
+    /// <b>Note:</b> For this method to be performant, it converts from <see cref="BigReal"/> to <see cref="double"/>,
+    /// which reduces range and precision. To avoid this, use <see cref="Log10(BigReal, int)"/>.
+    /// </remarks>
+    public static BigReal Log10Approx(BigReal value) {
+        return double.Log10((double)value);
+    }
     static BigReal ILogarithmicFunctions<BigReal>.Log10(BigReal value) {
-        return Log10(value);
+        return Log10Approx(value);
     }
     /// <summary>
     /// Returns the base 2 logarithm of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Log2(double)"/> instead.
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="Log2Approx(BigReal)"/> instead.
     /// </remarks>
-    public static BigReal Log2(BigReal value, int decimals = 15) {
+    public static BigReal Log2(BigReal value, int decimals) {
         return Log(value, 2, decimals);
     }
+    /// <summary>
+    /// Returns the base 2 logarithm of <paramref name="value"/>, correct to approximately 15 decimal places.
+    /// </summary>
+    /// <remarks>
+    /// <b>Note:</b> For this method to be performant, it converts from <see cref="BigReal"/> to <see cref="double"/>,
+    /// which reduces range and precision. To avoid this, use <see cref="Log2(BigReal, int)"/>.
+    /// </remarks>
+    public static BigReal Log2Approx(BigReal value) {
+        return double.Log2((double)value);
+    }
     static BigReal ILogarithmicFunctions<BigReal>.Log2(BigReal value) {
-        return Log2(value);
+        return Log2Approx(value);
     }
     /// <summary>
     /// Returns <paramref name="value"/> as a positive number.
@@ -674,28 +728,54 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Returns the square root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Sqrt(BigReal value, int decimals = 15) {
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="SqrtApprox(BigReal)"/> instead.
+    /// </remarks>
+    public static BigReal Sqrt(BigReal value, int decimals) {
         return RootN(value, 2, decimals);
     }
+    /// <summary>
+    /// Returns the square root of <paramref name="value"/>, correct to approximately 15 decimal places.
+    /// </summary>
+    /// <remarks>
+    /// <b>Note:</b> For this method to be performant, it converts from <see cref="BigReal"/> to <see cref="double"/>,
+    /// which reduces range and precision. To avoid this, use <see cref="Sqrt(BigReal, int)"/>.
+    /// </remarks>
+    public static BigReal SqrtApprox(BigReal value) {
+        return RootNApprox(value, 2);
+    }
     static BigReal IRootFunctions<BigReal>.Sqrt(BigReal value) {
-        return Sqrt(value);
+        return SqrtApprox(value);
     }
     /// <summary>
     /// Returns the cube root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
-    public static BigReal Cbrt(BigReal value, int decimals = 15) {
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="CbrtApprox(BigReal)"/> instead.
+    /// </remarks>
+    public static BigReal Cbrt(BigReal value, int decimals) {
         return RootN(value, 3, decimals);
     }
+    /// <summary>
+    /// Returns the cube root of <paramref name="value"/>, correct to approximately 15 decimal places.
+    /// </summary>
+    /// <remarks>
+    /// <b>Note:</b> For this method to be performant, it converts from <see cref="BigReal"/> to <see cref="double"/>,
+    /// which reduces range and precision. To avoid this, use <see cref="Cbrt(BigReal, int)"/>.
+    /// </remarks>
+    public static BigReal CbrtApprox(BigReal value) {
+        return RootNApprox(value, 3);
+    }
     static BigReal IRootFunctions<BigReal>.Cbrt(BigReal value) {
-        return Cbrt(value);
+        return CbrtApprox(value);
     }
     /// <summary>
     /// Returns the n-th root of <paramref name="value"/>, correct to <paramref name="decimals"/> decimal places.
     /// </summary>
     /// <remarks>
-    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.RootN(double, int)"/> instead.
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="RootNApprox(BigReal, int)"/> instead.
     /// </remarks>
-    public static BigReal RootN(BigReal value, int root, int decimals = 15) {
+    public static BigReal RootN(BigReal value, int root, int decimals) {
         if (IsZero(value) || IsOne(value)) {
             return value;
         }
@@ -733,16 +813,36 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         // Use the identity root_n(x) = e^(ln(x)/n)
         return Exp(Log(value, decimals: decimals) / root, decimals: decimals);
     }
-    static BigReal IRootFunctions<BigReal>.RootN(BigReal value, int root) {
-        return RootN(value, root);
-    }
     /// <summary>
-    /// Returns e raised to the specified <paramref name="power"/>.
+    /// Returns the n-th root of <paramref name="value"/>, correct to approximately 15 decimal places.
     /// </summary>
     /// <remarks>
-    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="double.Exp(double)"/> instead.
+    /// <b>Note:</b> For this method to be performant, it converts from <see cref="BigReal"/> to <see cref="double"/>,
+    /// which reduces range and precision. To avoid this, use <see cref="RootN(BigReal, int, int)"/>.
     /// </remarks>
-    public static BigReal Exp(BigReal power, int decimals = 15) {
+    public static BigReal RootNApprox(BigReal value, int root) {
+        if (IsZero(value) || IsOne(value)) {
+            return value;
+        }
+        if (!IsFinite(value)) {
+            return value;
+        }
+        if (root < 0) {
+            return One / Pow(value, -root);
+        }
+
+        return double.RootN((double)value, root);
+    }
+    static BigReal IRootFunctions<BigReal>.RootN(BigReal value, int root) {
+        return RootNApprox(value, root);
+    }
+    /// <summary>
+    /// Returns e raised to the specified <paramref name="power"/>, correct to <paramref name="decimals"/> decimal places.
+    /// </summary>
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="ExpApprox(BigReal)"/> instead.
+    /// </remarks>
+    public static BigReal Exp(BigReal power, int decimals) {
         if (IsZero(power)) {
             return One;
         }
@@ -750,7 +850,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
             return CalculateE(decimals);
         }
         if (IsNegative(power)) {
-            return One / Exp(Abs(power));
+            return One / Exp(Abs(power), decimals);
         }
         if (IsNaN(power)) {
             return NaN;
@@ -780,14 +880,56 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         return Round(sum, decimals);
     }
     /// <summary>
+    /// Returns e raised to the specified <paramref name="power"/>, correct to approximately 15 decimal places.
+    /// </summary>
+    /// <remarks>
+    /// <b>Note:</b> For this method to be performant, it converts from <see cref="BigReal"/> to <see cref="double"/>,
+    /// which reduces range and precision. To avoid this, use <see cref="Exp(BigReal, int)"/>.
+    /// </remarks>
+    public static BigReal ExpApprox(BigReal power) {
+        if (IsZero(power)) {
+            return One;
+        }
+        if (IsOne(power)) {
+            return double.E;
+        }
+        if (IsNegative(power)) {
+            return One / ExpApprox(Abs(power));
+        }
+        if (IsNaN(power)) {
+            return NaN;
+        }
+        if (IsPositiveInfinity(power)) {
+            return PositiveInfinity;
+        }
+        if (IsNegativeInfinity(power)) {
+            return Zero;
+        }
+
+        return double.Exp((double)power);
+    }
+    /// <summary>
     /// Returns the hypotenuse of <paramref name="x"/> and <paramref name="y"/>, correct to <paramref name="decimals"/> decimal places.<br/>
     /// This is the same as <c>sqrt(pow(<paramref name="x"/>, 2) + pow(<paramref name="y"/>, 2))</c>.
     /// </summary>
-    public static BigReal Hypot(BigReal x, BigReal y, int decimals = 15) {
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="HypotApprox(BigReal, BigReal)"/> instead.
+    /// </remarks>
+    public static BigReal Hypot(BigReal x, BigReal y, int decimals) {
         return Sqrt(Pow(x, 2) + Pow(y, 2), decimals);
     }
+    /// <summary>
+    /// Returns the hypotenuse of <paramref name="x"/> and <paramref name="y"/>, correct to approximately 15 decimal places.
+    /// This is the same as <c>sqrt(pow(<paramref name="x"/>, 2) + pow(<paramref name="y"/>, 2))</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>Warning:</b> This method may be extremely slow. If possible, use <see cref="Hypot(BigReal, BigReal, int)"/> instead.
+    /// </remarks>
+    public static BigReal HypotApprox(BigReal x, BigReal y) {
+        return SqrtApprox(PowApprox(x, 2) + PowApprox(y, 2));
+    }
     static BigReal IRootFunctions<BigReal>.Hypot(BigReal x, BigReal y) {
-        return Hypot(x, y);
+        return HypotApprox(x, y);
     }
     /// <summary>
     /// Factorizes the numerator and denominator to their canonical form.
@@ -904,7 +1046,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
 
         // Multiply by 10 ^ exponent
         if (!IsZero(exponent)) {
-            result *= Pow(Ten, exponent);
+            result *= PowApprox(Ten, exponent);
         }
         return result;
     }

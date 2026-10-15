@@ -31,22 +31,22 @@ public class BigRealTests {
         BigReal three = new(3);
         BigReal seven = new(7);
 
-        BigReal.Pow(three, seven).ShouldBe(2187);
-        ShouldBeApproximatelyEqual(BigReal.Pow(three, -seven), 0.000457, 6);
+        BigReal.PowApprox(three, seven).ShouldBe(2187);
+        ShouldBeApproximatelyEqual(BigReal.PowApprox(three, -seven), 0.000457, 6);
 
-        ShouldBeApproximatelyEqual(BigReal.Sqrt(three), 1.732, 3);
+        ShouldBeApproximatelyEqual(BigReal.SqrtApprox(three), 1.732, 3);
         ShouldBeApproximatelyEqual(BigReal.Sqrt(three, decimals: 40), 1.732, 3); // Slow
-        ShouldBeApproximatelyEqual(BigReal.Cbrt(three), 1.442, 3);
+        ShouldBeApproximatelyEqual(BigReal.CbrtApprox(three), 1.442, 3);
         ShouldBeApproximatelyEqual(BigReal.Cbrt(three, decimals: 40), 1.442, 3); // Slow
 
-        ShouldBeApproximatelyEqual(BigReal.RootN(three, (int)seven), 1.16993, 5);
+        ShouldBeApproximatelyEqual(BigReal.RootNApprox(three, (int)seven), 1.16993, 5);
         ShouldBeApproximatelyEqual(BigReal.RootN(three, (int)seven, decimals: 40), 1.16993, 5); // Slow
-        ShouldBeApproximatelyEqual(BigReal.Pow(three, 1 / seven), 1.16993, 5);
+        ShouldBeApproximatelyEqual(BigReal.PowApprox(three, 1 / seven), 1.16993, 5);
         ShouldBeApproximatelyEqual(BigReal.Pow(three, 1 / seven, decimals: 40), 1.16993, 5); // Slow
     }
     [Fact]
     public void ExpTest() {
-        ShouldBeApproximatelyEqual(BigReal.Exp(5.3), 200.33681, 5);
+        ShouldBeApproximatelyEqual(BigReal.ExpApprox(5.3), 200.33681, 5);
         ShouldBeApproximatelyEqual(BigReal.Exp(5.3, decimals: 40), 200.33681, 3); // Slow (slightly)
     }
     [Theory]
@@ -127,16 +127,19 @@ public class BigRealTests {
     [InlineData(0.3)]
     [InlineData(-0.5)]
     public void TrigonometryTest(double value) {
-        ShouldBeApproximatelyEqual(double.Sin(value), BigReal.Sin(value));
-        ShouldBeApproximatelyEqual(double.Cos(value), BigReal.Cos(value));
-        ShouldBeApproximatelyEqual(double.Tan(value), BigReal.Tan(value));
-        ShouldBeApproximatelyEqual(1 / double.Sin(value), BigReal.Cosec(value));
-        ShouldBeApproximatelyEqual(1 / double.Cos(value), BigReal.Sec(value));
-        ShouldBeApproximatelyEqual(1 / double.Tan(value), BigReal.Cot(value));
-        ShouldBeApproximatelyEqual(double.Asin(value), BigReal.Asin(value));
-        ShouldBeApproximatelyEqual(double.Acos(value), BigReal.Acos(value));
-        ShouldBeApproximatelyEqual(double.Atan(value), BigReal.Atan(value));
-        ShouldBeApproximatelyEqual(double.Atan2(value, value), BigReal.Atan2(value, value));
+        ShouldBeApproximatelyEqual(double.Sin(value), BigReal.SinApprox(value));
+        ShouldBeApproximatelyEqual(double.Cos(value), BigReal.CosApprox(value));
+        ShouldBeApproximatelyEqual(double.Tan(value), BigReal.TanApprox(value));
+        ShouldBeApproximatelyEqual(1 / double.Sin(value), BigReal.CosecApprox(value));
+        ShouldBeApproximatelyEqual(1 / double.Cos(value), BigReal.SecApprox(value));
+        ShouldBeApproximatelyEqual(1 / double.Tan(value), BigReal.CotApprox(value));
+        ShouldBeApproximatelyEqual(double.Asin(value), BigReal.AsinApprox(value));
+        ShouldBeApproximatelyEqual(double.Acos(value), BigReal.AcosApprox(value));
+        ShouldBeApproximatelyEqual(double.Atan(value), BigReal.AtanApprox(value));
+        ShouldBeApproximatelyEqual(double.Atan2(value, value), BigReal.Atan2Approx(value, value));
+        ShouldBeApproximatelyEqual(double.E, BigReal.E);
+        ShouldBeApproximatelyEqual(double.Pi, BigReal.Pi);
+        ShouldBeApproximatelyEqual(double.Tau, BigReal.Tau);
         ShouldBeApproximatelyEqual(double.E, BigReal.CalculateE(15));
         ShouldBeApproximatelyEqual(double.Pi, BigReal.CalculatePi(15));
         ShouldBeApproximatelyEqual(double.Tau, BigReal.CalculateTau(15));

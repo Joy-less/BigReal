@@ -1,9 +1,9 @@
 using ExtendedNumerics;
 
-Console.WriteLine(double.Log(10) + " -> " + BigReal.Log(10));
-Console.WriteLine(double.Log(10, 3) + " -> " + BigReal.Log(10, (BigReal)3));
-Console.WriteLine(double.Log10(5) + " -> " + BigReal.Log10(5));
-Console.WriteLine(double.Log2(10) + " -> " + BigReal.Log2(10));
+Console.WriteLine(double.Log(10) + " -> " + BigReal.LogApprox(10));
+Console.WriteLine(double.Log(10, 3) + " -> " + BigReal.LogApprox(10, (BigReal)3));
+Console.WriteLine(double.Log10(5) + " -> " + BigReal.Log10Approx(5));
+Console.WriteLine(double.Log2(10) + " -> " + BigReal.Log2Approx(10));
 
 Console.WriteLine(BigReal.CalculatePi(4));
 Console.WriteLine(BigReal.CalculatePi(10));
@@ -25,13 +25,13 @@ Console.WriteLine(BigReal.Pow(3.4, 2)); // 11.56
 Console.WriteLine(BigReal.Parse("12.34")); // 12.34
 Console.WriteLine(BigReal.Parse("2e2.5").ToString(2)); // 632.45
 
-Console.WriteLine(BigReal.Truncate(BigReal.Sin(100), 20)); // -0.50636564110975879365
-Console.WriteLine(BigReal.Truncate(BigReal.Cos(100), 20)); // 0.8623188722876839341
-Console.WriteLine(BigReal.Truncate(BigReal.Tan(100), 20)); // -0.58721391515692907667
+Console.WriteLine(BigReal.Truncate(BigReal.SinApprox(100), 20)); // -0.50636564110975879365
+Console.WriteLine(BigReal.Truncate(BigReal.CosApprox(100), 20)); // 0.8623188722876839341
+Console.WriteLine(BigReal.Truncate(BigReal.TanApprox(100), 20)); // -0.58721391515692907667
 
-Console.WriteLine(BigReal.Truncate(BigReal.Sec(100), 20)); // 1.15966382290469383255
-Console.WriteLine(BigReal.Truncate(BigReal.Cosec(100), 20)); // -1.97485753142409996121
-Console.WriteLine(BigReal.Truncate(BigReal.Cot(100), 20)); // -1.7029569194264692161
+Console.WriteLine(BigReal.Truncate(BigReal.SecApprox(100), 20)); // 1.15966382290469383255
+Console.WriteLine(BigReal.Truncate(BigReal.CosecApprox(100), 20)); // -1.97485753142409996121
+Console.WriteLine(BigReal.Truncate(BigReal.CotApprox(100), 20)); // -1.7029569194264692161
 
 Console.WriteLine("===========================");
 
@@ -55,15 +55,15 @@ Console.WriteLine(Math.Pow(10, -2));
 
 Console.WriteLine(BigReal.Pow(4, -2));
 Console.WriteLine(BigReal.Pow(-4, 2));
-Console.WriteLine(BigReal.Sqrt(4));
-Console.WriteLine(BigReal.RootN(4, -1));
+Console.WriteLine(BigReal.SqrtApprox(4));
+Console.WriteLine(BigReal.RootNApprox(4, -1));
 
-Console.WriteLine(BigReal.Log(5));
-Console.WriteLine(BigReal.Log10(5));
+Console.WriteLine(BigReal.LogApprox(5));
+Console.WriteLine(BigReal.Log10Approx(5));
 Console.WriteLine(BigReal.Log(100, 2));
-Console.WriteLine(BigReal.Log2(100));
+Console.WriteLine(BigReal.Log2Approx(100));
 
-Console.WriteLine(BigReal.Pow(4.5, 4.5));
+Console.WriteLine(BigReal.PowApprox(4.5, 4.5));
 
 Console.WriteLine(BigReal.LeftShift(new BigReal(10)));
 Console.WriteLine(BigReal.RightShift(new BigReal(10)));
