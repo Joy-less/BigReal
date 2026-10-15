@@ -413,7 +413,6 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         BigReal epsilon = One / Pow(Ten, decimals);
 
         // https://stackoverflow.com/a/35971996
-        BigReal oldSum = Zero;
         BigReal xmlxpl = (value - One) / (value + One);
         BigReal xmlxpl2 = xmlxpl * xmlxpl;
         BigReal denom = One;
@@ -422,7 +421,7 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
         BigReal sum = term;
 
         while (true) {
-            oldSum = sum;
+            BigReal oldSum = sum;
             denom += 2;
             frac *= xmlxpl2;
             sum += frac / denom;

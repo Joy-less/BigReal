@@ -113,14 +113,13 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
 
         // https://stackoverflow.com/a/2284929
         BigReal cur = radians;
-        BigReal acc = One;
         BigInteger fact = BigInteger.One;
         BigReal pow = radians;
         int n = 1;
         while (true) {
             fact *= (2 * n) * ((2 * n) + 1);
             pow *= -1 * radians * radians;
-            acc = pow / fact;
+            BigReal acc = pow / fact;
             cur += acc;
             n++;
             if (Abs(acc) <= epsilon) {
@@ -273,9 +272,6 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
             throw new ArgumentOutOfRangeException(nameof(radians));
         }
 
-        // Convert decimals to epsilon (e.g. 3 -> 0.001)
-        BigReal epsilon = One / Pow(Ten, decimals);
-
         // https://stackoverflow.com/a/7380529
         return Atan2(Sqrt((One + radians) * (One - radians), decimals), radians, decimals);
     }
@@ -301,10 +297,9 @@ partial struct BigReal : ITrigonometricFunctions<BigReal> {
 
         // https://stackoverflow.com/a/40077756
         BigReal sum = 0;
-        BigReal term = radians;
         int n = 0;
         while (true) {
-            term = (Pow(radians, (2 * n) + 1) * Pow(-1, n)) / ((2 * n) + 1);
+            BigReal term = (Pow(radians, (2 * n) + 1) * Pow(-1, n)) / ((2 * n) + 1);
             sum += term;
             n++;
             if (Abs(term) <= epsilon) {
