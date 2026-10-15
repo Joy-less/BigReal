@@ -1609,59 +1609,115 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="sbyte"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator sbyte(BigReal value) => NarrowConvert(value, sbyte.MinValue, sbyte.MaxValue, value => (sbyte)((sbyte)value.Numerator / (sbyte)value.Denominator));
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="sbyte"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator sbyte(BigReal value) => NarrowConvert(value, sbyte.MinValue, sbyte.MaxValue, static (value) => (sbyte)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="byte"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator byte(BigReal value) => NarrowConvert(value, byte.MinValue, byte.MaxValue, value => (byte)((byte)value.Numerator / (byte)value.Denominator));
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="byte"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator byte(BigReal value) => NarrowConvert(value, byte.MinValue, byte.MaxValue, static (value) => (byte)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="short"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator short(BigReal value) => NarrowConvert(value, short.MinValue, short.MaxValue, value => (short)((short)value.Numerator / (short)value.Denominator));
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="short"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator short(BigReal value) => NarrowConvert(value, short.MinValue, short.MaxValue, static (value) => (short)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="ushort"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator ushort(BigReal value) => NarrowConvert(value, ushort.MinValue, ushort.MaxValue, value => (ushort)((ushort)value.Numerator / (ushort)value.Denominator));
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="ushort"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator ushort(BigReal value) => NarrowConvert(value, ushort.MinValue, ushort.MaxValue, static (value) => (ushort)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="int"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator int(BigReal value) => NarrowConvert(value, int.MinValue, int.MaxValue, value => (int)value.Numerator / (int)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="int"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator int(BigReal value) => NarrowConvert(value, int.MinValue, int.MaxValue, static (value) => (int)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="uint"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator uint(BigReal value) => NarrowConvert(value, uint.MinValue, uint.MaxValue, value => (uint)value.Numerator / (uint)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="uint"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator uint(BigReal value) => NarrowConvert(value, uint.MinValue, uint.MaxValue, static (value) => (uint)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="long"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator long(BigReal value) => NarrowConvert(value, long.MinValue, long.MaxValue, value => (long)value.Numerator / (long)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="long"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator long(BigReal value) => NarrowConvert(value, long.MinValue, long.MaxValue, static (value) => (long)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="ulong"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator ulong(BigReal value) => NarrowConvert(value, ulong.MinValue, ulong.MaxValue, value => (ulong)value.Numerator / (ulong)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="ulong"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator ulong(BigReal value) => NarrowConvert(value, ulong.MinValue, ulong.MaxValue, static (value) => (ulong)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="Int128"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator Int128(BigReal value) => NarrowConvert(value, Int128.MinValue, Int128.MaxValue, value => (Int128)value.Numerator / (Int128)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="Int128"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator Int128(BigReal value) => NarrowConvert(value, Int128.MinValue, Int128.MaxValue, static (value) => (Int128)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="UInt128"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator UInt128(BigReal value) => NarrowConvert(value, UInt128.MinValue, UInt128.MaxValue, value => (UInt128)value.Numerator / (UInt128)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="UInt128"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator UInt128(BigReal value) => NarrowConvert(value, UInt128.MinValue, UInt128.MaxValue, static (value) => (UInt128)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="char"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator char(BigReal value) => NarrowConvert(value, char.MinValue, char.MaxValue, value => (char)((char)value.Numerator / (char)value.Denominator));
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="char"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator char(BigReal value) => NarrowConvert(value, char.MinValue, char.MaxValue, static (value) => (char)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="Rune"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator Rune(BigReal value) => new((uint)value);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="uint"/> (<see cref="Rune"/>), an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator Rune(BigReal value) => new(NarrowConvert(value, uint.MinValue, uint.MaxValue, static (value) => (uint)GetWholePart(value)));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="nint"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator nint(BigReal value) => NarrowConvert(value, nint.MinValue, nint.MaxValue, value => (nint)value.Numerator / (nint)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="nint"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator nint(BigReal value) => NarrowConvert(value, nint.MinValue, nint.MaxValue, static (value) => (nint)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="nuint"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator nuint(BigReal value) => NarrowConvert(value, nuint.MinValue, nuint.MaxValue, value => (nuint)value.Numerator / (nuint)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="nuint"/>, an <see cref="OverflowException"/> will be thrown.
+    /// </remarks>
+    /// <exception cref="OverflowException"/>
+    public static explicit operator nuint(BigReal value) => NarrowConvert(value, nuint.MinValue, nuint.MaxValue, static (value) => (nuint)GetWholePart(value));
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="BigInteger"/> using a narrowing conversion.
     /// </summary>
@@ -1670,23 +1726,36 @@ public readonly partial struct BigReal : IConvertible, IComparable, IComparable<
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="Half"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator Half(BigReal value) => NarrowConvert(value, Half.MinValue, Half.MaxValue, value => (Half)value.Numerator / (Half)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="Half"/>, the result will be positive or negative infinity.
+    /// </remarks>
+    public static explicit operator Half(BigReal value) => (Half)value.Numerator / (Half)value.Denominator;
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="float"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator float(BigReal value) => NarrowConvert(value, float.MinValue, float.MaxValue, value => (float)value.Numerator / (float)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="float"/>, the result will be positive or negative infinity.
+    /// </remarks>
+    public static explicit operator float(BigReal value) => (float)value.Numerator / (float)value.Denominator;
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="double"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator double(BigReal value) => NarrowConvert(value, double.MinValue, double.MaxValue, value => (double)value.Numerator / (double)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="double"/>, the result will be positive or negative infinity.
+    /// </remarks>
+    public static explicit operator double(BigReal value) => (double)value.Numerator / (double)value.Denominator;
     /// <summary>
     /// Converts from <see cref="BigReal"/> to <see cref="decimal"/> using a narrowing conversion.
     /// </summary>
-    public static explicit operator decimal(BigReal value) => NarrowConvert(value, decimal.MinValue, decimal.MaxValue, value => (decimal)value.Numerator / (decimal)value.Denominator);
+    /// <remarks>
+    /// <b>Note:</b> If <paramref name="value"/> is outside the range of <see cref="decimal"/>, the result will be positive or negative infinity.
+    /// </remarks>
+    public static explicit operator decimal(BigReal value) => (decimal)value.Numerator / (decimal)value.Denominator;
 
     /// <summary>
     /// Attempts to convert <paramref name="value"/> to <typeparamref name="T"/>, throwing if the value is outside the supported range.
     /// </summary>
+    /// <exception cref="OverflowException"/>
     private static T NarrowConvert<T>(BigReal value, BigReal minValue, BigReal maxValue, Func<BigReal, T> convert) {
         if (value < minValue) {
             throw new OverflowException($"{nameof(value)} is less than {typeof(T).Name}.MinValue.");
